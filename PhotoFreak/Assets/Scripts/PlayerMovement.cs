@@ -9,12 +9,12 @@ public class PlayerMovement : MonoBehaviour
     private CharacterController controller; 
 
     [Header("Movement and Speed")]
-    public float walkSpeed = 6f; 
-    public float sprintSpeed = 9f; 
-    public float crouchSpeed = 3f; 
+    public float walkSpeed = 7f; 
+    public float sprintSpeed = 10f; 
+    public float crouchSpeed = 4f; 
 
     [Header("Jump and Gravity")]
-    public float jumpHeight = 2f; 
+    public float jumpHeight = 1.5f; 
     public float gravity = -9.81f; 
 
     [Header("Crouching")]

@@ -14,8 +14,6 @@ public class PlayerCam : MonoBehaviour
     [Range(0f, 90f)]
     [SerializeField] private float bottomClamp = 90f; 
 
-
-
     private float xRot; 
     private float yRot; 
 
