@@ -8,6 +8,9 @@ public class PhotoCamera : MonoBehaviour
     [SerializeField] private InputManager inputManager; 
     private CharacterController controller; 
 
+    [SerializeField] private GameObject mainCam;
+    [SerializeField] private GameObject photoCam;
+
     enum CaptureState
     {
         Idle,
@@ -39,10 +42,14 @@ public class PhotoCamera : MonoBehaviour
         if(isCapturing)
         {
             currentState = CaptureState.Capturing;
+            mainCam.SetActive(false);
+            photoCam.SetActive(true);
             Debug.Log("CameraRaised"); 
         } else
         {
             currentState = CaptureState.Idle;
+            mainCam.SetActive(true);
+            photoCam.SetActive(false);
             Debug.Log("CameraLowered"); 
         }
         

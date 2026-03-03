@@ -12,10 +12,10 @@ public class InputManager : MonoBehaviour
     public event Action OnJump; 
     public event Action<bool> OnSprint; 
     public event Action <bool> OnCrouch;
-    
-    // TODO: still needs to be implemented 
     public event Action<bool> OnAim;
     public event Action OnInteract;
+    
+    // TODO: still needs to be implemented 
     public event Action OnPause; 
     public event Action OnResume; 
 
