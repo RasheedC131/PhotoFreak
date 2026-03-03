@@ -5,15 +5,17 @@ public class Pathfinding : MonoBehaviour
 {
     public Camera cam;
     public NavMeshAgent agent;
+    public bool follower;
     public bool loopTmp;
     private Transform ring;
     private Transform node;
     private Transform[] rings;
+    private Transform leader;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        Transform parent = this.transform.parent;
+        Transform parent = this.transform.parent.parent.parent;
         Transform paths = parent.Find("Paths");
 
         int count = paths.transform.childCount;
@@ -26,26 +28,43 @@ public class Pathfinding : MonoBehaviour
 
         ring = rings[0];
         node = ring.GetChild(0);
+
+        if (!follower)
+        {
+            this.transform.SetAsFirstSibling();
+        }
+        leader = this.transform.parent.GetChild(0); // 0 for first sibling
     }
 
-    void Update()
+    public void Run()
     {
-        if (loopTmp)
+        if (!follower)
         {
-            loopTmp = false;
-            Vector3 pos = node.position;
+            if (loopTmp)
+            {
+                loopTmp = false;
+                Vector3 pos = node.position;
+                pos = new Vector3(pos.x, 0, pos.z);
+                float angle = Vector3.angle(this.angle, pos);
+                this.transform.rotation = (angle);
+                agent.SetDestination(pos);
+            }
+
+            if (this.transform.position.x == node.position.x && this.transform.position.z == node.position.z)
+            {
+                NodeConnect script = node.GetComponent<NodeConnect>();
+                node = script.getForward();
+                // Debug.Log(node.name);
+                loopTmp = true;
+            }
+        }
+        else
+        {
+            Vector3 pos = leader.position;
             pos = new Vector3(pos.x, 0, pos.z);
             agent.SetDestination(pos);
+            new WaitForSeconds(2);
         }
-
-        if (this.transform.position.x == node.position.x && this.transform.position.z == node.position.z)
-        {
-            NodeConnect script = node.GetComponent<NodeConnect>();
-            node = script.getForward();
-            Debug.Log(node.name);
-            loopTmp = true;
-        }
-
     }
 
     public void MouseMove()

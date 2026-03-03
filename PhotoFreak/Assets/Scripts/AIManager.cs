@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class NewMonoBehaviourScript : MonoBehaviour
 {
-    public Pathfinding moveScript;
+    public Transform Ais;
     private int tmp = 0;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -12,16 +12,15 @@ public class NewMonoBehaviourScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (moveScript != null)
+        if (Ais != null)
         {
-            if (Input.GetMouseButtonDown(0))
+            Pathfinding[] NPCs = Ais.transform.GetChild(tmp).GetComponentsInChildren<Pathfinding>();
+            for (int i = 0; i < NPCs.Length ; i++)
             {
-                moveScript.MouseMove();
-            }
-            else if (Input.GetMouseButtonDown(1))
-            {
-                moveScript.NodeMove(tmp);
-                tmp = (tmp + 1) % 2;
+                if (NPCs[i] != null)
+                {
+                    NPCs[i].Run();
+                }
             }
         }
     }
