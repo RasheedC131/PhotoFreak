@@ -163,6 +163,15 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Shoot"",
+                    ""type"": ""Button"",
+                    ""id"": ""73947b59-5261-4b20-8316-99d75490eb60"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -297,6 +306,17 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""action"": ""Sprint"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a721a837-f728-40b7-a992-5d3f0830b529"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Shoot"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -341,6 +361,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Ground_Interact = m_Ground.FindAction("Interact", throwIfNotFound: true);
         m_Ground_Crouch = m_Ground.FindAction("Crouch", throwIfNotFound: true);
         m_Ground_Sprint = m_Ground.FindAction("Sprint", throwIfNotFound: true);
+        m_Ground_Shoot = m_Ground.FindAction("Shoot", throwIfNotFound: true);
         // UIMap
         m_UIMap = asset.FindActionMap("UIMap", throwIfNotFound: true);
         m_UIMap_Newaction = m_UIMap.FindAction("New action", throwIfNotFound: true);
@@ -433,6 +454,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Ground_Interact;
     private readonly InputAction m_Ground_Crouch;
     private readonly InputAction m_Ground_Sprint;
+    private readonly InputAction m_Ground_Shoot;
     /// <summary>
     /// Provides access to input actions defined in input action map "Ground".
     /// </summary>
@@ -476,6 +498,10 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Ground/Sprint".
         /// </summary>
         public InputAction @Sprint => m_Wrapper.m_Ground_Sprint;
+        /// <summary>
+        /// Provides access to the underlying input action "Ground/Shoot".
+        /// </summary>
+        public InputAction @Shoot => m_Wrapper.m_Ground_Shoot;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -526,6 +552,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Sprint.started += instance.OnSprint;
             @Sprint.performed += instance.OnSprint;
             @Sprint.canceled += instance.OnSprint;
+            @Shoot.started += instance.OnShoot;
+            @Shoot.performed += instance.OnShoot;
+            @Shoot.canceled += instance.OnShoot;
         }
 
         /// <summary>
@@ -561,6 +590,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Sprint.started -= instance.OnSprint;
             @Sprint.performed -= instance.OnSprint;
             @Sprint.canceled -= instance.OnSprint;
+            @Shoot.started -= instance.OnShoot;
+            @Shoot.performed -= instance.OnShoot;
+            @Shoot.canceled -= instance.OnShoot;
         }
 
         /// <summary>
@@ -753,6 +785,13 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnSprint(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Shoot" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnShoot(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "UIMap" which allows adding and removing callbacks.

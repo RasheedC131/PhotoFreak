@@ -18,6 +18,8 @@ public class InputManager : MonoBehaviour
     public event Action OnPause; 
     public event Action OnResume; 
 
+    public event Action OnShoot; 
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
     {
@@ -41,6 +43,8 @@ public class InputManager : MonoBehaviour
 
         playerControls.Ground.Crouch.performed += ctx => OnCrouch?.Invoke(true); 
         playerControls.Ground.Crouch.canceled += ctx => OnCrouch?.Invoke(false); 
+
+        playerControls.Ground.Shoot.performed += ctx => OnShoot?.Invoke(); 
 
         // playerControls.Ground.Pause.performed += ctx => TogglePause(); 
         // playerControls.UI.Resume.performed += ctx => TogglePause();  
