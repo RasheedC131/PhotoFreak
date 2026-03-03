@@ -11,6 +11,7 @@ public class Pathfinding : MonoBehaviour
     private Transform node;
     private Transform[] rings;
     private Transform leader;
+    private Vector3 destination;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -45,46 +46,46 @@ public class Pathfinding : MonoBehaviour
                 loopTmp = false;
                 Vector3 pos = node.position;
                 pos = new Vector3(pos.x, 0, pos.z);
-                float angle = Vector3.angle(this.angle, pos);
-                this.transform.rotation = (angle);
+                destination = pos; // for other npcs to use
                 agent.SetDestination(pos);
-            }
-
-            if (this.transform.position.x == node.position.x && this.transform.position.z == node.position.z)
-            {
-                NodeConnect script = node.GetComponent<NodeConnect>();
-                node = script.getForward();
-                // Debug.Log(node.name);
-                loopTmp = true;
             }
         }
         else
         {
-            Vector3 pos = leader.position;
+            Vector3 pos = leader.GetComponent<Pathfinding>().getBehind(); // get position of leader
             pos = new Vector3(pos.x, 0, pos.z);
             agent.SetDestination(pos);
             new WaitForSeconds(2);
         }
     }
 
-    public void MouseMove()
+    public Vector3 getBehind()
     {
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, out RaycastHit hitInfo))
-        {
-            Vector3 pos = hitInfo.point;
-            pos = new Vector3(pos.x, 0, pos.z);
-            agent.SetDestination(pos);
-            Debug.Log("hello world");
-        }
+        // get angle for destination
+        float angle = Vector3.Angle(destination, this.transform.position);
+
+        Vector3 newPos = this.transform.position;
+
+        // calculate behind
+        newPos = new Vector3(newPos.x + (2*Mathf.Sin(angle)), 0, newPos.z + (2*Mathf.Cos(angle)));
+
+        return newPos;
     }
 
     public void NodeMove(int ringNum)
     {
         ring = rings[ringNum];
-        node = ring.GetChild(0);
-        Debug.Log("Switching");
-        Debug.Log(ring.name);
+        // Debug.Log("Switching");
+        // Debug.Log(ring.name);
+        // Debug.Log(ring.childCount);
+        node = ring.GetChild(0); // magic number lol
+        loopTmp = true;
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        NodeConnect script = node.GetComponent<NodeConnect>();
+        node = script.getForward();
         loopTmp = true;
     }
 }
