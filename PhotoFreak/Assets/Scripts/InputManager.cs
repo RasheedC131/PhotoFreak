@@ -14,7 +14,8 @@ public class InputManager : MonoBehaviour
     public event Action <bool> OnCrouch;
     
     // TODO: still needs to be implemented 
-    public event Action OnAim; 
+    public event Action<bool> OnAim;
+    public event Action OnInteract;
     public event Action OnPause; 
     public event Action OnResume; 
 
@@ -45,8 +46,10 @@ public class InputManager : MonoBehaviour
         // playerControls.Ground.Pause.performed += ctx => TogglePause(); 
         // playerControls.UI.Resume.performed += ctx => TogglePause();  
 
-        // playerControls.Ground.Aim.performed += ctx => OnAim?.Invoke(true); 
-        // playerControls.Ground.Aim.performed += ctx => OnAim?.Invoke(false); 
+        playerControls.Ground.Aim.started += ctx => OnAim?.Invoke(true); 
+        playerControls.Ground.Aim.canceled += ctx => OnAim?.Invoke(false);
+
+        playerControls.Ground.Interact.performed += ctx => OnInteract?.Invoke(); 
         
         EnableGameplayControls(); 
     }
