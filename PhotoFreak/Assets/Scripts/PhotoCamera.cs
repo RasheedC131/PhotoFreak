@@ -8,6 +8,7 @@ public class PhotoCamera : MonoBehaviour
     [SerializeField] private InputManager inputManager; 
     [SerializeField] private GameObject mainCam;
     [SerializeField] private GameObject photoCam;
+    [SerializeField] private GameObject viewFinderUI; 
 
     [Header("Settings")]
     [SerializeField] private int maxFilm = 10; 
@@ -38,6 +39,7 @@ public class PhotoCamera : MonoBehaviour
 
         if (mainCam != null) mainCam.SetActive(true); 
         if (photoCam != null) photoCam.SetActive(false); 
+        if (viewFinderUI != null) viewFinderUI.SetActive(false); 
 
         if (inputManager != null)
         {
@@ -54,6 +56,7 @@ public class PhotoCamera : MonoBehaviour
             currentState = CaptureState.Capturing;
             mainCam.SetActive(false);
             photoCam.SetActive(true);
+            viewFinderUI.SetActive(true); 
             Debug.Log("CameraRaised"); 
         } 
         
@@ -62,6 +65,7 @@ public class PhotoCamera : MonoBehaviour
             currentState = CaptureState.Idle;
             mainCam.SetActive(true);
             photoCam.SetActive(false);
+            viewFinderUI.SetActive(false); 
             Debug.Log("CameraLowered"); 
         }
         
