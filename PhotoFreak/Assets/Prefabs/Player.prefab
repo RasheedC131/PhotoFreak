@@ -114,6 +114,7 @@ GameObject:
   - component: {fileID: 7174747704269209235}
   - component: {fileID: 1725610253161152218}
   - component: {fileID: 2095803515710949478}
+  - component: {fileID: 2309348911316483082}
   m_Layer: 0
   m_Name: Photo Camera
   m_TagString: Untagged
@@ -240,6 +241,24 @@ MonoBehaviour:
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
   m_Version: 2
+--- !u!114 &2309348911316483082
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1412445915342316205}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e74577a6e6f6b00459eb62d100308b05, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerCam
+  inputManager: {fileID: 1544095912236018681}
+  orientation: {fileID: 640686651714806553}
+  sensX: 200
+  sensY: 200
+  topClamp: -90
+  bottomClamp: 90
 --- !u!1 &2037803872167456665
 GameObject:
   m_ObjectHideFlags: 0
