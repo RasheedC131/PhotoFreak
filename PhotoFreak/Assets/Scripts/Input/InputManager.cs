@@ -14,12 +14,12 @@ public class InputManager : MonoBehaviour
     public event Action <bool> OnCrouch;
     public event Action<bool> OnAim;
     public event Action OnInteract;
-    
+    public event Action OnShoot; 
+    public event Action<float> OnScroll; 
+
     // TODO: still needs to be implemented 
     public event Action OnPause; 
     public event Action OnResume; 
-
-    public event Action OnShoot; 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
@@ -54,6 +54,8 @@ public class InputManager : MonoBehaviour
         playerControls.Ground.Aim.canceled += ctx => OnAim?.Invoke(false);
 
         playerControls.Ground.Interact.performed += ctx => OnInteract?.Invoke(); 
+
+        playerControls.Ground.Focus.performed += ctx => OnScroll?.Invoke(ctx.ReadValue<float>()); 
         
         EnableGameplayControls(); 
     }

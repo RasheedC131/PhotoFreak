@@ -9,6 +9,7 @@ public class PhotoCamera : MonoBehaviour
     [SerializeField] private GameObject mainCam;
     [SerializeField] private GameObject photoCam;
     [SerializeField] private GameObject viewFinderUI; 
+    [SerializeField] private CameraFocus cameraFocus;
 
     [Header("Settings")]
     [SerializeField] private int maxFilm = 10; 
@@ -30,7 +31,6 @@ public class PhotoCamera : MonoBehaviour
         if (inputManager == null) inputManager = GetComponent<InputManager>(); 
     }
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         // Initialize Film 
@@ -100,10 +100,14 @@ public class PhotoCamera : MonoBehaviour
     }
 
     // TODO: actually implement taking the photo
+    // setup start for basic scoring with focusing 
     private void TakePhoto()
     {
         currFilm --; 
-        Debug.Log($"Took Photo, Film remaining: {currFilm}"); 
+
+        float score = 0f;
+        if (cameraFocus != null) score = cameraFocus.GetFocusScore();
+        Debug.Log($"*SNAP* Photo taken! Focus Quality: {score * 100:F0}%");
     }
 
     // TODO: add some sort of ui feedback to indicate that the user is out of film 
