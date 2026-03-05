@@ -5,8 +5,8 @@ public class PlayerCam : MonoBehaviour
     [SerializeField] private InputManager inputManager; 
     [SerializeField] private Transform orientation; 
 
-    public float sensX = 20f;
-    public float sensY = 20f;
+    public float sensX = 300f;
+    public float sensY = 300f;
 
     [Range(-90f, 0f)]
     [SerializeField] private float topClamp = -90f; 
