@@ -10,10 +10,11 @@ public class PhotoCamera : MonoBehaviour
     [SerializeField] private GameObject photoCam;
     [SerializeField] private GameObject viewFinderUI; 
     [SerializeField] private CameraFocus cameraFocus;
+    [SerializeField] private PhotoScore photoScore;
 
     [Header("Settings")]
     [SerializeField] private int maxFilm = 10; 
-    [SerializeField] private int currFilm; 
+    [SerializeField] private int currFilm;
 
     // private CharacterController controller; This was never used 
 
@@ -29,6 +30,7 @@ public class PhotoCamera : MonoBehaviour
     {
         // controller = GetComponent<CharacterController>(); 
         if (inputManager == null) inputManager = GetComponent<InputManager>(); 
+
     }
 
     void Start()
@@ -107,7 +109,7 @@ public class PhotoCamera : MonoBehaviour
 
         float score = 0f;
         if (cameraFocus != null) score = cameraFocus.GetFocusScore();
-        Debug.Log($"*SNAP* Photo taken! Focus Quality: {score * 100:F0}%");
+        Debug.Log($"Photo taken, Focus Quality: {score * 100:F0}%");
     }
 
     // TODO: add some sort of ui feedback to indicate that the user is out of film 
