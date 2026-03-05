@@ -17,6 +17,10 @@ public class CameraFocus : MonoBehaviour
     [SerializeField] private float minFocusDist = 0.1f; 
     [SerializeField] private float maxFocusDist = 100f; 
 
+    [Header("Scoring")]
+    [Range(0.1f, 10f)]
+    public float scoreCurveFlatness = 4.0f;         // used for the formula to calculate the score 
+
     private DepthOfField dof; 
     private float currFocusDist; 
     private float targetTrueDist; 
@@ -99,19 +103,16 @@ public class CameraFocus : MonoBehaviour
 
     public float GetFocusScore()
     {
-        // calc margin based on the aperture for the score 
-        float tolerancePercentage = aperture / 100f; 
-        float allowedError = targetTrueDist * tolerancePercentage;
-        
-        // buffer to allow for close up shots 
-        allowedError = Mathf.Max(allowedError, 0.2f); 
-
+        float allowedError = GetAllowedError(); 
         float diff = Mathf.Abs(currFocusDist - targetTrueDist);
 
-        if (diff > allowedError) return 0f; 
-        
-        // calc score from 0 to 1 
-        return 1f - (diff / allowedError);
+        // normalize the score (0, 1)
+        float deviation = diff / allowedError; 
+
+        // Apply Gaussian Bell Curve Formula: e^(-(x^2) / flatness)
+        float score = Mathf.Exp(-(deviation * deviation) / scoreCurveFlatness);
+
+        return score;
     }
 
     private void UpdateTargetDistance()
