@@ -8,11 +8,12 @@ public class PhotoCamera : MonoBehaviour
     [SerializeField] private InputManager inputManager; 
     [SerializeField] private GameObject mainCam;
     [SerializeField] private GameObject photoCam;
-    [SerializeField] private GameObject viewFinderUI; 
+    [SerializeField] private GameObject viewFinderUI;
+    [SerializeField] private PhotoScore photoScore;
 
     [Header("Settings")]
     [SerializeField] private int maxFilm = 10; 
-    [SerializeField] private int currFilm; 
+    [SerializeField] private int currFilm;
 
     // private CharacterController controller; This was never used 
 
@@ -28,6 +29,7 @@ public class PhotoCamera : MonoBehaviour
     {
         // controller = GetComponent<CharacterController>(); 
         if (inputManager == null) inputManager = GetComponent<InputManager>(); 
+
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -102,8 +104,9 @@ public class PhotoCamera : MonoBehaviour
     // TODO: actually implement taking the photo
     private void TakePhoto()
     {
-        currFilm --; 
+        currFilm --;
         Debug.Log($"Took Photo, Film remaining: {currFilm}"); 
+        photoScore.CaptureSubject();
     }
 
     // TODO: add some sort of ui feedback to indicate that the user is out of film 

@@ -115,6 +115,7 @@ GameObject:
   - component: {fileID: 1725610253161152218}
   - component: {fileID: 2095803515710949478}
   - component: {fileID: 2309348911316483082}
+  - component: {fileID: 2571432492211414147}
   m_Layer: 0
   m_Name: Photo Camera
   m_TagString: Untagged
@@ -131,7 +132,7 @@ Transform:
   m_GameObject: {fileID: 1412445915342316205}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.067, y: 0.612, z: 0.348}
+  m_LocalPosition: {x: -0.3958492, y: 0.612, z: 0.348}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -259,6 +260,23 @@ MonoBehaviour:
   sensY: 200
   topClamp: -90
   bottomClamp: 90
+--- !u!114 &2571432492211414147
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1412445915342316205}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 04510d53731e5d6439f404392413c7c3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PhotoScore
+  radius: 0.5
+  maxDistance: 8
+  layer:
+    serializedVersion: 2
+    m_Bits: 9
 --- !u!1 &2037803872167456665
 GameObject:
   m_ObjectHideFlags: 0
@@ -271,7 +289,7 @@ GameObject:
   - component: {fileID: 2555132764132827132}
   - component: {fileID: 1544095912236018681}
   - component: {fileID: 1527766073637076163}
-  - component: {fileID: 4596647987355327710}
+  - component: {fileID: 3674286216050365794}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -357,7 +375,7 @@ MonoBehaviour:
   crouchTransitionSpeed: 10
   crouchCenter: {x: 0, y: 0.5, z: 0}
   standingCenter: {x: 0, y: 0, z: 0}
---- !u!114 &4596647987355327710
+--- !u!114 &3674286216050365794
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -373,6 +391,7 @@ MonoBehaviour:
   mainCam: {fileID: 8854006747983261293}
   photoCam: {fileID: 1412445915342316205}
   viewFinderUI: {fileID: 7488071159006568316}
+  photoScore: {fileID: 2571432492211414147}
   maxFilm: 10
   currFilm: 0
 --- !u!1 &7082863440451782398
@@ -593,7 +612,7 @@ Transform:
   m_GameObject: {fileID: 8854006747983261293}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.067, y: 0.612, z: 0.348}
+  m_LocalPosition: {x: -0.3958492, y: 0.612, z: 0.348}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
