@@ -130,12 +130,12 @@ Transform:
   m_GameObject: {fileID: 1412445915342316205}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.067, y: 0.612, z: 0.348}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 614047325561792967}
-  m_Father: {fileID: 640686651714806553}
+  m_Father: {fileID: 7942777007654047214}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!20 &7174747704269209235
 Camera:
@@ -274,8 +274,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 486260596798964970}
-  - {fileID: 6362894696699967186}
-  - {fileID: 8628134068181590404}
+  - {fileID: 7942777007654047214}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!143 &2555132764132827132
@@ -354,6 +353,7 @@ MonoBehaviour:
   mainCam: {fileID: 8854006747983261293}
   photoCam: {fileID: 1412445915342316205}
   viewFinderUI: {fileID: 7488071159006568316}
+  cameraFocus: {fileID: 0}
   maxFilm: 10
   currFilm: 0
 --- !u!1 &7082863440451782398
@@ -470,6 +470,58 @@ CapsuleCollider:
   m_Height: 1
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &7372221476996589241
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7942777007654047214}
+  - component: {fileID: 3324815147843262641}
+  m_Layer: 0
+  m_Name: CameraHolder
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7942777007654047214
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7372221476996589241}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0, y: 0.657, z: 0.338}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 6362894696699967186}
+  - {fileID: 8628134068181590404}
+  m_Father: {fileID: 640686651714806553}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3324815147843262641
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7372221476996589241}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e74577a6e6f6b00459eb62d100308b05, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerCam
+  inputManager: {fileID: 1544095912236018681}
+  orientation: {fileID: 640686651714806553}
+  sensX: 300
+  sensY: 300
+  topClamp: -90
+  bottomClamp: 90
 --- !u!1 &7488071159006568316
 GameObject:
   m_ObjectHideFlags: 0
@@ -557,9 +609,8 @@ GameObject:
   - component: {fileID: 4061806477637331288}
   - component: {fileID: 2438063088750968248}
   - component: {fileID: 8291320912420731299}
-  - component: {fileID: 240379655810389320}
   m_Layer: 0
-  m_Name: Main Camera
+  m_Name: PlayerCam
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -573,12 +624,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8854006747983261293}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.067, y: 0.612, z: 0.348}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.351, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 640686651714806553}
+  m_Father: {fileID: 7942777007654047214}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!20 &4061806477637331288
 Camera:
@@ -683,21 +734,3 @@ MonoBehaviour:
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
   m_Version: 2
---- !u!114 &240379655810389320
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8854006747983261293}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e74577a6e6f6b00459eb62d100308b05, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerCam
-  inputManager: {fileID: 1544095912236018681}
-  orientation: {fileID: 640686651714806553}
-  sensX: 300
-  sensY: 300
-  topClamp: -90
-  bottomClamp: 90

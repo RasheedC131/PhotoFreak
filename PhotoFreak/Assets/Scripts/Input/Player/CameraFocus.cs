@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityEngine.Rendering; 
 using UnityEngine.Rendering.Universal; 
+using TMPro;
+using UnityEngine.UI;
 
 public class CameraFocus : MonoBehaviour
 {
@@ -8,6 +10,8 @@ public class CameraFocus : MonoBehaviour
     [SerializeField] private InputManager inputManager; 
     [SerializeField] private Volume globalVolume; 
     [SerializeField] private Transform cameraTransform; 
+    [SerializeField] private TextMeshProUGUI focusIndicatorText;
+    [SerializeField] private Image viewFinderImage; 
 
     [Header("Settings")]
     [SerializeField] private float baseFocusSpeed = 0.5f;     
@@ -49,7 +53,7 @@ public class CameraFocus : MonoBehaviour
     void Update()
     {
         UpdateTargetDistance(); 
-        CheckFocusQuality(); 
+        UpdateFocusUI();
     }
 
     private void InitializeFocus()
@@ -128,18 +132,23 @@ public class CameraFocus : MonoBehaviour
         }
     }
 
-    void OnGUI()
+    private void UpdateFocusUI()
     {
-        float centerX = Screen.width / 2 - 100; 
-        float centerY = Screen.height / 2 + 50; 
+        if (focusIndicatorText == null || viewFinderImage == null) return;
 
-        GUI.color = Color.red; 
-        GUI.Label(new Rect(centerX, centerY, 300, 20), $"Target: {targetTrueDist:F2}");
-        GUI.Label(new Rect(centerX, centerY + 20, 300, 20), $"Current: {currFocusDist:F2}");
-        
-        float diff = Mathf.Abs(currFocusDist - targetTrueDist);
-        string status = (diff < GetAllowedError()) ? "PERFECT" : "BLURRY";
-        
-        GUI.Label(new Rect(centerX, centerY + 40, 300, 20), status);
+        float score = GetFocusScore(); 
+        Color baseColor = viewFinderImage.color; 
+        focusIndicatorText.color = baseColor; 
+
+        if (score > 0.85)
+        {
+            focusIndicatorText.text = $"PERFECT [{score*100:F0}%]";
+            focusIndicatorText.color = baseColor; 
+        }
+        else
+        {
+            focusIndicatorText.text = $"FOCUSING... [{score*100:F0}%]";
+            focusIndicatorText.color = baseColor; 
+        }
     }
 }
