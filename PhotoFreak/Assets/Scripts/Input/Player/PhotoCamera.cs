@@ -6,17 +6,15 @@ public class PhotoCamera : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private InputManager inputManager; 
-    [SerializeField] private GameObject mainCam;
-    [SerializeField] private GameObject photoCam;
     [SerializeField] private GameObject viewFinderUI;
-    [SerializeField] private PhotoScore photoScore;
 
     [Header("Settings")]
     [SerializeField] private int maxFilm = 10; 
     [SerializeField] private int currFilm;
 
-    // private CharacterController controller; This was never used 
+    private PhotoScore photoScore;
 
+    
     enum CaptureState
     {
         Idle,
@@ -27,7 +25,6 @@ public class PhotoCamera : MonoBehaviour
 
     void Awake ()
     {
-        // controller = GetComponent<CharacterController>(); 
         if (inputManager == null) inputManager = GetComponent<InputManager>(); 
 
     }
@@ -39,8 +36,6 @@ public class PhotoCamera : MonoBehaviour
         currFilm = maxFilm; 
         currentState = CaptureState.Idle;
 
-        if (mainCam != null) mainCam.SetActive(true); 
-        if (photoCam != null) photoCam.SetActive(false); 
         if (viewFinderUI != null) viewFinderUI.SetActive(false); 
 
         if (inputManager != null)
@@ -49,6 +44,8 @@ public class PhotoCamera : MonoBehaviour
             inputManager.OnInteract += Interact;        
             inputManager.OnShoot += Shoot;   
         }
+
+        photoScore = GetComponent<PhotoScore>();
     }
 
     private void UpdateCaptureState(bool isCapturing)
@@ -56,8 +53,7 @@ public class PhotoCamera : MonoBehaviour
         if(isCapturing)
         {
             currentState = CaptureState.Capturing;
-            mainCam.SetActive(false);
-            photoCam.SetActive(true);
+
             viewFinderUI.SetActive(true); 
             Debug.Log("CameraRaised"); 
         } 
@@ -65,8 +61,7 @@ public class PhotoCamera : MonoBehaviour
         else
         {
             currentState = CaptureState.Idle;
-            mainCam.SetActive(true);
-            photoCam.SetActive(false);
+    
             viewFinderUI.SetActive(false); 
             Debug.Log("CameraLowered"); 
         }
