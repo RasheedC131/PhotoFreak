@@ -8,13 +8,15 @@ public class CameraFocus : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private InputManager inputManager; 
+    [SerializeField] private CameraZoom cameraZoom; 
     [SerializeField] private Volume globalVolume; 
     [SerializeField] private Transform cameraTransform; 
     [SerializeField] private TextMeshProUGUI focusIndicatorText;
     [SerializeField] private Image viewFinderImage; 
+    [SerializeField] private Image focusStatusIndicator;
 
     [Header("Settings")]
-    [SerializeField] private float baseFocusSpeed = 0.5f;     
+    [SerializeField] private float baseFocusSpeed = 0.2f;     
     [SerializeField] private float aperture = 5.6f; 
     [SerializeField] private float blurRandomness = 5f; 
     [SerializeField] private float focusTolerance = 0.25f;       
@@ -31,23 +33,26 @@ public class CameraFocus : MonoBehaviour
 
     void Awake()
     {
-        if (globalVolume.profile.TryGet(out DepthOfField tmpDof))
-        {
-            dof = tmpDof; 
-        }
-
         if (inputManager == null) inputManager = FindAnyObjectByType<InputManager>(); 
+        
+        if (cameraZoom == null) cameraZoom = GetComponent<CameraZoom>(); 
+        
+        if (globalVolume != null && globalVolume.profile.TryGet(out DepthOfField tmpDof)) 
+        {
+            dof = tmpDof;
+            dof.focusDistance.overrideState = true; 
+        }
     }
 
     void OnEnable()
     {
-        if (inputManager != null) inputManager.OnScroll += AdjustFocus; 
+        if (inputManager != null) inputManager.OnFocus += AdjustFocus; 
         InitializeFocus();
     }
 
     void OnDisable()
     {
-        if (inputManager != null) inputManager.OnScroll -= AdjustFocus; 
+        if (inputManager != null) inputManager.OnFocus -= AdjustFocus; 
     }
 
     void Update()
@@ -69,17 +74,25 @@ public class CameraFocus : MonoBehaviour
         UpdateDoF();
     }
 
-    // uses a log scaling to take adjust the focus
+    // adjust the focus based on the user input and zoom level 
     private void AdjustFocus(float scrollAmount)
     {
         float direction = Mathf.Clamp(scrollAmount, -1f, 1f);
-        
-        float dynamicSpeed = currFocusDist * baseFocusSpeed; 
-        dynamicSpeed = Mathf.Max(dynamicSpeed, 0.1f); 
 
-        // calc the focus dist and normalize the value 
-        currFocusDist += direction * dynamicSpeed;
+        float zoomLevel = (cameraZoom != null) ? cameraZoom.currZoomLevel : 1f; 
+        float dampenZoom = 1f / zoomLevel; 
+        
+        float dynamicSpeed = baseFocusSpeed * dampenZoom; 
+        dynamicSpeed = Mathf.Max(dynamicSpeed, 0.1f); 
+        
+        float distanceMultiplier = Mathf.Max(currFocusDist, 1f);
+        
+        float change = direction * dynamicSpeed * distanceMultiplier;
+
+        currFocusDist += change;
         currFocusDist = Mathf.Clamp(currFocusDist, minFocusDist, maxFocusDist); 
+
+        Debug.Log($"Focus Dist: {currFocusDist:F2}; Target: {targetTrueDist:F2}");
 
         UpdateDoF();
     }
@@ -89,28 +102,26 @@ public class CameraFocus : MonoBehaviour
         if (dof != null) dof.focusDistance.value = currFocusDist;
     }
 
-    private float GetAllowedError()
-    {
-        float tolerancePercentage = aperture / 100f; 
-        float errorMargin = targetTrueDist * tolerancePercentage;
-
-        return Mathf.Max(errorMargin, focusTolerance);
-    }
-
-    private void CheckFocusQuality()
-    {
-        if (Mathf.Abs(currFocusDist - targetTrueDist) < GetAllowedError())
-        {
-            // TODO: add logic for successfully snapping a photo 
-        }
-    }
+    // private void CheckFocusQuality()
+    // {
+    //     if (Mathf.Abs(currFocusDist - targetTrueDist) < GetAllowedError())
+    //     {
+    //         // TODO: add logic for successfully snapping a photo 
+    //     }
+    // }
 
     public float GetFocusScore()
     {
-        float allowedError = GetAllowedError(); 
-        float diff = Mathf.Abs(currFocusDist - targetTrueDist);
+        float zoomLevel = (GetComponent<Camera>() != null) ? cameraZoom.currZoomLevel : 1f; // 1f is the minimum zoom level 
+        
+        float tolerancePerct = aperture / 100f;
+        float allowedError = targetTrueDist * tolerancePerct; 
 
-        // normalize the score (0, 1)
+        // need to have some margin of error so it's easier to take a decent pic 
+        allowedError /= zoomLevel; 
+        allowedError = Mathf.Max(allowedError, focusTolerance); 
+
+        float diff = Mathf.Abs(currFocusDist - targetTrueDist); 
         float deviation = diff / allowedError; 
 
         // Apply Gaussian Bell Curve Formula: e^(-(x^2) / flatness)
@@ -134,21 +145,30 @@ public class CameraFocus : MonoBehaviour
 
     private void UpdateFocusUI()
     {
-        if (focusIndicatorText == null || viewFinderImage == null) return;
+        Color colorGreen = Color.green;
+        Color colorOrange = new Color(1f, 0.64f, 0f); // Orange
+        Color colorRed = Color.red;
+
+        if (focusIndicatorText == null) return;
 
         float score = GetFocusScore(); 
-        Color baseColor = viewFinderImage.color; 
-        focusIndicatorText.color = baseColor; 
-
-        if (score > 0.85)
+        
+        focusIndicatorText.text = $"FOCUS: {score*100:F0}%";
+        
+        if (focusStatusIndicator != null)
         {
-            focusIndicatorText.text = $"PERFECT [{score*100:F0}%]";
-            focusIndicatorText.color = baseColor; 
-        }
-        else
-        {
-            focusIndicatorText.text = $"FOCUSING... [{score*100:F0}%]";
-            focusIndicatorText.color = baseColor; 
+            if (score > 0.90f)
+            {
+                focusStatusIndicator.color = colorGreen; 
+            }
+            else if (score > 0.30f)
+            {
+                focusStatusIndicator.color = colorOrange; 
+            }
+            else
+            {
+                focusStatusIndicator.color = colorRed; 
+            }
         }
     }
 }

@@ -174,10 +174,10 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Focus"",
+                    ""name"": ""ScrollAction"",
                     ""type"": ""Value"",
-                    ""id"": ""332fdcca-9880-440a-b724-520508609037"",
-                    ""expectedControlType"": ""Axis"",
+                    ""id"": ""a46c0bfa-c8cd-4d47-8a64-7daa3f89b2a6"",
+                    ""expectedControlType"": ""Vector2"",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
@@ -329,12 +329,12 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""28477a24-03d7-453b-842e-50a5fa7a43a9"",
-                    ""path"": ""<Mouse>/scroll/y"",
+                    ""id"": ""f6089f02-97dd-4a30-9796-b280788cd463"",
+                    ""path"": ""<Mouse>/scroll"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Focus"",
+                    ""action"": ""ScrollAction"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -382,7 +382,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Ground_Crouch = m_Ground.FindAction("Crouch", throwIfNotFound: true);
         m_Ground_Sprint = m_Ground.FindAction("Sprint", throwIfNotFound: true);
         m_Ground_Shoot = m_Ground.FindAction("Shoot", throwIfNotFound: true);
-        m_Ground_Focus = m_Ground.FindAction("Focus", throwIfNotFound: true);
+        m_Ground_ScrollAction = m_Ground.FindAction("ScrollAction", throwIfNotFound: true);
         // UIMap
         m_UIMap = asset.FindActionMap("UIMap", throwIfNotFound: true);
         m_UIMap_Newaction = m_UIMap.FindAction("New action", throwIfNotFound: true);
@@ -476,7 +476,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Ground_Crouch;
     private readonly InputAction m_Ground_Sprint;
     private readonly InputAction m_Ground_Shoot;
-    private readonly InputAction m_Ground_Focus;
+    private readonly InputAction m_Ground_ScrollAction;
     /// <summary>
     /// Provides access to input actions defined in input action map "Ground".
     /// </summary>
@@ -525,9 +525,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @Shoot => m_Wrapper.m_Ground_Shoot;
         /// <summary>
-        /// Provides access to the underlying input action "Ground/Focus".
+        /// Provides access to the underlying input action "Ground/ScrollAction".
         /// </summary>
-        public InputAction @Focus => m_Wrapper.m_Ground_Focus;
+        public InputAction @ScrollAction => m_Wrapper.m_Ground_ScrollAction;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -581,9 +581,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Shoot.started += instance.OnShoot;
             @Shoot.performed += instance.OnShoot;
             @Shoot.canceled += instance.OnShoot;
-            @Focus.started += instance.OnFocus;
-            @Focus.performed += instance.OnFocus;
-            @Focus.canceled += instance.OnFocus;
+            @ScrollAction.started += instance.OnScrollAction;
+            @ScrollAction.performed += instance.OnScrollAction;
+            @ScrollAction.canceled += instance.OnScrollAction;
         }
 
         /// <summary>
@@ -622,9 +622,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Shoot.started -= instance.OnShoot;
             @Shoot.performed -= instance.OnShoot;
             @Shoot.canceled -= instance.OnShoot;
-            @Focus.started -= instance.OnFocus;
-            @Focus.performed -= instance.OnFocus;
-            @Focus.canceled -= instance.OnFocus;
+            @ScrollAction.started -= instance.OnScrollAction;
+            @ScrollAction.performed -= instance.OnScrollAction;
+            @ScrollAction.canceled -= instance.OnScrollAction;
         }
 
         /// <summary>
@@ -825,12 +825,12 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnShoot(InputAction.CallbackContext context);
         /// <summary>
-        /// Method invoked when associated input action "Focus" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// Method invoked when associated input action "ScrollAction" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnFocus(InputAction.CallbackContext context);
+        void OnScrollAction(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "UIMap" which allows adding and removing callbacks.

@@ -29,10 +29,10 @@ public class InputManager : MonoBehaviour
 
         playerControls.Ground.Enable();
 
-        playerControls.Ground.Movement.performed += ctx => OnMove?.Invoke(ctx.ReadValue<Vector2>());
+        playerControls.Ground.Movement.performed += ctx => OnMove?.Invoke(ctx.ReadValue<Vector2>());        // wasd
         playerControls.Ground.Movement.canceled += ctx => OnMove?.Invoke(Vector2.zero); 
 
-        playerControls.Ground.Look.performed += ctx => OnLook?.Invoke(ctx.ReadValue<Vector2>()); 
+        playerControls.Ground.Look.performed += ctx => OnLook?.Invoke(ctx.ReadValue<Vector2>());        
         playerControls.Ground.Look.canceled += ctx => OnLook?.Invoke(Vector2.zero); 
 
         playerControls.Ground.Jump.performed += ctx => OnJump?.Invoke(); 
@@ -53,12 +53,24 @@ public class InputManager : MonoBehaviour
 
         playerControls.Ground.Interact.performed += ctx => OnInteract?.Invoke(); 
 
-        playerControls.Ground.Focus.performed += ctx =>
+        playerControls.Ground.ScrollAction.performed += ctx =>
         {
-            float scrollValue = ctx.ReadValue<float>(); 
+            float scrollVal = ctx.ReadValue<Vector2>().y; 
+            
+            // deadzone 
+            if (Mathf.Abs(scrollVal) < 0.01f) return;
 
-            if (keyboard.current.shiftkey.isPressed) OnFocus?.Invoke(scrollValue); 
-            else OnZoom?.Invoke(scrollValue); 
+            // Focus
+            if (Keyboard.current != null && Keyboard.current.ctrlKey.isPressed)
+            {
+                OnFocus?.Invoke(scrollVal);
+            }
+
+            // zoom 
+            else
+            {
+                OnZoom?.Invoke(scrollVal);
+            }
         };
     }
 

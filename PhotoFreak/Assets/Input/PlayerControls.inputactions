@@ -88,10 +88,10 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Focus",
+                    "name": "ScrollAction",
                     "type": "Value",
-                    "id": "332fdcca-9880-440a-b724-520508609037",
-                    "expectedControlType": "Axis",
+                    "id": "a46c0bfa-c8cd-4d47-8a64-7daa3f89b2a6",
+                    "expectedControlType": "Vector2",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
@@ -243,12 +243,12 @@
                 },
                 {
                     "name": "",
-                    "id": "28477a24-03d7-453b-842e-50a5fa7a43a9",
-                    "path": "<Mouse>/scroll/y",
+                    "id": "f6089f02-97dd-4a30-9796-b280788cd463",
+                    "path": "<Mouse>/scroll",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Focus",
+                    "action": "ScrollAction",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
