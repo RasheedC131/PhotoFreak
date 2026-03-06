@@ -11,6 +11,7 @@ public class PhotoCamera : MonoBehaviour
     [SerializeField] private GameObject viewFinderUI; 
     [SerializeField] private CameraFocus cameraFocus;
     [SerializeField] private PhotoScore photoScore;
+    [SerializeField] private CameraFlash cameraFlash; 
 
     [Header("Settings")]
     [SerializeField] private int maxFilm = 10; 
@@ -30,6 +31,7 @@ public class PhotoCamera : MonoBehaviour
     {
         // controller = GetComponent<CharacterController>(); 
         if (inputManager == null) inputManager = GetComponent<InputManager>(); 
+        if (cameraFlash == null) cameraFlash = GetComponentInChildren<CameraFlash>();
 
     }
 
@@ -106,7 +108,7 @@ public class PhotoCamera : MonoBehaviour
     private void TakePhoto()
     {
         currFilm --; 
-
+        if (cameraFlash != null) cameraFlash.TriggerFlash(); 
         float score = 0f;
         if (cameraFocus != null) score = cameraFocus.GetFocusScore();
         Debug.Log($"Photo taken, Focus Quality: {score * 100:F0}%");
