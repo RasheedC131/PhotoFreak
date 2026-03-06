@@ -15,7 +15,8 @@ public class InputManager : MonoBehaviour
     public event Action<bool> OnAim;
     public event Action OnInteract;
     public event Action OnShoot; 
-    public event Action<float> OnScroll; 
+    public event Action<float> OnZoom; 
+    public event Action<float> OnFocus; 
 
     // TODO: still needs to be implemented 
     public event Action OnPause; 
@@ -25,10 +26,7 @@ public class InputManager : MonoBehaviour
     void Awake()
     {
         playerControls = new PlayerControls(); 
-    }
 
-    private void OnEnable()
-    {
         playerControls.Ground.Enable();
 
         playerControls.Ground.Movement.performed += ctx => OnMove?.Invoke(ctx.ReadValue<Vector2>());
@@ -55,9 +53,18 @@ public class InputManager : MonoBehaviour
 
         playerControls.Ground.Interact.performed += ctx => OnInteract?.Invoke(); 
 
-        playerControls.Ground.Focus.performed += ctx => OnScroll?.Invoke(ctx.ReadValue<float>()); 
-        
-        EnableGameplayControls(); 
+        playerControls.Ground.Focus.performed += ctx =>
+        {
+            float scrollValue = ctx.ReadValue<float>(); 
+
+            if (keyboard.current.shiftkey.isPressed) OnFocus?.Invoke(scrollValue); 
+            else OnZoom?.Invoke(scrollValue); 
+        };
+    }
+
+    private void OnEnable()
+    {
+        playerControls.Ground.Enable();         
     }
 
     private void OnDisable()
@@ -65,18 +72,19 @@ public class InputManager : MonoBehaviour
         playerControls.Ground.Disable(); 
     }
 
+    // Todo: tweak this later when we have resume/pause
     public void EnableGameplayControls()
     {
-        if (playerControls.Ground.enabled)
-        {
-            OnPause?.Invoke(); 
-            // EnableUIControls(); 
-        }
+        // if (playerControls.Ground.enabled)
+        // {
+        //     OnPause?.Invoke(); 
+        //     // EnableUIControls(); 
+        // }
 
-        else
-        {
-            OnResume?.Invoke(); 
-            // EnableGameplayControls(); 
-        }
+        // else
+        // {
+        //     OnResume?.Invoke(); 
+        //     // EnableGameplayControls(); 
+        // }
     }
 }
