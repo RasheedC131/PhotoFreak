@@ -558,11 +558,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 04510d53731e5d6439f404392413c7c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PhotoScore
-  radius: 0.5
+  radius: 0.8
   maxDistance: 8
   layer:
     serializedVersion: 2
-    m_Bits: 9
+    m_Bits: 64
 --- !u!114 &7039488818799544351
 MonoBehaviour:
   m_ObjectHideFlags: 0
