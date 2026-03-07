@@ -8,6 +8,8 @@ public class MonsterPathfinding : Pathfinding
     [Header("Monster Behavior")]
     [SerializeField] private float minTimeBetweenTells = 5f; 
     [SerializeField] private float maxTimeBetweenTells = 15f; 
+    [Range(0f, 1f)]
+    [SerializeField] private float tellTriggerProbability = 0.7f; 
 
     private float nextTellTime = 0f; 
     private bool isGlitching = false; 
@@ -25,7 +27,8 @@ public class MonsterPathfinding : Pathfinding
         // see if monster is able to do its tell 
         if (!isGlitching && Time.time >= nextTellTime) 
         {    
-            StartCoroutine(TriggerTell());
+            if (Random.value <= tellTriggerProbability) StartCoroutine(TriggerTell());
+            else SetNextTellTime(); 
         }
 
         // TODO: tweak or change this later based on in-game clock 
