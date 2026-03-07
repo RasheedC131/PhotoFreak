@@ -29,9 +29,14 @@ public class PhotoCamera : MonoBehaviour
     [SerializeField] private float photoReviewTime = 2.0f; // might tweak this so user can close out of it early
 
 
-    [Header("Settings")]
+    [Header("Film Settings")]
     [SerializeField] private int maxFilm = 10; 
     [SerializeField] private int currFilm;
+
+    [Header("Star Settings")]
+    [SerializeField] private Image[] starImages; 
+    [SerializeField] private Color earnedStarColor = Color.yellow; 
+    [SerializeField] private Color emptyStarColor = Color.gray;
     
 
     // private CharacterController controller; This was never used 
@@ -155,10 +160,13 @@ public class PhotoCamera : MonoBehaviour
         if (playerMovementScript != null) playerMovementScript.enabled = false;
         if (cameraLookScript != null) cameraLookScript.enabled = false;
 
-        if (photoReviewUI != null) photoReviewUI.SetActive(true); 
-        
+
+        ResetStars(); 
+
+        if (photoReviewUI != null) photoReviewUI.SetActive(true);         
         if (capturedPhotoDisplay != null) capturedPhotoDisplay.gameObject.SetActive(false); 
 
+        // close shutter
         yield return StartCoroutine(AnimateShutters(shutterOpenHeight, 0f, shutterSpeed)); 
 
         if (cameraFlash != null) cameraFlash.TriggerFlash(); 
@@ -173,7 +181,13 @@ public class PhotoCamera : MonoBehaviour
             capturedPhotoDisplay.gameObject.SetActive(true); 
         }
 
+        // calculate score and display stars
+
+        // open shutter
         yield return StartCoroutine(AnimateShutters(0f, shutterOpenHeight, shutterSpeed)); 
+    
+        yield return new WaitForSeconds(0.2f); 
+        CalculateAndShowStars(); 
 
         if (cameraFocus != null)
         {
@@ -186,7 +200,7 @@ public class PhotoCamera : MonoBehaviour
         // clean up the states 
         if (playerMovementScript != null) playerMovementScript.enabled = true;
         if (cameraLookScript != null) cameraLookScript.enabled = true;
-        
+
         if (photoReviewUI != null) photoReviewUI.SetActive(false); 
         if (viewFinderUI != null && currentState == CaptureState.Capturing) viewFinderUI.SetActive(true); 
 
@@ -219,4 +233,36 @@ public class PhotoCamera : MonoBehaviour
         if (bottomShutter != null) bottomShutter.anchoredPosition = new Vector2(0, -shutterOpenHeight);
     }
 
+    private void UpdateStarUI(int starCount)
+    {
+        for (int i = 0; i < starImages.Length; i++)
+        {
+            if (i < starCount) starImages[i].color = earnedStarColor; 
+            else starImages[i].color = emptyStarColor; 
+        }
+    }
+
+    private void ResetStars()
+    {
+        if (starImages == null) return; 
+
+        foreach (Image star in starImages)
+        {
+            if (star != null) star.color = Color.clear; 
+        }
+    }
+    
+    // TODO: use actual scoring system 
+    private void CalculateAndShowStars()
+    {
+        if (cameraFocus == null) return;
+
+        float score = cameraFocus.GetFocusScore();
+        int starCount = Mathf.RoundToInt(score * 5);
+
+        Debug.Log($"Score: {score:F2}, Stars: {starCount}");
+        UpdateStarUI(starCount);
+    }
+
 }
+
