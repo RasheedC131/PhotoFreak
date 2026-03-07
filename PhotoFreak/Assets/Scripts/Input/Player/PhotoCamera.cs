@@ -150,6 +150,7 @@ public class PhotoCamera : MonoBehaviour
         if (currFilm > 0)
         {
             currFilm --; 
+            if (filmCounterText != null) filmCounterText.text = $"{currFilm} Shots";
             StartCoroutine(CapturePhotoRoutine()); 
         }
         
