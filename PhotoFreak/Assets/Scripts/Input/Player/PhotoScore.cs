@@ -19,6 +19,7 @@ public class PhotoScore : MonoBehaviour
         public int distance; //How far is the subject
         public int facing; //Is the subject facing the camera
         public int framing; // How much of the photo does the subject take up
+        public int pose; //Taken from Photo Tag
     };
 
 
@@ -54,6 +55,9 @@ public class PhotoScore : MonoBehaviour
     private int DistanceCalculation(Vector3 playerPos, Vector3 subjectPos)
     {
         float distance = Vector3.Distance(playerPos, subjectPos);
+
+        //Debug.Log("Distance: " + distance);
+        //Debug.Log("Distance: " + (int)distanceCurve.Evaluate(distance));
 
         return (int)distanceCurve.Evaluate(distance);
     }
