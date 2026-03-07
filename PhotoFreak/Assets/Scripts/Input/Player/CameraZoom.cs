@@ -13,7 +13,7 @@ public class CameraZoom : MonoBehaviour
     [Header("Settings")]
     [SerializeField] private float maxZoom = 3f; 
     [SerializeField] private float minZoom = 1f; 
-    [SerializeField] private float zoomSpeed = 10f; 
+    [SerializeField] private float zoomSpeed = 50f; 
 
     public float currZoomLevel {get; private set; } = 1f; 
     private float defaultFOV; 
