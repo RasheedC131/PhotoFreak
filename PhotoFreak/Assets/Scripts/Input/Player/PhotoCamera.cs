@@ -18,14 +18,13 @@ public class PhotoCamera : MonoBehaviour
     [SerializeField] private RectTransform topShutter;    
     [SerializeField] private RectTransform bottomShutter;
     [SerializeField] private TextMeshProUGUI filmCounterText; 
+    [SerializeField] private MonoBehaviour cameraLookScript; 
+    [SerializeField] private MonoBehaviour playerMovementScript;
 
 
     [Header("Photo Display Settings")]
     [SerializeField] private GameObject photoReviewUI; 
     [SerializeField] private RawImage capturedPhotoDisplay; 
-    [SerializeField] private Image whiteFlashOverlay; 
-    [Range(0, 5)]
-    // [SerializeField] private float waitTimeToCapture = 1.0f; 
     [SerializeField] private float shutterSpeed = 0.15f; 
     [SerializeField] private float photoReviewTime = 2.0f; // might tweak this so user can close out of it early
 
@@ -132,18 +131,6 @@ public class PhotoCamera : MonoBehaviour
         }
     }
 
-    // TODO: actually implement taking the photo
-    // setup start for basic scoring with focusing 
-    // private void TakePhoto()
-    // {
-    //     currFilm --; 
-    //     // if (cameraFlash != null) cameraFlash.TriggerFlash(); 
-    //     // float score = 0f;
-    //     // if (cameraFocus != null) score = cameraFocus.GetFocusScore();
-    //     // Debug.Log($"Photo taken, Focus Quality: {score * 100:F0}%");
-    //     StartCoroutine(CapturePhotoRoutine());
-    // }
-
     // TODO: add some sort of ui feedback to indicate that the user is out of film 
     private void AttemptTakePhoto()
     {
@@ -158,12 +145,18 @@ public class PhotoCamera : MonoBehaviour
     }
 
     // TODO: after prototype need to implement a way to exit out of preview early 
+
     // routine that captures the photo and displays it 
     private IEnumerator CapturePhotoRoutine()
     {
         isReview = true; 
-        
+
+        // disable player from being able to look/move
+        if (playerMovementScript != null) playerMovementScript.enabled = false;
+        if (cameraLookScript != null) cameraLookScript.enabled = false;
+
         if (photoReviewUI != null) photoReviewUI.SetActive(true); 
+        
         if (capturedPhotoDisplay != null) capturedPhotoDisplay.gameObject.SetActive(false); 
 
         yield return StartCoroutine(AnimateShutters(shutterOpenHeight, 0f, shutterSpeed)); 
@@ -190,6 +183,10 @@ public class PhotoCamera : MonoBehaviour
 
         yield return new WaitForSeconds(photoReviewTime); 
 
+        // clean up the states 
+        if (playerMovementScript != null) playerMovementScript.enabled = true;
+        if (cameraLookScript != null) cameraLookScript.enabled = true;
+        
         if (photoReviewUI != null) photoReviewUI.SetActive(false); 
         if (viewFinderUI != null && currentState == CaptureState.Capturing) viewFinderUI.SetActive(true); 
 
