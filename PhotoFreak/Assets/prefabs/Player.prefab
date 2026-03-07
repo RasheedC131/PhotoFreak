@@ -559,10 +559,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PhotoScore
   radius: 0.8
-  maxDistance: 8
+  maxDistance: 30
   layer:
     serializedVersion: 2
     m_Bits: 64
+  distanceCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!114 &7039488818799544351
 MonoBehaviour:
   m_ObjectHideFlags: 0
