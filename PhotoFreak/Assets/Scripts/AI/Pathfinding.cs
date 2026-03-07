@@ -3,18 +3,21 @@ using UnityEngine.AI;
 
 public class Pathfinding : MonoBehaviour
 {
-    public Camera cam;
-    public NavMeshAgent agent;
+    [SerializeField] protected Camera cam;
+    [SerializeField] protected NavMeshAgent agent;
+    [SerializeField] protected bool loopTmp;
     public bool follower;
-    public bool loopTmp;
-    private Transform ring;
-    private Transform node;
-    private Transform[] rings;
-    private Transform leader;
-    private Vector3 destination;
+
+
+    protected Transform ring;
+    protected Transform node;
+    protected Transform[] rings;
+    protected Transform leader;
+    protected Vector3 destination;
+    protected float personalSpaceDist = 2.0f; 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    protected virtual void Start()
     {
         Transform parent = this.transform.parent.parent.parent;
         Transform paths = parent.Find("Paths");
@@ -37,7 +40,7 @@ public class Pathfinding : MonoBehaviour
         leader = this.transform.parent.GetChild(0); // 0 for first sibling
     }
 
-    public void Run()
+    public virtual void Run()
     {
         if (!follower)
         {
@@ -67,7 +70,7 @@ public class Pathfinding : MonoBehaviour
         Vector3 newPos = this.transform.position;
 
         // calculate behind
-        newPos = new Vector3(newPos.x + (2*Mathf.Sin(angle)), 0, newPos.z + (2*Mathf.Cos(angle)));
+        newPos = new Vector3(newPos.x + (personalSpaceDist * Mathf.Sin(angle)), 0, newPos.z + (personalSpaceDist * Mathf.Cos(angle)));
 
         return newPos;
     }
