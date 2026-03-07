@@ -2,6 +2,8 @@ using UnityEngine;
 using UnityEngine.InputSystem; 
 using UnityEngine.UI; 
 using System.Collections; 
+using TMPro; 
+
 
 public class PhotoCamera : MonoBehaviour
 {
@@ -15,6 +17,8 @@ public class PhotoCamera : MonoBehaviour
     [SerializeField] private CameraFlash cameraFlash; 
     [SerializeField] private RectTransform topShutter;    
     [SerializeField] private RectTransform bottomShutter;
+    [SerializeField] private TextMeshProUGUI filmCounterText; 
+
 
     [Header("Photo Display Settings")]
     [SerializeField] private GameObject photoReviewUI; 
@@ -84,7 +88,8 @@ public class PhotoCamera : MonoBehaviour
             currentState = CaptureState.Capturing;
             mainCam.SetActive(false);
             photoCam.SetActive(true);
-            viewFinderUI.SetActive(true); 
+            viewFinderUI.SetActive(true);
+            if (filmCounterText != null) filmCounterText.text = $"{currFilm} Shots";
             Debug.Log("CameraRaised"); 
         } 
         
@@ -151,6 +156,7 @@ public class PhotoCamera : MonoBehaviour
         else Debug.Log("Camera out of film"); 
     }
 
+    // TODO: after prototype need to implement a way to exit out of preview early 
     // routine that captures the photo and displays it 
     private IEnumerator CapturePhotoRoutine()
     {
