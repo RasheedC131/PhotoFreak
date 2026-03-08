@@ -42,7 +42,6 @@ public class PhotoCamera : MonoBehaviour
     
 
 
-    [SerializeField] private int currFilm; 
     private bool cameraRaised; // flag for checking if camera is raised for freakmeter
     // private CharacterController controller; This was never used 
 
