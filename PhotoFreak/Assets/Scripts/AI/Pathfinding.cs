@@ -19,6 +19,7 @@ public class Pathfinding : MonoBehaviour
     public int groupIdx = 0; 
     public int groupTotalSize = 1; 
     [SerializeField] private Renderer myRenderer; 
+    [SerializeField] private Material monsterMaterial;
 
     public bool follower;
     protected Transform ring;
@@ -233,8 +234,9 @@ public class Pathfinding : MonoBehaviour
         // TODO: this is just a visual to see who is a monster. We need to implement a 
         // way to switch over the models where the monster can actually transform
 
-        if (myRenderer != null) myRenderer.material.color = Color.red; 
-
+        if (myRenderer != null) myRenderer.material = monsterMaterial;
+        else  Debug.LogError(name + ": Missing Renderer or Monster Material");
+        Debug.Log(name + " has been infected");
         // cleanup the old guest behaivor
         customLeader = null; 
         follower = false; 
