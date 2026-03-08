@@ -57,7 +57,7 @@ if (Ais == null) return;
             List<Pathfinding> available = new List<Pathfinding>();
             foreach (var a in agents)
             {
-                if (!a.isInfected && !a.isBusy && !a.follower) available.Add(a);
+                if (!a.isInfected && !a.isBusy && !a.follower && !(a is MonsterPathfinding)) available.Add(a);
             }
 
             if (available.Count < 2) return; 
