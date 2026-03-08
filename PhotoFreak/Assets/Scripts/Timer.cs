@@ -4,9 +4,11 @@ public class Timer : MonoBehaviour
 {
     public float timeRemaining = 10;
     private float currentTime;
+    private bool tmp;
 
     void Start()
     {
+        tmp = true;
         currentTime = timeRemaining;
     }
 
@@ -20,11 +22,19 @@ public class Timer : MonoBehaviour
         }
         else
         {
-            Debug.Log("Switch");
-            currentTime = timeRemaining;
+            if (tmp)
+            {
+                Debug.Log("Timeout");
+                tmp = false;
+            }
         }
     }
 
+    public void restart()
+    {
+        currentTime = timeRemaining;
+        tmp = true;
+    }
     public float getTime()
     {
         return currentTime;
