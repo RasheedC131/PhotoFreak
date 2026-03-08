@@ -26,6 +26,7 @@ public class PhotoCamera : MonoBehaviour
 
     [Header("Film Settings")]
     [SerializeField] private int maxFilm = 10; 
+
     [SerializeField] private int currFilm;
 
     //Scripts
@@ -41,10 +42,15 @@ public class PhotoCamera : MonoBehaviour
     
 
 
+    [SerializeField] private int currFilm; 
+    private bool cameraRaised; // flag for checking if camera is raised for freakmeter
+    // private CharacterController controller; This was never used 
+
+
     enum CaptureState
     {
         Idle,
-        Capturing
+        Capturing,
     };
 
     private CaptureState currentState;
@@ -92,7 +98,11 @@ public class PhotoCamera : MonoBehaviour
 
     private void UpdateCaptureState(bool isCapturing)
     {
+
         if (isReview) return; 
+
+
+        cameraRaised = isCapturing;
 
         if(isCapturing)
         {
@@ -158,6 +168,7 @@ public class PhotoCamera : MonoBehaviour
         
         else Debug.Log("Camera out of film"); 
     }
+
 
     // TODO: after prototype need to implement a way to exit out of preview early 
 
@@ -270,5 +281,10 @@ public class PhotoCamera : MonoBehaviour
         Debug.Log("Star Count: " + photoScore.currentScore);
     }
 
+
+    public bool getCameraState()
+    {
+        return cameraRaised;
+    }
 }
 

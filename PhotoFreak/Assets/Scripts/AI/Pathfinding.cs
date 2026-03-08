@@ -3,15 +3,16 @@ using UnityEngine.AI;
 
 public class Pathfinding : MonoBehaviour
 {
-    public Camera cam;
-    public NavMeshAgent agent;
+    [SerializeField] private NavMeshAgent agent;
+    [SerializeField] private int distanceBehind;
+    [SerializeField] private bool loopTmp;
     public bool follower;
-    public bool loopTmp;
     private Transform ring;
     private Transform node;
     private Transform[] rings;
     private Transform leader;
     private Vector3 destination;
+    private bool playerInside;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -34,7 +35,11 @@ public class Pathfinding : MonoBehaviour
         {
             this.transform.SetAsFirstSibling();
         }
-        leader = this.transform.parent.GetChild(0); // 0 for first sibling
+        else
+        {
+        int previousSibling = this.transform.GetSiblingIndex() - 1;
+        leader = this.transform.parent.GetChild(previousSibling); // 0 for first sibling
+        }
     }
 
     public void Run()
@@ -74,18 +79,27 @@ public class Pathfinding : MonoBehaviour
 
     public void NodeMove(int ringNum)
     {
-        ring = rings[ringNum];
-        // Debug.Log("Switching");
-        // Debug.Log(ring.name);
-        // Debug.Log(ring.childCount);
-        node = ring.GetChild(0); // magic number lol
-        loopTmp = true;
+        // ring = rings[ringNum];
+        // node = ring.GetChild(0); // magic number lol
+        // loopTmp = true;
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        NodeConnect script = node.GetComponent<NodeConnect>();
-        node = script.getForward();
-        loopTmp = true;
+        if (other.transform.parent != null)
+        {
+            if (other.transform.name == node.name && !follower)
+            {
+                NodeConnect script = node.GetComponent<NodeConnect>();
+                node = script.getForward();
+                Debug.Log(node.name);
+                loopTmp = true; 
+            }
+        }
+    }
+
+    public bool GetPlayerInside()
+    {
+        return playerInside;
     }
 }
