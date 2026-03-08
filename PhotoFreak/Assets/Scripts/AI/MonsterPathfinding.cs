@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic; 
 using System.Collections; 
 // TODO: still need to scale tell chance exponetially when we have our ingame clock setup 
 
@@ -153,24 +154,43 @@ public class MonsterPathfinding : Pathfinding
     {
         Pathfinding[] allAgents = FindObjectsByType<Pathfinding>(FindObjectsSortMode.None);
         
-        float closestDist = Mathf.Infinity;
-        Pathfinding bestCandidate = null;
+        List<Pathfinding> independentTargets = new List<Pathfinding>();
+        List<Pathfinding> groupedTargets = new List<Pathfinding>();
 
         foreach (var a in allAgents)
         {
+            // prioritize independent guest first 
             if (!a.isInfected && a != this)
             {
-                float d = Vector3.Distance(transform.position, a.transform.position);
-                if (d < closestDist)
+                if (!a.isBusy && a.customLeader == null) 
                 {
-                    closestDist = d;
-                    bestCandidate = a;
+                    independentTargets.Add(a); 
+                }
+                else 
+                {
+                    groupedTargets.Add(a);     
                 }
             }
         }
 
+        List<Pathfinding> validTargets = (independentTargets.Count > 0) ? independentTargets : groupedTargets;
+
+        float closestDist = Mathf.Infinity;
+        Pathfinding bestCandidate = null;
+
+        foreach (var target in validTargets)
+        {
+            float d = Vector3.Distance(transform.position, target.transform.position);
+            if (d < closestDist)
+            {
+                closestDist = d;
+                bestCandidate = target;
+            }
+        }
+
         currVictim = bestCandidate;
+        
         if (currVictim != null)
-             Debug.Log("Monster selected new target: " + currVictim.name);
+             Debug.Log("Monster selected target: " + currVictim.name + " [Type: " + (independentTargets.Count > 0 ? "Independent" : "Grouped") + "]");
     }
 }
