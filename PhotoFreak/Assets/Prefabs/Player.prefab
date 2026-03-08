@@ -456,12 +456,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CameraFocus
   inputManager: {fileID: 1544095912236018681}
-  cameraZoom: {fileID: 0}
+  cameraZoom: {fileID: 6481360904692951648}
   globalVolume: {fileID: 0}
   cameraTransform: {fileID: 8628134068181590404}
   focusIndicatorText: {fileID: 0}
   viewFinderImage: {fileID: 1689692754910603316}
-  focusStatusIndicator: {fileID: 0}
+  focusStatusIndicator: {fileID: 2803133412719727890}
   baseFocusSpeed: 0.5
   aperture: 5.6
   blurRandomness: 5

@@ -157,36 +157,27 @@ public class PhotoCamera : MonoBehaviour
         isReview = true; 
 
         // disable player from being able to look/move
-        if (playerMovementScript != null) playerMovementScript.enabled = false;
-        if (cameraLookScript != null) cameraLookScript.enabled = false;
-
-
-        ResetStars(); 
-
-        if (photoReviewUI != null) photoReviewUI.SetActive(true);         
-        if (capturedPhotoDisplay != null) capturedPhotoDisplay.gameObject.SetActive(false); 
-
-        // close shutter
-        yield return StartCoroutine(AnimateShutters(shutterOpenHeight, 0f, shutterSpeed)); 
-
-        if (cameraFlash != null) cameraFlash.TriggerFlash(); 
-        if (viewFinderUI != null) viewFinderUI.SetActive(false); 
+        // if (playerMovementScript != null) playerMovementScript.enabled = false;
+        // if (cameraLookScript != null) cameraLookScript.enabled = false;
 
         yield return new WaitForEndOfFrame(); 
-
         Texture2D screenCap = ScreenCapture.CaptureScreenshotAsTexture();
+        Time.timeScale = 0f; 
+
         if (capturedPhotoDisplay != null)
         {
-            capturedPhotoDisplay.texture = screenCap;
+            capturedPhotoDisplay.texture = screenCap; 
             capturedPhotoDisplay.gameObject.SetActive(true); 
         }
 
-        // calculate score and display stars
+        if (photoReviewUI != null) photoReviewUI.SetActive(true); 
 
-        // open shutter
-        yield return StartCoroutine(AnimateShutters(0f, shutterOpenHeight, shutterSpeed)); 
-    
-        yield return new WaitForSeconds(0.2f); 
+        ResetStars(); 
+
+        yield return StartCoroutine(AnimateShutters(shutterOpenHeight, 0f, shutterSpeed)); 
+
+        if (cameraFlash != null) cameraFlash.TriggerFlash(); 
+
         CalculateAndShowStars(); 
 
         if (cameraFocus != null)
@@ -195,16 +186,19 @@ public class PhotoCamera : MonoBehaviour
             Debug.Log($"Photo taken, Focus Quality: {score * 100:F0}%");
         }
 
-        yield return new WaitForSeconds(photoReviewTime); 
+        yield return StartCoroutine(AnimateShutters(0f, shutterOpenHeight, shutterSpeed)); 
+        yield return new WaitForSecondsRealtime(photoReviewTime); 
 
-        // clean up the states 
+
+        // clean up/ resume game state
+        Time.timeScale = 1f; 
+        if (photoReviewUI != null) photoReviewUI.SetActive(false); 
+        if (viewFinderUI != null && currentState == CaptureState.Capturing) viewFinderUI.SetActive(true); 
+        
         if (playerMovementScript != null) playerMovementScript.enabled = true;
         if (cameraLookScript != null) cameraLookScript.enabled = true;
 
-        if (photoReviewUI != null) photoReviewUI.SetActive(false); 
-        if (viewFinderUI != null && currentState == CaptureState.Capturing) viewFinderUI.SetActive(true); 
-
-        isReview = false; 
+        isReview = false;
     }
 
     private IEnumerator AnimateShutters(float startY, float endY, float duration)
@@ -212,7 +206,7 @@ public class PhotoCamera : MonoBehaviour
         float elapsed = 0f;
         while (elapsed < duration)
         {
-            elapsed += Time.deltaTime;
+            elapsed += Time.unscaledDeltaTime;
             float percent = elapsed / duration;
             float curve = Mathf.Sin(percent * Mathf.PI * 0.5f); 
             float currentY = Mathf.Lerp(startY, endY, curve);
