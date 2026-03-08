@@ -99,14 +99,20 @@ public class PhotoCamera : MonoBehaviour
             currentState = CaptureState.Capturing;
             viewFinderUI.SetActive(true);
             if (filmCounterText != null) filmCounterText.text = $"{currFilm} Shots";
-            Debug.Log("CameraRaised"); 
+            Debug.Log("CameraRaised");
+
+            cameraFocus.EnableDepthOfField();
+
+            
         } 
         
         else
         {
             currentState = CaptureState.Idle;
             viewFinderUI.SetActive(false); 
-            Debug.Log("CameraLowered"); 
+            Debug.Log("CameraLowered");
+
+           cameraFocus.DisableDepthOfField();
         }
         
     }
@@ -208,7 +214,8 @@ public class PhotoCamera : MonoBehaviour
         if (photoReviewUI != null) photoReviewUI.SetActive(false); 
         if (viewFinderUI != null && currentState == CaptureState.Capturing) viewFinderUI.SetActive(true); 
 
-        isReview = false; 
+        isReview = false;
+        UpdateCaptureState(false);
     }
 
     private IEnumerator AnimateShutters(float startY, float endY, float duration)

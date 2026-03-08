@@ -42,6 +42,8 @@ public class CameraFocus : MonoBehaviour
             dof = tmpDof;
             dof.focusDistance.overrideState = true; 
         }
+
+        DisableDepthOfField();
     }
 
     void OnEnable()
@@ -170,5 +172,15 @@ public class CameraFocus : MonoBehaviour
                 focusStatusIndicator.color = colorRed; 
             }
         }
+    }
+
+    public void EnableDepthOfField()
+    {
+        if (dof != null) dof.active = true;
+    }
+
+    public void DisableDepthOfField()
+    {
+        if (dof != null) dof.active = false;
     }
 }
