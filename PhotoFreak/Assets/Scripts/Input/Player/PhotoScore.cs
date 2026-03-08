@@ -20,6 +20,8 @@ public class PhotoScore : MonoBehaviour
         public int facing; //Is the subject facing the camera
         public int framing; // How much of the photo does the subject take up
         public int pose; //Taken from Photo Tag
+
+        public const int numParameters = 4; //To easily update amount of parameters
     };
 
 
@@ -39,8 +41,9 @@ public class PhotoScore : MonoBehaviour
                 return;
             }
 
-            photo.distance = DistanceCalculation(transform.position, subject.point);
-            photo.facing = FacingCalculation(transform, subject);
+            photo.distance = DistanceCalculation(subject.point);
+            photo.facing = FacingCalculation(subject);
+            photo.pose = tag.poseScore;
 
 
 
@@ -49,12 +52,12 @@ public class PhotoScore : MonoBehaviour
             EmptyPhoto(photo);
         }
 
-
+        DisplayResult(photo);
     }
 
-    private int DistanceCalculation(Vector3 playerPos, Vector3 subjectPos)
+    private int DistanceCalculation(Vector3 subjectPos)
     {
-        float distance = Vector3.Distance(playerPos, subjectPos);
+        float distance = Vector3.Distance(transform.position, subjectPos);
 
         //Debug.Log("Distance: " + distance);
         //Debug.Log("Distance: " + (int)distanceCurve.Evaluate(distance));
@@ -62,11 +65,11 @@ public class PhotoScore : MonoBehaviour
         return (int)distanceCurve.Evaluate(distance);
     }
 
-    private int FacingCalculation(Transform player, RaycastHit subject)
+    private int FacingCalculation(RaycastHit subject)
     {
         //Angle from subject pov
         Vector3 fromSubject = subject.collider.transform.forward;
-        Vector3 toPlayer = player.position - subject.point;
+        Vector3 toPlayer = transform.position - subject.point;
         
         //Takes horizontals out of the calculation
         fromSubject.y = 0;
@@ -84,13 +87,18 @@ public class PhotoScore : MonoBehaviour
         return (int)facingCurve.Evaluate(angle);
     }
 
-
-
     private void EmptyPhoto(ScoreParameters photo)
     {
         photo.distance = 0;
         photo.facing = 0;
         photo.framing = 0;
+        photo.pose = 0;
+    }
+
+    private void DisplayResult(ScoreParameters photo)
+    {
+        int result = (photo.distance + photo.facing + photo.framing + photo.pose)/ScoreParameters.numParameters;
+        Debug.Log("Score: " + result);
     }
 
     //Debug to see SphereCast

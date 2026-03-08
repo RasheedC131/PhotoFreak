@@ -10,5 +10,11 @@ public class PhotoTag : MonoBehaviour
 
     [Header("Subject Description")]
     public SubjectType type;
+    public int poseScore;
+
+    public void SetPoseScore(int score)
+    {
+        poseScore = score;
+    }
 
 }
