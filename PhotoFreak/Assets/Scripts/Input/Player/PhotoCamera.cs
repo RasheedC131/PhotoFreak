@@ -9,12 +9,7 @@ public class PhotoCamera : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private InputManager inputManager; 
-    [SerializeField] private GameObject viewFinderUI;
-    [SerializeField] private GameObject mainCam;
-    [SerializeField] private GameObject photoCam;
-    [SerializeField] private CameraFocus cameraFocus;
-    [SerializeField] private PhotoScore photoScore;
-    [SerializeField] private CameraFlash cameraFlash; 
+    [SerializeField] private GameObject viewFinderUI; 
     [SerializeField] private RectTransform topShutter;    
     [SerializeField] private RectTransform bottomShutter;
     [SerializeField] private TextMeshProUGUI filmCounterText; 
@@ -33,8 +28,10 @@ public class PhotoCamera : MonoBehaviour
     [SerializeField] private int maxFilm = 10; 
     [SerializeField] private int currFilm;
 
-
+    //Scripts
     private PhotoScore photoScore;
+    private CameraFocus cameraFocus;
+    private CameraFlash cameraFlash;
 
 
     [Header("Star Settings")]
@@ -64,7 +61,8 @@ public class PhotoCamera : MonoBehaviour
     void Start()
     {
         // Initialize Film 
-        currFilm = maxFilm; 
+        currFilm = maxFilm;
+
         currentState = CaptureState.Idle;
 
 
@@ -74,8 +72,6 @@ public class PhotoCamera : MonoBehaviour
             SetShuttersOpen(); 
         }
 
-        if (mainCam != null) mainCam.SetActive(true); 
-        if (photoCam != null) photoCam.SetActive(false); 
         if (viewFinderUI != null) viewFinderUI.SetActive(false); 
         if (photoReviewUI != null) photoReviewUI.SetActive(false); 
 
@@ -86,7 +82,12 @@ public class PhotoCamera : MonoBehaviour
             inputManager.OnShoot += Shoot;   
         }
 
+
+        //Getting Scripts
         photoScore = GetComponent<PhotoScore>();
+        cameraFocus = GetComponent<CameraFocus>();
+        cameraFlash = GetComponent<CameraFlash>();
+
     }
 
     private void UpdateCaptureState(bool isCapturing)
@@ -96,8 +97,6 @@ public class PhotoCamera : MonoBehaviour
         if(isCapturing)
         {
             currentState = CaptureState.Capturing;
-            mainCam.SetActive(false);
-            photoCam.SetActive(true);
             viewFinderUI.SetActive(true);
             if (filmCounterText != null) filmCounterText.text = $"{currFilm} Shots";
             Debug.Log("CameraRaised"); 
@@ -106,7 +105,6 @@ public class PhotoCamera : MonoBehaviour
         else
         {
             currentState = CaptureState.Idle;
-    
             viewFinderUI.SetActive(false); 
             Debug.Log("CameraLowered"); 
         }
@@ -148,6 +146,7 @@ public class PhotoCamera : MonoBehaviour
         {
             currFilm --; 
             if (filmCounterText != null) filmCounterText.text = $"{currFilm} Shots";
+            photoScore.CaptureSubject();
             StartCoroutine(CapturePhotoRoutine()); 
         }
         
