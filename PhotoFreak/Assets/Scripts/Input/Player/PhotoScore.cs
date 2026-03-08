@@ -18,7 +18,7 @@ public class PhotoScore : MonoBehaviour
         //Integers representing rating 1-5
         public int distance; //How far is the subject
         public int facing; //Is the subject facing the camera
-        public int framing; // How much of the photo does the subject take up
+        //public int framing; // How much of the photo does the subject take up
         public int pose; //Taken from Photo Tag
 
         public const int numParameters = 4; //To easily update amount of parameters
@@ -91,14 +91,19 @@ public class PhotoScore : MonoBehaviour
     {
         photo.distance = 0;
         photo.facing = 0;
-        photo.framing = 0;
+        //photo.framing = 0;
         photo.pose = 0;
     }
 
     private void DisplayResult(ScoreParameters photo)
     {
-        int result = (photo.distance + photo.facing + photo.framing + photo.pose)/ScoreParameters.numParameters;
-        Debug.Log("Score: " + result);
+        int result = (photo.distance + photo.facing + photo.pose)/(ScoreParameters.numParameters-1); //Version without framing until implemented
+        //int result = (photo.distance + photo.facing + photo.framing + photo.pose)/ScoreParameters.numParameters;
+
+        Debug.Log("Distance: " + photo.distance);
+        Debug.Log("Facing: " + photo.facing);
+        Debug.Log("Pose: " + photo.pose);
+        Debug.Log("Total Score: " + result);
     }
 
     //Debug to see SphereCast
