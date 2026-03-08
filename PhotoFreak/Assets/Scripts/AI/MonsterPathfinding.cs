@@ -16,6 +16,7 @@ public class MonsterPathfinding : Pathfinding
 
     private float nextTellTime = 0f; 
     private bool isGlitching = false; 
+    private float defaultSpeed;         // used for the tell where it goes faster
     private float defaultAngularSpeed; 
     private float currStalkTimer;
     private bool isStalking = true;
@@ -26,39 +27,20 @@ public class MonsterPathfinding : Pathfinding
         isInfected = true; 
         follower = false;
         currStalkTimer = stalkDuration; 
-        
+        defaultSpeed = agent.speed;
         defaultAngularSpeed = agent.angularSpeed; 
         // SetNextTellTime();
         Infect();
     }
 
-    // public override void Run()
-    // {
-    //     // see if monster is able to do its tell 
-    //     if (!isGlitching && Time.time >= nextTellTime) 
-    //     {    
-    //         if (Random.value <= tellTriggerProbability) StartCoroutine(TriggerTell());
-    //         else SetNextTellTime(); 
-    //     }
-
-    //     // TODO: tweak or change this later based on in-game clock 
-    //     // Snap to the player to reveal itself as a tell 
-    //     if (!isGlitching)
-    //     {
-    //         // personalSpaceDist = 2.0f; 
-    //         // agent.angularSpeed = defaultAngularSpeed; 
-    //         base.Run(); 
-    //     }
-    //     else
-    //     {
-    //         personalSpaceDist = 2.0f; 
-    //         agent.angularSpeed = defaultAngularSpeed; 
-    //         base.Run(); 
-    //     }
-    // }
-
     public override void Run()
     {
+        if (isStalking && !isGlitching && Time.time >= nextTellTime)
+        {
+            if (Random.value <= tellTriggerProbability) StartCoroutine(TriggerTell()); 
+            SetNextTellTime(); 
+        }
+
         if (currVictim == null || currVictim.isInfected)
         {
             FindNewVictim();
@@ -73,20 +55,23 @@ public class MonsterPathfinding : Pathfinding
         {
             currStalkTimer -= Time.deltaTime;
 
-            // Move towards them
-            agent.SetDestination(currVictim.transform.position);
-
-            // tries to not get too close to victim 
-            if (dist < stalkDistance)
+            // only update movement of the AI when the tell isn't being triggered 
+            if (!isGlitching)
             {
-                agent.isStopped = true; 
-                transform.LookAt(currVictim.transform); 
-            }
-            else
-            {
-                agent.isStopped = false; // Catch up if they run away
+                agent.SetDestination(currVictim.transform.position);
+
+                if (dist < stalkDistance)
+                {
+                    agent.isStopped = true; 
+                    transform.LookAt(currVictim.transform); 
+                }
+                else
+                {
+                    agent.isStopped = false; 
+                }
             }
 
+            // Draw Stalk Line
             Debug.DrawLine(transform.position, currVictim.transform.position, Color.yellow);
 
             if (currStalkTimer <= 0)
@@ -121,29 +106,47 @@ public class MonsterPathfinding : Pathfinding
         isGlitching = true;
         
         int tellType = Random.Range(0, 3);
+        Debug.Log("Monster Tell Triggered: " + tellType);
 
         switch (tellType)
         {
-            // come close 
+           // snap to victim 
             case 0: 
-                personalSpaceDist = 0.5f; 
-                break;
-            // snap quickly
-            case 1: 
+                float oldAngular = agent.angularSpeed;
                 agent.angularSpeed = 10000f; 
+                
+                if(currVictim != null) agent.SetDestination(currVictim.transform.position);                
+                yield return new WaitForSeconds(0.5f);
+                agent.angularSpeed = oldAngular;
                 break;
-            // 
+
+            // moves really fast 
+            case 1: 
+                agent.speed = defaultSpeed * 4.0f; 
+                yield return new WaitForSeconds(0.25f); 
+                agent.speed = defaultSpeed;
+                agent.acceleration = 8f;          
+                break;
+
+            // Twitch (rotates a bit)
             case 2: 
-                agent.isStopped = true;
-                yield return new WaitForSeconds(0.4f); 
-                agent.isStopped = false;
+                agent.updateRotation = false; 
+                float duration = 0.6f;
+                float timer = 0f;
+                
+                while (timer < duration)
+                {
+                    timer += Time.deltaTime;
+                    float spasm = Random.Range(-30f, 30f);
+                    transform.Rotate(0, spasm, 0);
+                    yield return null; 
+                }
+                
+                agent.updateRotation = true; 
                 break;
         }
 
-        yield return new WaitForSeconds(Random.Range(0.5f, 1.5f));
-
         isGlitching = false;
-        SetNextTellTime();
     }
 
     private void FindNewVictim()
