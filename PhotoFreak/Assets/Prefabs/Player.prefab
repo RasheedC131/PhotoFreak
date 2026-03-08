@@ -2448,7 +2448,7 @@ Transform:
   m_GameObject: {fileID: 8854006747983261293}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.3958492, y: 0.612, z: 0.348}
+  m_LocalPosition: {x: 0, y: 0.612, z: 0.348}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -2602,7 +2602,12 @@ MonoBehaviour:
   photoReviewTime: 2
   maxFilm: 10
   currFilm: 0
-  starImages: []
+  starImages:
+  - {fileID: 3476537028644640744}
+  - {fileID: 990102708415200273}
+  - {fileID: 5737275449612771573}
+  - {fileID: 1577837329239791989}
+  - {fileID: 4704915129347017551}
   earnedStarColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   emptyStarColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
 --- !u!114 &4031336190884412857
@@ -2733,6 +2738,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  currentScore: 0
 --- !u!114 &2567925154425162385
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2758,6 +2764,9 @@ MonoBehaviour:
   focusTolerance: 0.25
   minFocusDist: 0.1
   maxFocusDist: 100
+  layer:
+    serializedVersion: 2
+    m_Bits: 64
   scoreCurveFlatness: 4.2
 --- !u!114 &6879815655715343003
 MonoBehaviour:

@@ -20,9 +20,22 @@ public class PhotoScore : MonoBehaviour
         public int facing; //Is the subject facing the camera
         //public int framing; // How much of the photo does the subject take up
         public int pose; //Taken from Photo Tag
+        public int focus; //Taken from CameraFocus
 
-        public const int numParameters = 4; //To easily update amount of parameters
+        public const int numParameters = 5; //To easily update amount of parameters
     };
+
+    //Other scripts
+    private CameraFocus cameraFocus;
+    private PhotoCamera photoCamera;
+
+    public int currentScore;
+
+    void Start()
+    {
+        cameraFocus = GetComponent<CameraFocus>();
+        photoCamera = GetComponent<PhotoCamera>();
+    }
 
 
 
@@ -44,15 +57,15 @@ public class PhotoScore : MonoBehaviour
             photo.distance = DistanceCalculation(subject.point);
             photo.facing = FacingCalculation(subject);
             photo.pose = tag.poseScore;
-
-
+            photo.focus = FocusCalculation();
 
         } else
         {
             EmptyPhoto(photo);
         }
 
-        DisplayResult(photo);
+
+        currentScore = CalculateResult(photo);
     }
 
     private int DistanceCalculation(Vector3 subjectPos)
@@ -87,23 +100,34 @@ public class PhotoScore : MonoBehaviour
         return (int)facingCurve.Evaluate(angle);
     }
 
+    private int FocusCalculation()
+    {
+        float accuracy = cameraFocus.GetFocusScore();
+        return Mathf.RoundToInt(accuracy * 5);
+    }
+
     private void EmptyPhoto(ScoreParameters photo)
     {
         photo.distance = 0;
         photo.facing = 0;
         //photo.framing = 0;
         photo.pose = 0;
+        Debug.Log("oof");
     }
 
-    private void DisplayResult(ScoreParameters photo)
+    
+    private int CalculateResult(ScoreParameters photo)
     {
-        int result = (photo.distance + photo.facing + photo.pose)/(ScoreParameters.numParameters-1); //Version without framing until implemented
-        //int result = (photo.distance + photo.facing + photo.framing + photo.pose)/ScoreParameters.numParameters;
+        int result = (photo.distance + photo.facing + photo.pose + photo.focus)/(ScoreParameters.numParameters-1); //Version without framing until implemented
+        //int result = (photo.distance + photo.facing + photo.framing + photo.focus + photo.pose)/ScoreParameters.numParameters;
 
         Debug.Log("Distance: " + photo.distance);
         Debug.Log("Facing: " + photo.facing);
         Debug.Log("Pose: " + photo.pose);
+        Debug.Log("Focus: " + photo.focus);
         Debug.Log("Total Score: " + result);
+
+        return result;
     }
 
     //Debug to see SphereCast

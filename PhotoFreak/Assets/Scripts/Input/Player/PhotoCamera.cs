@@ -266,13 +266,8 @@ public class PhotoCamera : MonoBehaviour
     // TODO: use actual scoring system 
     private void CalculateAndShowStars()
     {
-        if (cameraFocus == null) return;
-
-        float score = cameraFocus.GetFocusScore();
-        int starCount = Mathf.RoundToInt(score * 5);
-
-        Debug.Log($"Score: {score:F2}, Stars: {starCount}");
-        UpdateStarUI(starCount);
+        UpdateStarUI(photoScore.currentScore);
+        Debug.Log("Star Count: " + photoScore.currentScore);
     }
 
 }

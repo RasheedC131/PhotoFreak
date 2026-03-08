@@ -21,7 +21,8 @@ public class CameraFocus : MonoBehaviour
     [SerializeField] private float blurRandomness = 5f; 
     [SerializeField] private float focusTolerance = 0.25f;       
     [SerializeField] private float minFocusDist = 0.1f; 
-    [SerializeField] private float maxFocusDist = 100f; 
+    [SerializeField] private float maxFocusDist = 100f;
+    [SerializeField] private LayerMask layer; 
 
     [Header("Scoring")]
     [Range(0.1f, 10f)]
@@ -135,7 +136,7 @@ public class CameraFocus : MonoBehaviour
     private void UpdateTargetDistance()
     {
         RaycastHit hit;
-        if (Physics.Raycast(cameraTransform.position, cameraTransform.forward, out hit, maxFocusDist))
+        if (Physics.Raycast(cameraTransform.position, cameraTransform.forward, out hit, maxFocusDist, layer))
         {
             targetTrueDist = hit.distance;
         }
