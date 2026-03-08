@@ -17,6 +17,7 @@ public class MonsterPathfinding : Pathfinding
 
     protected override void Start()
     {
+        isInfected = true; 
         base.Start(); 
         defaultAngularSpeed = agent.angularSpeed; 
         SetNextTellTime();
@@ -35,12 +36,14 @@ public class MonsterPathfinding : Pathfinding
         // Snap to the player to reveal itself as a tell 
         if (!isGlitching)
         {
-            personalSpaceDist = 2.0f; 
-            agent.angularSpeed = defaultAngularSpeed; 
+            // personalSpaceDist = 2.0f; 
+            // agent.angularSpeed = defaultAngularSpeed; 
             base.Run(); 
         }
         else
         {
+            personalSpaceDist = 2.0f; 
+            agent.angularSpeed = defaultAngularSpeed; 
             base.Run(); 
         }
     }
@@ -58,12 +61,15 @@ public class MonsterPathfinding : Pathfinding
 
         switch (tellType)
         {
+            // come close 
             case 0: 
                 personalSpaceDist = 0.5f; 
                 break;
+            // snap quickly
             case 1: 
                 agent.angularSpeed = 10000f; 
                 break;
+            // 
             case 2: 
                 agent.isStopped = true;
                 yield return new WaitForSeconds(0.4f); 
