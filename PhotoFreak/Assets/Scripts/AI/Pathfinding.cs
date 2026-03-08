@@ -5,10 +5,11 @@ using System.Collections.Generic;
 public class Pathfinding : MonoBehaviour
 {
     [Header("References")]
-    [SerializeField] protected Camera cam;
-    [SerializeField] protected NavMeshAgent agent;
-    [SerializeField] protected bool loopTmp;
-    [SerializeField] protected Transform pathsContainer;
+    public NavMeshAgent agent;
+    public bool loopTmp;
+    protected Transform pathsContainer;     // grabbed from the manager 
+    public Material monsterMaterial;
+    public Renderer myRenderer; 
 
 
     [Header("Current NPC Status")]
@@ -18,8 +19,6 @@ public class Pathfinding : MonoBehaviour
     public Pathfinding currVictim;   // who is being chased by monster 
     public int groupIdx = 0; 
     public int groupTotalSize = 1; 
-    [SerializeField] private Renderer myRenderer; 
-    [SerializeField] private Material monsterMaterial;
 
     public bool follower;
     protected Transform ring;
@@ -32,42 +31,15 @@ public class Pathfinding : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     protected virtual void Start()
     {
-        if (pathsContainer == null)
+        if (agent == null) agent = GetComponent<NavMeshAgent>();
+
+        if (agent == null)
         {
-            GameObject obj = GameObject.Find("Paths"); 
-            if (obj != null)
-            {
-                pathsContainer = obj.transform; 
-            }
-            else
-            {
-                Debug.LogError("No 'Paths' object was assigned or it couldn't be found");
-                return; 
-            }
+            Debug.LogError(name + ": Missing NavMeshAgent");
+            return;
         }
 
-        int count = pathsContainer.childCount;
-        rings = new Transform[count];
-
-        for (int i = 0; i < count; i++)
-        {
-            rings[i] = pathsContainer.GetChild(i);
-        }
-
-        if (rings.Length > 0)
-        {
-            ring = rings[0];
-            
-            // guest pick a random node and teleport to it on start 
-            if (ring.childCount > 0)
-            {
-                int randomStart = Random.Range(0, ring.childCount);
-                node = ring.GetChild(randomStart);
-                agent.Warp(node.position + new Vector3(Random.Range(-2f, 2f), 0, Random.Range(-2f, 2f)));
-
-                loopTmp = true; 
-            }
-        }
+        SetupNavigation(); 
 
         if (isInfected) Infect(); 
 
@@ -147,6 +119,53 @@ public class Pathfinding : MonoBehaviour
         }
     }
 
+    public void SetupNavigation(bool isMutating = false)
+    {
+        if (rings != null && rings.Length > 0) return; 
+
+        if (pathsContainer == null)
+        {
+            if (AIManager.AIInstance != null)
+            {
+                pathsContainer = AIManager.AIInstance.globalPathsContainer;
+            }
+            
+            if (pathsContainer == null)
+            {
+                Debug.LogError(name + ": AIManager is missing the 'globalPathsContainer' reference!");
+                return; 
+            }
+        }
+
+        int count = pathsContainer.childCount;
+        rings = new Transform[count];
+
+        for (int i = 0; i < count; i++)
+        {
+            rings[i] = pathsContainer.GetChild(i);
+        }
+
+        if (rings.Length > 0)
+        {
+            ring = rings[0];
+            
+            if (!isMutating)
+            {
+                if (ring.childCount > 0)
+                {
+                    int randomStart = Random.Range(0, ring.childCount);
+                    node = ring.GetChild(randomStart);
+                    agent.Warp(node.position + new Vector3(Random.Range(-2f, 2f), 0, Random.Range(-2f, 2f)));
+                    loopTmp = true; 
+                }
+            }
+            else
+            {
+                loopTmp = true;
+            }
+        }
+    }
+
     // have the group try to form a circle 
     public Vector3 GetSocialPosition()
     {
@@ -212,7 +231,7 @@ public class Pathfinding : MonoBehaviour
             // infect the guest 
             if (Vector3.Distance(transform.position, currVictim.transform.position) < 1.5f)
             {
-                currVictim.Infect(); 
+                currVictim.Infect(this); 
                 currVictim = null;      // setup for next victim 
             }
         }
@@ -234,7 +253,14 @@ public class Pathfinding : MonoBehaviour
         }
     }
 
-    public void Infect()
+    public virtual void Infect(Pathfinding attacker = null)
+    {
+        if (AIManager.AIInstance != null) AIManager.AIInstance.HandleInfection(this, attacker); 
+        else Debug.LogError("Missing AI manager"); 
+    }
+
+    // TODO: for refactor make logic for promotion in the same file 
+    public void ApplyStandardInfection()
     {
         isInfected = true; 
         isBusy = true; 

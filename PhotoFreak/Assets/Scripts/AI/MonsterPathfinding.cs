@@ -73,7 +73,7 @@ public class MonsterPathfinding : Pathfinding
             }
 
             // Draw Stalk Line
-            Debug.DrawLine(transform.position, currVictim.transform.position, Color.yellow);
+            Debug.DrawLine(transform.position, currVictim.transform.position , Color.yellow);
 
             if (currStalkTimer <= 0)
             {
@@ -91,10 +91,18 @@ public class MonsterPathfinding : Pathfinding
             // Infect if close enough
             if (dist < 1.5f)
             {
-                currVictim.Infect();
+                currVictim.Infect(this);
                 currVictim = null; 
             }
         }
+    }
+
+    public override void Infect(Pathfinding attacker = null)
+    {
+        ApplyStandardInfection(); 
+        currStalkTimer = stalkDuration; 
+        isGlitching = false; 
+        FindNewVictim(); 
     }
 
     private void SetNextTellTime()

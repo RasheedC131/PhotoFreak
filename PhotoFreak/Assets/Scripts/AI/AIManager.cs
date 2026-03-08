@@ -1,22 +1,40 @@
 using UnityEngine;
 using System.Collections.Generic; 
+
+// controls whether infected AI can have the basic AI or the monster AI 
+
 public class AIManager : MonoBehaviour
 {
-    [SerializeField] private Timer timer; 
+    public enum InfectionMode
+    {
+        ONLY_STANDARD, 
+        ONLY_MONSTER, 
+        RANDOM
+    } 
+
+    [Header("References")]
+    public static AIManager AIInstance; // since our manager should be a singleton have one static reference 
+    public Transform globalPathsContainer; 
     public Transform Ais;
-    private int NPCS = 0;
-    private int LOOP = 0;
-
-    // TODO: change these once we have a ingame timer setup
-    [Header("Timers")]
-    private float movementTimer = 0f; 
-    public float groupFormRate = 5.0f;      // period of time that npcs try to form a group 
-    public float groupTimer = 0f; 
-
+    
     [Header("Grouping Settings")]
     [SerializeField] private int minGroupSize = 2; 
-    [SerializeField] private int maxGroupSize = 4; 
-    [SerializeField] private float timeToBreakGroup = 15f;      // change this in actual demo  
+    [SerializeField] private int maxGroupSize = 4;             
+    [SerializeField] private float timeToBreakGroup = 15f;      // When the groups break up from their circles 
+    public float groupFormRate = 5.0f;                          // period of time that npcs try to form a group 
+
+    [Header("Infection Monster Settings")]
+    public InfectionMode infectionMode = InfectionMode.RANDOM; 
+    public float smartAIChance = 50f;       // only works if set to random for infectionMode 
+ 
+    private float movementTimer = 0f; 
+    private float groupTimer = 0f; 
+    private int LOOP = 0;
+
+    void Awake()
+    {
+        AIInstance = this; 
+    }
 
     void Update()
     {
@@ -33,22 +51,74 @@ public class AIManager : MonoBehaviour
             foreach (var a in allAgents)
             {
                 // move npcs if they're not 'socializing' in a group 
-                if (a != null && !a.follower && !a.isBusy && !a.isInfected)
-                {
-                    a.NodeMove(LOOP % 2);
-                }
+                if (a != null && !a.follower && !a.isBusy && !a.isInfected) a.NodeMove(LOOP % 2);
             }
         }
 
+        // path finding 
         Pathfinding[] activeAgents = Ais.GetComponentsInChildren<Pathfinding>();
         foreach (var a in activeAgents) if (a != null) a.Run();
 
+        // group formation 
         groupTimer += Time.deltaTime;
         if (groupTimer > groupFormRate)
         {
             FormPartyGroup(activeAgents);
             groupTimer = 0;
         }
+    }
+
+    public void HandleInfection (Pathfinding victim, Pathfinding attacker)
+    {
+        // if victim is already infected don't do anything 
+        if (victim is MonsterPathfinding)
+        {
+            victim.ApplyStandardInfection(); 
+            return; 
+        }
+
+        bool attackerIsSmart = attacker != null && attacker is MonsterPathfinding;
+
+        if (!attackerIsSmart)
+        {
+            victim.ApplyStandardInfection(); 
+            return; 
+        }
+
+        bool makeSmart = false; 
+
+        switch (infectionMode)
+        {
+            case InfectionMode.ONLY_STANDARD:   makeSmart = false;                                  break; 
+            case InfectionMode.ONLY_MONSTER:    makeSmart = true;                                   break; 
+            case InfectionMode.RANDOM:          makeSmart = Random.Range(0f, 100f) < smartAIChance; break; 
+        }
+
+        if (makeSmart) ApplySmartMonster(victim); 
+        else victim.ApplyStandardInfection(); 
+    }
+
+    // replaces the references to the old guest to become a "smart" monster 
+    private void ApplySmartMonster(Pathfinding oldScript)
+    {
+        GameObject body = oldScript.gameObject; 
+        Transform savedPaths = oldScript.pathsContainer;
+        Renderer savedRenderer = oldScript.myRenderer;
+        Material savedMat = oldScript.monsterMaterial;
+
+        Destroy(oldScript);
+
+        MonsterPathfinding newBrain = body.AddComponent<MonsterPathfinding>();
+
+        newBrain.pathsContainer = savedPaths;
+        newBrain.myRenderer = savedRenderer;
+        newBrain.monsterMaterial = savedMat;
+
+        newBrain.SetupNavigation(true); 
+        newBrain.Infect(); 
+        
+        Debug.Log(body.name + " mutated now a monster");
+
     }
 
     void FormPartyGroup(Pathfinding[] agents)
