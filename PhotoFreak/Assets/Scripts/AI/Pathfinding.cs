@@ -10,6 +10,8 @@ public class Pathfinding : MonoBehaviour
     public Transform pathsContainer;     // grabbed from the manager 
     public Material monsterMaterial;
     public Renderer myRenderer; 
+    private bool playerInside;
+
 
 
     [Header("Current NPC Status")]
@@ -273,5 +275,10 @@ public class Pathfinding : MonoBehaviour
         // cleanup the old guest behaivor
         customLeader = null; 
         follower = false; 
+    }
+    
+    public bool GetPlayerInside()
+    {
+        return playerInside;
     }
 }

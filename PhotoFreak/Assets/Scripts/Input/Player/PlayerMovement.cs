@@ -130,4 +130,8 @@ public class PlayerMovement : MonoBehaviour
         this.isCrouching = isCrouching; 
     }
 
+    public bool getSprint()
+    {
+        return isSprinting;
+    }
 }

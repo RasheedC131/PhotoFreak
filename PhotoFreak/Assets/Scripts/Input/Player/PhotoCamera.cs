@@ -38,12 +38,12 @@ public class PhotoCamera : MonoBehaviour
     [SerializeField] private Color earnedStarColor = Color.yellow; 
     [SerializeField] private Color emptyStarColor = Color.gray;
     
-
+    private bool cameraRaised; // flag for checking if camera is raised for freakmeter
     // private CharacterController controller; This was never used 
     enum CaptureState
     {
         Idle,
-        Capturing
+        Capturing,
     };
 
     private CaptureState currentState;
@@ -87,6 +87,7 @@ public class PhotoCamera : MonoBehaviour
     {
         if (isReview) return; 
 
+        cameraRaised = isCapturing;
         if(isCapturing)
         {
             currentState = CaptureState.Capturing;
@@ -258,5 +259,9 @@ public class PhotoCamera : MonoBehaviour
         UpdateStarUI(starCount);
     }
 
+    public bool getCameraState()
+    {
+        return cameraRaised;
+    }
 }
 
