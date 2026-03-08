@@ -34,7 +34,7 @@ public class Pathfinding : MonoBehaviour
     {
         if (pathsContainer == null)
         {
-            GameObject obj = GameObject.Find("Pahts"); 
+            GameObject obj = GameObject.Find("Paths"); 
             if (obj != null)
             {
                 pathsContainer = obj.transform; 
@@ -69,21 +69,9 @@ public class Pathfinding : MonoBehaviour
             }
         }
 
-        // if (!follower)
-        // {
-        //     this.transform.SetAsFirstSibling();
-        // }
-
-        // if (this.transform.parent != null && this.transform.parent.childCount > 0) 
-        // {
-        //     defaultLeader = this.transform.parent.GetChild(0); // 0 for first sibling
-        // }
-        // else 
-        // { 
-        //     defaultLeader = null;
-        // }
-
         if (isInfected) Infect(); 
+
+        agent.avoidancePriority = Random.Range(30, 70);
     }
 
     public virtual void Run()
@@ -91,6 +79,7 @@ public class Pathfinding : MonoBehaviour
         // monster logic 
         if (isInfected)
         {
+            agent.isStopped = false; 
             StartHunting(); 
             return; 
         }
@@ -99,26 +88,58 @@ public class Pathfinding : MonoBehaviour
         if (customLeader != null)
         {
             Vector3 socialSpot = GetSocialPosition(); 
-            agent.SetDestination(socialSpot); 
+            float dist = Vector3.Distance(transform.position, socialSpot);
 
-            // TODO: tweak this later 
-            // have group member face the leader
-            if (agent.remainingDistance < 0.5f)
+            // move to spot with tolerance 
+            if (dist > 1.0f) 
             {
-                Vector3 lookTarget = customLeader.transform.position; 
-                lookTarget.y = transform.position.y; 
-                transform.LookAt(lookTarget); 
+                agent.isStopped = false;
+                agent.SetDestination(socialSpot);
+            }
+
+            // once guest ai is within range stop moving and "talk"
+            else
+            {
+                agent.isStopped = true; 
+                agent.velocity = Vector3.zero;
+
+                // Smoothly rotate to face the leader
+                Vector3 direction = (customLeader.transform.position - transform.position).normalized;
+                direction.y = 0; 
+                
+                if (direction != Vector3.zero)
+                {
+                    Quaternion lookRot = Quaternion.LookRotation(direction);
+                    transform.rotation = Quaternion.Slerp(transform.rotation, lookRot, Time.deltaTime * 5f);
+                }
             }
             return; 
         }
 
-        // independent guest walking logic 
+        if (isBusy)
+        {
+            agent.isStopped = true;
+            return;
+        }
+
+        agent.isStopped = false;
+
+        // independent guest walking logic (approach the node and hang around it)
         if (node != null)
         {
-            if (loopTmp || agent.remainingDistance < 0.5f)
+            float distToDest = Vector3.Distance(transform.position, destination);
+
+            if (loopTmp || distToDest < 1.5f) 
             {
+
+                if (!loopTmp)
+                {
+                    NodeConnect script = node.GetComponent<NodeConnect>();
+                    if (script != null) node = script.getForward();
+                }
+
                 loopTmp = false; 
-                Vector3 randomOffset = new Vector3(Random.Range(-0.5f, 0.5f), 0, Random.Range(-0.5f, 0.5f));
+                Vector3 randomOffset = new Vector3(Random.Range(-2.0f, 2.0f), 0, Random.Range(-2.0f, 2.0f));
                 destination = node.position + randomOffset;
                 
                 agent.SetDestination(destination);
@@ -174,20 +195,6 @@ public class Pathfinding : MonoBehaviour
                 // switch to a random node 
                 int randomNode = Random.Range(0, ring.childCount);
                 node = ring.GetChild(randomNode); 
-                loopTmp = true;
-            }
-        }
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        // added safety checks 
-        if (node != null && other.transform == node)
-        {
-            NodeConnect script = node.GetComponent<NodeConnect>();
-            if (script != null)
-            {
-                node = script.getForward();
                 loopTmp = true;
             }
         }

@@ -20,7 +20,7 @@ public class AIManager : MonoBehaviour
 
     void Update()
     {
-if (Ais == null) return;
+        if (Ais == null) return;
 
         // ring switching logic 
         movementTimer -= Time.deltaTime;
