@@ -4,6 +4,7 @@ public class FreakMeter : MonoBehaviour
 {
     [SerializeField] PhotoCamera CameraScript;
     [SerializeField] PlayerMovement player;
+    [SerializeField] private FreakMeterUI UI;
     [SerializeField] private int maxNPC;
     [SerializeField] private int maxFreak;
     [SerializeField] private int maxStrikes;
@@ -16,7 +17,7 @@ public class FreakMeter : MonoBehaviour
     void Start()
     {
         count = 0;
-        NPCs = new Transform[30];
+        NPCs = new Transform[1];
     }
 
     // Update is called once per frame
@@ -34,8 +35,10 @@ public class FreakMeter : MonoBehaviour
         }
         if (player.getSprint())
         {
-            currentFreak += count*(.01);
+            if (count >= 0)
+                currentFreak += count*(.01);
             Debug.Log(currentFreak);
+            UI.UpdateMeter(currentFreak);
             timer.restart();
             tmp = true;
         }
@@ -43,6 +46,7 @@ public class FreakMeter : MonoBehaviour
         {
             currentFreak += count*(.03);
             Debug.Log(currentFreak);
+            UI.UpdateMeter(currentFreak);
             timer.restart();
             tmp = true;
         }
@@ -57,6 +61,7 @@ public class FreakMeter : MonoBehaviour
                     tmp = false;
                 }
                 Debug.Log(currentFreak);
+                UI.UpdateMeter(currentFreak);
             }
         }
 
@@ -70,8 +75,8 @@ public class FreakMeter : MonoBehaviour
         {
             if (!ArrayUtility.Contains(NPCs, other.transform))
             {
-                count++;
                 ArrayUtility.Add(ref NPCs, other.transform);
+                count = NPCs.Length - 1;
             }
             Debug.Log("Up: " + count);
         }
@@ -87,14 +92,11 @@ public class FreakMeter : MonoBehaviour
         {
             if (ArrayUtility.Contains(NPCs, other.transform))
             {
-                count--;
                 ArrayUtility.Remove(ref NPCs, other.transform);
+                count = NPCs.Length - 1;
             }
             Debug.Log("Down: " + count);
         }
         }
     }
-
-    
-
 }

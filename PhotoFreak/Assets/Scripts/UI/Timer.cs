@@ -2,6 +2,9 @@ using UnityEngine;
 
 public class Timer : MonoBehaviour
 {
+    [SerializeField] private FreakMeterUI UI;
+    [SerializeField] private GameObject player;
+    [SerializeField] private bool MainTimer;
     public float timeRemaining = 10;
     private float currentTime;
     private bool tmp;
@@ -19,6 +22,7 @@ public class Timer : MonoBehaviour
         {
             currentTime -= Time.deltaTime;
             // Debug.Log(currentTime);
+
         }
         else
         {
@@ -26,8 +30,14 @@ public class Timer : MonoBehaviour
             {
                 Debug.Log("Timeout");
                 tmp = false;
+                if (MainTimer) // deletes player
+                {
+                    Destroy(player);
+                }
             }
         }
+        if (UI != null)
+            UI.UpdateTime(currentTime);
     }
 
     public void restart()
