@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 public class Pathfinding : MonoBehaviour
 {
+    [Header("References")]
     [SerializeField] protected Camera cam;
     [SerializeField] protected NavMeshAgent agent;
     [SerializeField] protected bool loopTmp;
@@ -15,7 +16,8 @@ public class Pathfinding : MonoBehaviour
     public bool isBusy = false;     // use for the AIManager
     public Pathfinding customLeader; // used for a dynamic defaultLeader
     public Pathfinding currVictim;   // who is being chased by monster 
-
+    public int groupIdx = 0; 
+    public int groupTotalSize = 1; 
     [SerializeField] private Renderer myRenderer; 
 
     public bool follower;
@@ -25,7 +27,7 @@ public class Pathfinding : MonoBehaviour
     protected Transform defaultLeader; // renamed it to avoid confusion with the new logic defaultLeader vars 
     protected Vector3 destination;
     protected float personalSpaceDist = 2.0f; 
-
+    
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     protected virtual void Start()
     {
@@ -36,7 +38,6 @@ public class Pathfinding : MonoBehaviour
             {
                 pathsContainer = obj.transform; 
             }
-
             else
             {
                 Debug.LogError("No 'Paths' object was assigned or it couldn't be found");
@@ -55,25 +56,31 @@ public class Pathfinding : MonoBehaviour
         if (rings.Length > 0)
         {
             ring = rings[0];
+            
+            // guest pick a random node and teleport to it on start 
             if (ring.childCount > 0)
             {
-                node = ring.GetChild(0);
+                int randomStart = Random.Range(0, ring.childCount);
+                node = ring.GetChild(randomStart);
+                agent.Warp(node.position + new Vector3(Random.Range(-2f, 2f), 0, Random.Range(-2f, 2f)));
+
+                loopTmp = true; 
             }
         }
 
-        if (!follower)
-        {
-            this.transform.SetAsFirstSibling();
-        }
+        // if (!follower)
+        // {
+        //     this.transform.SetAsFirstSibling();
+        // }
 
-        if (this.transform.parent != null && this.transform.parent.childCount > 0) 
-        {
-            defaultLeader = this.transform.parent.GetChild(0); // 0 for first sibling
-        }
-        else 
-        { 
-            defaultLeader = null;
-        }
+        // if (this.transform.parent != null && this.transform.parent.childCount > 0) 
+        // {
+        //     defaultLeader = this.transform.parent.GetChild(0); // 0 for first sibling
+        // }
+        // else 
+        // { 
+        //     defaultLeader = null;
+        // }
 
         if (isInfected) Infect(); 
     }
@@ -90,37 +97,50 @@ public class Pathfinding : MonoBehaviour
         // group logic (socializing with guest)
         if (customLeader != null)
         {
-            Vector3 pos = customLeader.getBehind(); 
-            agent.SetDestination(pos); 
+            Vector3 socialSpot = GetSocialPosition(); 
+            agent.SetDestination(socialSpot); 
+
+            // TODO: tweak this later 
+            // have group member face the leader
+            if (agent.remainingDistance < 0.5f)
+            {
+                Vector3 lookTarget = customLeader.transform.position; 
+                lookTarget.y = transform.position.y; 
+                transform.LookAt(lookTarget); 
+            }
             return; 
         }
 
-        // if follower follow defaultLeader
-        if (follower && defaultLeader != null)
+        // independent guest walking logic 
+        if (node != null)
         {
-            Vector3 pos = defaultLeader.GetComponent<Pathfinding>().getBehind();
-            agent.SetDestination(pos); 
-        }
-
-        // if defaultLeader/independent from a group walk the nodes 
-        else
-        {
-            // walk the node path if it's an independent guest 
-            if (node == null)
-            {
-                Debug.LogWarning(name + ": 'node' is NULL!");
-                return;
-            }
-
             if (loopTmp || agent.remainingDistance < 0.5f)
             {
-                loopTmp = false;
-                destination = node.position;
-                agent.SetDestination(destination);
+                loopTmp = false; 
+                Vector3 randomOffset = new Vector3(Random.Range(-0.5f, 0.5f), 0, Random.Range(-0.5f, 0.5f));
+                destination = node.position + randomOffset;
                 
-                Debug.DrawLine(transform.position, destination, Color.green);
+                agent.SetDestination(destination);
             }
         }
+    }
+
+    // have the group try to form a circle 
+    public Vector3 GetSocialPosition()
+    {
+        if (customLeader == null) return transform.position;
+
+        
+        float circleRadius = 2.5f; 
+        
+
+        float angleStep = 360f / (groupTotalSize + 1); 
+        float myAngle = angleStep * (groupIdx + 1); 
+
+        Quaternion rotation = Quaternion.Euler(0, myAngle, 0);
+        Vector3 offset = rotation * Vector3.forward * circleRadius;
+
+        return customLeader.transform.position + offset;
     }
 
     public Vector3 getBehind()
@@ -150,8 +170,10 @@ public class Pathfinding : MonoBehaviour
             ring = rings[ringNum]; 
             if (ring.childCount > 0)
             {
-                node = ring.GetChild(0); 
-                loopTmp = true; 
+                // switch to a random node 
+                int randomNode = Random.Range(0, ring.childCount);
+                node = ring.GetChild(randomNode); 
+                loopTmp = true;
             }
         }
     }
