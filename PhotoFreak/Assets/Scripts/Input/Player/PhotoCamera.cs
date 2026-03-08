@@ -1,20 +1,49 @@
 using UnityEngine;
 using UnityEngine.InputSystem; 
-using System;
+using UnityEngine.UI; 
+using System.Collections; 
+using TMPro; 
+
 
 public class PhotoCamera : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private InputManager inputManager; 
     [SerializeField] private GameObject viewFinderUI;
+    [SerializeField] private GameObject mainCam;
+    [SerializeField] private GameObject photoCam;
+    [SerializeField] private CameraFocus cameraFocus;
+    [SerializeField] private PhotoScore photoScore;
+    [SerializeField] private CameraFlash cameraFlash; 
+    [SerializeField] private RectTransform topShutter;    
+    [SerializeField] private RectTransform bottomShutter;
+    [SerializeField] private TextMeshProUGUI filmCounterText; 
+    [SerializeField] private MonoBehaviour cameraLookScript; 
+    [SerializeField] private MonoBehaviour playerMovementScript;
 
-    [Header("Settings")]
+
+    [Header("Photo Display Settings")]
+    [SerializeField] private GameObject photoReviewUI; 
+    [SerializeField] private RawImage capturedPhotoDisplay; 
+    [SerializeField] private float shutterSpeed = 0.15f; 
+    [SerializeField] private float photoReviewTime = 2.0f; // might tweak this so user can close out of it early
+
+
+    [Header("Film Settings")]
     [SerializeField] private int maxFilm = 10; 
     [SerializeField] private int currFilm;
 
+
     private PhotoScore photoScore;
 
+
+    [Header("Star Settings")]
+    [SerializeField] private Image[] starImages; 
+    [SerializeField] private Color earnedStarColor = Color.yellow; 
+    [SerializeField] private Color emptyStarColor = Color.gray;
     
+
+
     enum CaptureState
     {
         Idle,
@@ -22,21 +51,33 @@ public class PhotoCamera : MonoBehaviour
     };
 
     private CaptureState currentState;
+    private bool isReview = false; 
+    private float shutterOpenHeight; 
 
     void Awake ()
     {
         if (inputManager == null) inputManager = GetComponent<InputManager>(); 
+        if (cameraFlash == null) cameraFlash = GetComponentInChildren<CameraFlash>();
 
     }
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         // Initialize Film 
         currFilm = maxFilm; 
         currentState = CaptureState.Idle;
 
+
+        if (topShutter != null)
+        {
+            shutterOpenHeight = topShutter.rect.height; 
+            SetShuttersOpen(); 
+        }
+
+        if (mainCam != null) mainCam.SetActive(true); 
+        if (photoCam != null) photoCam.SetActive(false); 
         if (viewFinderUI != null) viewFinderUI.SetActive(false); 
+        if (photoReviewUI != null) photoReviewUI.SetActive(false); 
 
         if (inputManager != null)
         {
@@ -50,11 +91,15 @@ public class PhotoCamera : MonoBehaviour
 
     private void UpdateCaptureState(bool isCapturing)
     {
+        if (isReview) return; 
+
         if(isCapturing)
         {
             currentState = CaptureState.Capturing;
-
-            viewFinderUI.SetActive(true); 
+            mainCam.SetActive(false);
+            photoCam.SetActive(true);
+            viewFinderUI.SetActive(true);
+            if (filmCounterText != null) filmCounterText.text = $"{currFilm} Shots";
             Debug.Log("CameraRaised"); 
         } 
         
@@ -83,7 +128,7 @@ public class PhotoCamera : MonoBehaviour
 
     private void Shoot()
     {
-        if (currentState == CaptureState.Capturing) AttemptTakePhoto(); 
+        if (currentState == CaptureState.Capturing && !isReview) AttemptTakePhoto(); 
     }
 
     void OnDestroy()
@@ -96,22 +141,133 @@ public class PhotoCamera : MonoBehaviour
         }
     }
 
-    // TODO: actually implement taking the photo
-    private void TakePhoto()
-    {
-        currFilm --;
-        Debug.Log($"Took Photo, Film remaining: {currFilm}"); 
-        photoScore.CaptureSubject();
-    }
-
     // TODO: add some sort of ui feedback to indicate that the user is out of film 
     private void AttemptTakePhoto()
     {
-        if (currFilm > 0) TakePhoto();
+        if (currFilm > 0)
+        {
+            currFilm --; 
+            if (filmCounterText != null) filmCounterText.text = $"{currFilm} Shots";
+            StartCoroutine(CapturePhotoRoutine()); 
+        }
+        
         else Debug.Log("Camera out of film"); 
     }
 
+    // TODO: after prototype need to implement a way to exit out of preview early 
+
+    // routine that captures the photo and displays it 
+    private IEnumerator CapturePhotoRoutine()
+    {
+        isReview = true; 
+
+        // disable player from being able to look/move
+        if (playerMovementScript != null) playerMovementScript.enabled = false;
+        if (cameraLookScript != null) cameraLookScript.enabled = false;
+
+
+        ResetStars(); 
+
+        if (photoReviewUI != null) photoReviewUI.SetActive(true);         
+        if (capturedPhotoDisplay != null) capturedPhotoDisplay.gameObject.SetActive(false); 
+
+        // close shutter
+        yield return StartCoroutine(AnimateShutters(shutterOpenHeight, 0f, shutterSpeed)); 
+
+        if (cameraFlash != null) cameraFlash.TriggerFlash(); 
+        if (viewFinderUI != null) viewFinderUI.SetActive(false); 
+
+        yield return new WaitForEndOfFrame(); 
+
+        Texture2D screenCap = ScreenCapture.CaptureScreenshotAsTexture();
+        if (capturedPhotoDisplay != null)
+        {
+            capturedPhotoDisplay.texture = screenCap;
+            capturedPhotoDisplay.gameObject.SetActive(true); 
+        }
+
+        // calculate score and display stars
+
+        // open shutter
+        yield return StartCoroutine(AnimateShutters(0f, shutterOpenHeight, shutterSpeed)); 
+    
+        yield return new WaitForSeconds(0.2f); 
+        CalculateAndShowStars(); 
+
+        if (cameraFocus != null)
+        {
+            float score = cameraFocus.GetFocusScore();
+            Debug.Log($"Photo taken, Focus Quality: {score * 100:F0}%");
+        }
+
+        yield return new WaitForSeconds(photoReviewTime); 
+
+        // clean up the states 
+        if (playerMovementScript != null) playerMovementScript.enabled = true;
+        if (cameraLookScript != null) cameraLookScript.enabled = true;
+
+        if (photoReviewUI != null) photoReviewUI.SetActive(false); 
+        if (viewFinderUI != null && currentState == CaptureState.Capturing) viewFinderUI.SetActive(true); 
+
+        isReview = false; 
+    }
+
+    private IEnumerator AnimateShutters(float startY, float endY, float duration)
+    {
+        float elapsed = 0f;
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float percent = elapsed / duration;
+            float curve = Mathf.Sin(percent * Mathf.PI * 0.5f); 
+            float currentY = Mathf.Lerp(startY, endY, curve);
+
+            if (topShutter != null) topShutter.anchoredPosition = new Vector2(0, currentY);
+            if (bottomShutter != null) bottomShutter.anchoredPosition = new Vector2(0, -currentY);
+
+            yield return null;
+        }
+
+        if (topShutter != null) topShutter.anchoredPosition = new Vector2(0, endY);
+        if (bottomShutter != null) bottomShutter.anchoredPosition = new Vector2(0, -endY);
+    }
+
+    private void SetShuttersOpen()
+    {
+        if (topShutter != null) topShutter.anchoredPosition = new Vector2(0, shutterOpenHeight);
+        if (bottomShutter != null) bottomShutter.anchoredPosition = new Vector2(0, -shutterOpenHeight);
+    }
+
+    private void UpdateStarUI(int starCount)
+    {
+        for (int i = 0; i < starImages.Length; i++)
+        {
+            if (i < starCount) starImages[i].color = earnedStarColor; 
+            else starImages[i].color = emptyStarColor; 
+        }
+    }
+
+    private void ResetStars()
+    {
+        if (starImages == null) return; 
+
+        foreach (Image star in starImages)
+        {
+            if (star != null) star.color = Color.clear; 
+        }
+    }
+    
+    // TODO: use actual scoring system 
+    private void CalculateAndShowStars()
+    {
+        if (cameraFocus == null) return;
+
+        float score = cameraFocus.GetFocusScore();
+        int starCount = Mathf.RoundToInt(score * 5);
+
+        Debug.Log($"Score: {score:F2}, Stars: {starCount}");
+        UpdateStarUI(starCount);
+    }
+
 }
-
-
 

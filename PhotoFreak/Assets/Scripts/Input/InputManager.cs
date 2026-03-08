@@ -14,27 +14,25 @@ public class InputManager : MonoBehaviour
     public event Action <bool> OnCrouch;
     public event Action<bool> OnAim;
     public event Action OnInteract;
-    
+    public event Action OnShoot; 
+    public event Action<float> OnZoom; 
+    public event Action<float> OnFocus; 
+
     // TODO: still needs to be implemented 
     public event Action OnPause; 
     public event Action OnResume; 
-
-    public event Action OnShoot; 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
     {
         playerControls = new PlayerControls(); 
-    }
 
-    private void OnEnable()
-    {
         playerControls.Ground.Enable();
 
-        playerControls.Ground.Movement.performed += ctx => OnMove?.Invoke(ctx.ReadValue<Vector2>());
+        playerControls.Ground.Movement.performed += ctx => OnMove?.Invoke(ctx.ReadValue<Vector2>());        // wasd
         playerControls.Ground.Movement.canceled += ctx => OnMove?.Invoke(Vector2.zero); 
 
-        playerControls.Ground.Look.performed += ctx => OnLook?.Invoke(ctx.ReadValue<Vector2>()); 
+        playerControls.Ground.Look.performed += ctx => OnLook?.Invoke(ctx.ReadValue<Vector2>());        
         playerControls.Ground.Look.canceled += ctx => OnLook?.Invoke(Vector2.zero); 
 
         playerControls.Ground.Jump.performed += ctx => OnJump?.Invoke(); 
@@ -54,8 +52,31 @@ public class InputManager : MonoBehaviour
         playerControls.Ground.Aim.canceled += ctx => OnAim?.Invoke(false);
 
         playerControls.Ground.Interact.performed += ctx => OnInteract?.Invoke(); 
-        
-        EnableGameplayControls(); 
+
+        playerControls.Ground.ScrollAction.performed += ctx =>
+        {
+            float scrollVal = ctx.ReadValue<Vector2>().y; 
+            
+            // deadzone 
+            if (Mathf.Abs(scrollVal) < 0.01f) return;
+
+            // Focus
+            if (Keyboard.current != null && Keyboard.current.ctrlKey.isPressed)
+            {
+                OnFocus?.Invoke(scrollVal);
+            }
+
+            // zoom 
+            else
+            {
+                OnZoom?.Invoke(scrollVal);
+            }
+        };
+    }
+
+    private void OnEnable()
+    {
+        playerControls.Ground.Enable();         
     }
 
     private void OnDisable()
@@ -63,18 +84,19 @@ public class InputManager : MonoBehaviour
         playerControls.Ground.Disable(); 
     }
 
+    // Todo: tweak this later when we have resume/pause
     public void EnableGameplayControls()
     {
-        if (playerControls.Ground.enabled)
-        {
-            OnPause?.Invoke(); 
-            // EnableUIControls(); 
-        }
+        // if (playerControls.Ground.enabled)
+        // {
+        //     OnPause?.Invoke(); 
+        //     // EnableUIControls(); 
+        // }
 
-        else
-        {
-            OnResume?.Invoke(); 
-            // EnableGameplayControls(); 
-        }
+        // else
+        // {
+        //     OnResume?.Invoke(); 
+        //     // EnableGameplayControls(); 
+        // }
     }
 }
