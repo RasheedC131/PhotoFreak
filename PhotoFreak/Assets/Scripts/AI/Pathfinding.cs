@@ -7,7 +7,7 @@ public class Pathfinding : MonoBehaviour
     [Header("References")]
     public NavMeshAgent agent;
     public bool loopTmp;
-    protected Transform pathsContainer;     // grabbed from the manager 
+    public Transform pathsContainer;     // grabbed from the manager 
     public Material monsterMaterial;
     public Renderer myRenderer; 
 
