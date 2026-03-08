@@ -21,7 +21,7 @@ public class CameraFocus : MonoBehaviour
     [SerializeField] private float blurRandomness = 5f; 
     [SerializeField] private float focusTolerance = 0.25f;       
     [SerializeField] private float minFocusDist = 0.1f; 
-    [SerializeField] private float maxFocusDist = 100f; 
+    [SerializeField] private float maxFocusDist = 10000f; 
 
     [Header("Scoring")]
     [Range(0.1f, 10f)]
@@ -102,16 +102,21 @@ public class CameraFocus : MonoBehaviour
         if (dof != null) dof.focusDistance.value = currFocusDist;
     }
 
-    // private void CheckFocusQuality()
-    // {
-    //     if (Mathf.Abs(currFocusDist - targetTrueDist) < GetAllowedError())
-    //     {
-    //         // TODO: add logic for successfully snapping a photo 
-    //     }
-    // }
-
     public float GetFocusScore()
     {
+        if (Physics.Raycast(cameraTransform.position, cameraTransform.forward, out RaycastHit hit, maxFocusDist))
+        {
+            if (!hit.collider.CompareTag("NPC"))
+            {
+                Debug.Log("Not an npc"); 
+            }
+        } 
+
+        else
+        {
+            return 0f; 
+        }
+
         float zoomLevel = (GetComponent<Camera>() != null) ? cameraZoom.currZoomLevel : 1f; // 1f is the minimum zoom level 
         
         float tolerancePerct = aperture / 100f;
