@@ -50,20 +50,21 @@ public class PhotoScore : MonoBehaviour
         Vector3 origin = cameraTransform ? cameraTransform.position : transform.position;
         Vector3 direction = cameraTransform ? cameraTransform.forward : transform.forward;
 
-        if(Physics.SphereCast(transform.position,radius,transform.forward,out subject,maxDistance, layer))
+        if(Physics.SphereCast(origin,radius,direction,out subject,maxDistance))
         {
-           hitObject = subject.collider.gameObject;
-           PhotoTag tag = subject.collider.GetComponent<PhotoTag>();
-
+            Debug.Log("Hit");
+            hitObject = subject.collider.gameObject;
+        
             //For when player takes a picture of a wall or any obstruction
-           if (!tag)
+            if (!subject.collider.GetComponent<PhotoTag>())
             {
-                EmptyPhoto(photo);
+                EmptyPhoto(ref photo);
+                Debug.Log("No Tag");
             }
-
             else
             {
-                photo.distance = DistanceCalculation(subject.point);
+                PhotoTag tag = subject.collider.GetComponent<PhotoTag>();
+                photo.distance = DistanceCalculation(subject.collider.transform.position);
                 photo.facing = FacingCalculation(subject);
                 photo.pose = tag.poseScore;
                 photo.focus = FocusCalculation();
@@ -71,7 +72,9 @@ public class PhotoScore : MonoBehaviour
 
         } else
         {
-            EmptyPhoto(photo);
+            EmptyPhoto(ref photo);
+            Debug.Log("Missed");
+
         }
 
 
@@ -95,7 +98,7 @@ public class PhotoScore : MonoBehaviour
         //Angle from subject pov
         Vector3 fromSubject = subject.collider.transform.forward;
         Vector3 origin = cameraTransform ? cameraTransform.position : transform.position;
-        Vector3 toPlayer = origin - subject.point;
+        Vector3 toPlayer = origin - subject.collider.transform.position;
         
         //Takes horizontals out of the calculation
         fromSubject.y = 0;
@@ -119,12 +122,13 @@ public class PhotoScore : MonoBehaviour
         return Mathf.RoundToInt(accuracy * 5);
     }
 
-    private void EmptyPhoto(ScoreParameters photo)
+    private void EmptyPhoto(ref ScoreParameters photo)
     {
-        photo.distance = 0;
-        photo.facing = 0;
+        photo.distance = 1;
+        photo.facing = 1;
         //photo.framing = 0;
-        photo.pose = 0;
+        photo.pose = 1;
+        photo.focus = 1;
         Debug.Log("oof");
     }
 
@@ -146,9 +150,12 @@ public class PhotoScore : MonoBehaviour
     //Debug to see SphereCast
     void OnDrawGizmos()
     {
+        Vector3 origin = cameraTransform ? cameraTransform.position : transform.position;
+        Vector3 direction = cameraTransform ? cameraTransform.forward : transform.forward;
+
         Gizmos.color = Color.red;
-        Gizmos.DrawSphere(transform.position + transform.forward*maxDistance, radius);
-        Debug.DrawRay(transform.position, transform.forward * maxDistance, Color.green);
+        Gizmos.DrawSphere(origin + direction*maxDistance, radius);
+        Debug.DrawRay(origin, direction*maxDistance, Color.green);
     }
 
 }

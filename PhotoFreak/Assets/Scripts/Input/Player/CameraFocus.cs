@@ -23,7 +23,6 @@ public class CameraFocus : MonoBehaviour
     [SerializeField] private float focusTolerance = 0.25f;       
     [SerializeField] private float minFocusDist = 0.1f; 
     [SerializeField] private float maxFocusDist = 100f;
-    [SerializeField] private LayerMask layer; 
 
     [Header("Detection Settings")]
     [SerializeField] private LayerMask focusLayerMask; 

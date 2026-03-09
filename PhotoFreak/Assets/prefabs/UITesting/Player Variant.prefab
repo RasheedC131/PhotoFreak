@@ -1515,11 +1515,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 04510d53731e5d6439f404392413c7c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PhotoScore
+  cameraTransform: {fileID: 3569621495016689465}
   radius: 0.1
   maxDistance: 30
   layer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 4294967295
   distanceCurve:
     serializedVersion: 2
     m_Curve:
@@ -1658,9 +1659,6 @@ MonoBehaviour:
   focusTolerance: 0
   minFocusDist: 0.1
   maxFocusDist: 100
-  layer:
-    serializedVersion: 2
-    m_Bits: 4294967295
   focusLayerMask:
     serializedVersion: 2
     m_Bits: 4294967295
