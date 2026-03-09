@@ -3,11 +3,12 @@ using UnityEngine;
 public class PhotoScore : MonoBehaviour
 {
     [Header("SphereCast")]
-    public float radius;
-    public float maxDistance;
+    public float radius = 0.5f;
+    public float maxDistance = 100f;
     public LayerMask layer;
 
-    RaycastHit subject; //what the SphereCast hit
+
+    private RaycastHit subject; //what the SphereCast hit
 
     [Header("Scoring Curves")]
     public AnimationCurve distanceCurve;
@@ -39,33 +40,38 @@ public class PhotoScore : MonoBehaviour
 
 
 
-    public void CaptureSubject()
+    public GameObject CaptureSubject()
     {
         ScoreParameters photo = new ScoreParameters();
+        GameObject hitObject = null; 
 
         if(Physics.SphereCast(transform.position,radius,transform.forward,out subject,maxDistance, layer))
         {
+           hitObject = subjectHit.collider.gameObject;
            PhotoTag tag = subject.collider.GetComponent<PhotoTag>();
 
             //For when player takes a picture of a wall or any obstruction
            if (!tag)
             {
-                EmptyPhoto(photo);
-                return;
+                EmptyPhoto(ref photo);
             }
 
-            photo.distance = DistanceCalculation(subject.point);
-            photo.facing = FacingCalculation(subject);
-            photo.pose = tag.poseScore;
-            photo.focus = FocusCalculation();
+            else
+            {
+                photo.distance = DistanceCalculation(subject.point);
+                photo.facing = FacingCalculation(subject);
+                photo.pose = tag.poseScore;
+                photo.focus = FocusCalculation();
+            }
 
         } else
         {
-            EmptyPhoto(photo);
+            EmptyPhoto(ref photo);
         }
 
 
         currentScore = CalculateResult(photo);
+        return hitObject; 
     }
 
     private int DistanceCalculation(Vector3 subjectPos)
