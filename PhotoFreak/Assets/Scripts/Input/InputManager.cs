@@ -22,7 +22,12 @@ public class InputManager : MonoBehaviour
     public event Action OnPause; 
     public event Action OnResume; 
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    void Start()
+    {
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;        
+    }
+
     void Awake()
     {
         playerControls = new PlayerControls(); 

@@ -4,8 +4,7 @@ using UnityEngine.UI;
 using System.Collections; 
 using TMPro; 
 
-
-public class PhotoCamera : MonoBehaviour
+public class PhotoCamera : MonoBehaviour, IEquippable
 {
     enum CaptureState
     {
@@ -61,7 +60,7 @@ public class PhotoCamera : MonoBehaviour
 
     void Awake ()
     {
-        if (inputManager == null) inputManager = GetComponent<InputManager>(); 
+        if (inputManager == null) inputManager = GetComponentInParent<InputManager>(); 
         if (cameraFlash == null) cameraFlash = GetComponentInChildren<CameraFlash>();
 
     }
@@ -83,14 +82,6 @@ public class PhotoCamera : MonoBehaviour
         if (viewFinderUI != null) viewFinderUI.SetActive(false); 
         if (photoReviewUI != null) photoReviewUI.SetActive(false); 
 
-        if (inputManager != null)
-        {
-            inputManager.OnAim += UpdateCaptureState;
-            inputManager.OnInteract += Interact;        
-            inputManager.OnShoot += Shoot;   
-        }
-
-
         //Getting Scripts
         photoScore = GetComponent<PhotoScore>();
         cameraFocus = GetComponent<CameraFocus>();
@@ -98,6 +89,36 @@ public class PhotoCamera : MonoBehaviour
 
         if (!cameraFocus) cameraFocus.DisableDepthOfField();
 
+    }
+
+    public void OnEquip()
+    {
+        gameObject.SetActive(true);
+        if (inputManager != null)
+        {
+            inputManager.OnAim += UpdateCaptureState;
+            inputManager.OnInteract += Interact;
+        }
+    }
+
+    public void OnUnequip()
+    {
+        if (inputManager != null)
+        {
+            inputManager.OnAim -= UpdateCaptureState;
+            inputManager.OnInteract -= Interact;
+        }
+
+        UpdateCaptureState(false);
+        if (photoReviewUI != null) photoReviewUI.SetActive(false);
+        isReview = false;
+        
+        gameObject.SetActive(false);
+    }
+
+    public void OnUse()
+    {
+        if (currentState == CaptureState.Capturing && !isReview) AttemptTakePhoto(); 
     }
 
     private void UpdateCaptureState(bool isCapturing)
@@ -141,18 +162,12 @@ public class PhotoCamera : MonoBehaviour
 
     }
 
-    private void Shoot()
-    {
-        if (currentState == CaptureState.Capturing && !isReview) AttemptTakePhoto(); 
-    }
-
     void OnDestroy()
     {
         if (inputManager != null) 
         {
             inputManager.OnAim -= UpdateCaptureState;
             inputManager.OnInteract -= Interact;
-            inputManager.OnShoot -= Shoot; 
         }
     }
 
@@ -290,7 +305,3 @@ public class PhotoCamera : MonoBehaviour
     }
 
 }
-
-
-
-
