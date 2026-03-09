@@ -16,7 +16,8 @@ public class CameraFocus : MonoBehaviour
     [SerializeField] private Image focusStatusIndicator;
 
     [Header("Settings")]
-    [SerializeField] private float baseFocusSpeed = 0.2f;     
+    [SerializeField] private float baseFocusSpeed = 0.2f;   
+    [SerializeField] private float focusOffset = 0.2f;  
     [SerializeField] private float aperture = 5.6f; 
     [SerializeField] private float blurRandomness = 5f; 
     [SerializeField] private float focusTolerance = 0.25f;       
@@ -25,7 +26,6 @@ public class CameraFocus : MonoBehaviour
     [SerializeField] private LayerMask layer; 
 
     [Header("Detection Settings")]
-    [SerializeField] private float sphereCastRadius = 0.5f; 
     [SerializeField] private LayerMask focusLayerMask; 
 
     [Header("Scoring")]
@@ -106,33 +106,16 @@ public class CameraFocus : MonoBehaviour
 
     private void UpdateDoF()
     {
-        if (dof != null) dof.focusDistance.value = currFocusDist;
+        if (dof != null) 
+        {
+            dof.focusDistance.value = currFocusDist;
+            dof.aperture.value = aperture; 
+        }
     }
-
-    // private void CheckFocusQuality()
-    // {
-    //     if (Mathf.Abs(currFocusDist - targetTrueDist) < GetAllowedError())
-    //     {
-    //         // TODO: add logic for successfully snapping a photo 
-    //     }
-    // }
 
     public float GetFocusScore()
     {
-        // if (Physics.Raycast(cameraTransform.position, cameraTransform.forward, out RaycastHit hit, maxFocusDist))
-        // {
-        //     if (!hit.collider.CompareTag("NPC"))
-        //     {
-        //         Debug.Log("Not an npc"); 
-        //     }
-        // } 
-
-        // else
-        // {
-        //     return 0f; 
-        // }
-
-        bool isHit = Physics.SphereCast(cameraTransform.position, sphereCastRadius, cameraTransform.forward, out RaycastHit hit, maxFocusDist, focusLayerMask);
+        bool isHit = Physics.Raycast(cameraTransform.position, cameraTransform.forward, out RaycastHit hit, maxFocusDist, focusLayerMask);
 
         if (!isHit) return 0f; 
 
@@ -157,10 +140,13 @@ public class CameraFocus : MonoBehaviour
     private void UpdateTargetDistance()
     {
         RaycastHit hit;
-        if (Physics.SphereCast(cameraTransform.position, sphereCastRadius, cameraTransform.forward, out hit, maxFocusDist, focusLayerMask))        
+
+        if (Physics.Raycast(cameraTransform.position, cameraTransform.forward, out hit, maxFocusDist, focusLayerMask, QueryTriggerInteraction.Collide))        
         {
-            targetTrueDist = hit.distance;
+            targetTrueDist = hit.distance + focusOffset;
+            Debug.Log($"<color=green>RAYCAST HIT:</color> {hit.collider.name} (Layer: {LayerMask.LayerToName(hit.collider.gameObject.layer)})");
         }
+
         else
         {
             targetTrueDist = maxFocusDist; 
@@ -198,11 +184,30 @@ public class CameraFocus : MonoBehaviour
 
     public void EnableDepthOfField()
     {
-        if (dof != null) dof.active = true;
-    }
+        this.enabled = true;
+
+        if (dof != null) 
+        {
+            dof.active = true;
+            dof.focusDistance.overrideState = true;
+        }
+        
+        InitializeFocus();    }
 
     public void DisableDepthOfField()
     {
         if (dof != null) dof.active = false;
+        this.enabled = false;
+    }
+
+    void OnDrawGizmos()
+    {
+        if (cameraTransform == null) return;
+
+        Gizmos.color = Color.red;
+        Gizmos.DrawLine(cameraTransform.position, cameraTransform.position + cameraTransform.forward * targetTrueDist);
+        
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(cameraTransform.position + cameraTransform.forward * targetTrueDist, 0.2f);
     }
 }

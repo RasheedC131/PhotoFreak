@@ -96,6 +96,8 @@ public class PhotoCamera : MonoBehaviour
         cameraFocus = GetComponent<CameraFocus>();
         cameraFlash = GetComponent<CameraFlash>();
 
+        if (!cameraFocus) cameraFocus.DisableDepthOfField();
+
     }
 
     private void UpdateCaptureState(bool isCapturing)
@@ -161,7 +163,7 @@ public class PhotoCamera : MonoBehaviour
         {
             currFilm --; 
             if (filmCounterText != null) filmCounterText.text = $"{currFilm} Shots";
-            photoScore.CaptureSubject();
+            // photoScore.CaptureSubject();
             StartCoroutine(CapturePhotoRoutine()); 
         }
         
@@ -235,7 +237,7 @@ public class PhotoCamera : MonoBehaviour
         float elapsed = 0f;
         while (elapsed < duration)
         {
-            elapsed += Time.deltaTime;
+            elapsed += Time.unscaledDeltaTime;
             float percent = elapsed / duration;
             float curve = Mathf.Sin(percent * Mathf.PI * 0.5f); 
             float currentY = Mathf.Lerp(startY, endY, curve);
@@ -286,6 +288,7 @@ public class PhotoCamera : MonoBehaviour
     {
         return cameraRaised;
     }
+
 }
 
 

@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.AI;
+using System.Collections.Generic;
 
 public class Pathfinding : MonoBehaviour
 {
@@ -25,12 +26,12 @@ public class Pathfinding : MonoBehaviour
     protected Transform ring;
     protected Transform node;
     protected Transform[] rings;
-    protected Transform defaultLeader; // renamed it to avoid confusion with the new logic defaultLeader vars 
+    protected Transform defaultLeader; // renamed it to avoid confusion with the new logic leader vars 
     protected Vector3 destination;
     protected float personalSpaceDist = 2.0f; 
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    protected virtual void Start()
     {
         if (agent == null) agent = GetComponent<NavMeshAgent>();
 
@@ -52,7 +53,7 @@ public class Pathfinding : MonoBehaviour
         // monster logic 
         if (isInfected)
         {
-            Vector3 pos = leader.GetComponent<Pathfinding>().getBehind(); // get position of leader
+            Vector3 pos = defaultLeader.GetComponent<Pathfinding>().getBehind(); // get position of defaultLeader
             pos = new Vector3(pos.x, 0, pos.z);
             agent.SetDestination(pos);
             new WaitForSeconds(2);
@@ -77,7 +78,7 @@ public class Pathfinding : MonoBehaviour
                 agent.isStopped = true; 
                 agent.velocity = Vector3.zero;
 
-                // Smoothly rotate to face the leader
+                // Smoothly rotate to face the defaultLeader
                 Vector3 direction = (customLeader.transform.position - transform.position).normalized;
                 direction.y = 0; 
                 

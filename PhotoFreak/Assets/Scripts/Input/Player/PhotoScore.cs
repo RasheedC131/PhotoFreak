@@ -47,13 +47,13 @@ public class PhotoScore : MonoBehaviour
 
         if(Physics.SphereCast(transform.position,radius,transform.forward,out subject,maxDistance, layer))
         {
-           hitObject = subjectHit.collider.gameObject;
+           hitObject = subject.collider.gameObject;
            PhotoTag tag = subject.collider.GetComponent<PhotoTag>();
 
             //For when player takes a picture of a wall or any obstruction
            if (!tag)
             {
-                EmptyPhoto(ref photo);
+                EmptyPhoto(photo);
             }
 
             else
@@ -66,7 +66,7 @@ public class PhotoScore : MonoBehaviour
 
         } else
         {
-            EmptyPhoto(ref photo);
+            EmptyPhoto(photo);
         }
 
 
