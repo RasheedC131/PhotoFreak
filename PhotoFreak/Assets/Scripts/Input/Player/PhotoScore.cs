@@ -7,6 +7,7 @@ public class PhotoScore : MonoBehaviour
     public float maxDistance;
     public LayerMask layer;
 
+
     RaycastHit subject; //what the SphereCast hit
 
     //Debug to see SphereCast
@@ -17,14 +18,18 @@ public class PhotoScore : MonoBehaviour
         Debug.DrawRay(transform.position, transform.forward * maxDistance, Color.green);
     }
 
-    public void CaptureSubject()
+    public GameObject CaptureSubject()
     {
+        RaycastHit subject; 
         if(Physics.SphereCast(transform.position,radius,transform.forward,out subject,maxDistance, layer))
         {
            Debug.Log(subject.collider.gameObject);
+           return subject.collider.gameObject; 
         } else
         {
             Debug.Log("oof");
         }
+
+        return null; 
     }
 }

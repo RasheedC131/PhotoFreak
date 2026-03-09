@@ -10,15 +10,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: b88dda52e3c894000811d62d73113d93, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 4.44
+      value: -32.5
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: b88dda52e3c894000811d62d73113d93, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.204
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: b88dda52e3c894000811d62d73113d93, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 6.78
+      value: 6.1899996
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: b88dda52e3c894000811d62d73113d93, type: 3}
       propertyPath: m_LocalRotation.w
@@ -66,6 +66,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: b88dda52e3c894000811d62d73113d93, type: 3}
       propertyPath: m_Name
+      value: Guest
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: b88dda52e3c894000811d62d73113d93, type: 3}
+      propertyPath: m_TagString
       value: Guest
       objectReference: {fileID: 0}
     - target: {fileID: 1427564092133216371, guid: b88dda52e3c894000811d62d73113d93, type: 3}
@@ -159,18 +163,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f89f7a79bf64e94f8aefe71c75388c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Pathfinding
-  cam: {fileID: 0}
   agent: {fileID: 7271762693807982147}
   loopTmp: 0
   pathsContainer: {fileID: 0}
+  monsterMaterial: {fileID: 2100000, guid: 2a53426d9b38245d1b922dfeac26c145, type: 2}
+  myRenderer: {fileID: 3860600277520522324}
   isInfected: 0
   isBusy: 0
   customLeader: {fileID: 0}
   currVictim: {fileID: 0}
   groupIdx: 0
   groupTotalSize: 1
-  myRenderer: {fileID: 3860600277520522324}
-  monsterMaterial: {fileID: 2100000, guid: 2a53426d9b38245d1b922dfeac26c145, type: 2}
   follower: 0
 --- !u!23 &3043832315542927495
 MeshRenderer:

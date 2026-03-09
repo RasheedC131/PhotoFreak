@@ -8,7 +8,7 @@ public class FreakMeterUI : MonoBehaviour
     [SerializeField] private TMP_Text timeText;
 
     // Update is called once per frame
-    public void UpdateMeter(double value)
+    public void UpdateMeter(float value)
     {
         freakText.text = string.Format("{0}", value.ToString("F2"));
     }

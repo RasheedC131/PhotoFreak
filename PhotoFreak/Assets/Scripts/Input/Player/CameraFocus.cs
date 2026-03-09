@@ -23,6 +23,10 @@ public class CameraFocus : MonoBehaviour
     [SerializeField] private float minFocusDist = 0.1f; 
     [SerializeField] private float maxFocusDist = 10000f; 
 
+    [Header("Detection Settings")]
+    [SerializeField] private float sphereCastRadius = 0.5f; 
+    [SerializeField] private LayerMask focusLayerMask; 
+
     [Header("Scoring")]
     [Range(0.1f, 10f)]
     public float scoreCurveFlatness = 4.0f;         // used for the formula to calculate the score 
@@ -104,18 +108,22 @@ public class CameraFocus : MonoBehaviour
 
     public float GetFocusScore()
     {
-        if (Physics.Raycast(cameraTransform.position, cameraTransform.forward, out RaycastHit hit, maxFocusDist))
-        {
-            if (!hit.collider.CompareTag("NPC"))
-            {
-                Debug.Log("Not an npc"); 
-            }
-        } 
+        // if (Physics.Raycast(cameraTransform.position, cameraTransform.forward, out RaycastHit hit, maxFocusDist))
+        // {
+        //     if (!hit.collider.CompareTag("NPC"))
+        //     {
+        //         Debug.Log("Not an npc"); 
+        //     }
+        // } 
 
-        else
-        {
-            return 0f; 
-        }
+        // else
+        // {
+        //     return 0f; 
+        // }
+
+        bool isHit = Physics.SphereCast(cameraTransform.position, sphereCastRadius, cameraTransform.forward, out RaycastHit hit, maxFocusDist, focusLayerMask);
+
+        if (!isHit) return 0f; 
 
         float zoomLevel = (GetComponent<Camera>() != null) ? cameraZoom.currZoomLevel : 1f; // 1f is the minimum zoom level 
         
@@ -138,7 +146,7 @@ public class CameraFocus : MonoBehaviour
     private void UpdateTargetDistance()
     {
         RaycastHit hit;
-        if (Physics.Raycast(cameraTransform.position, cameraTransform.forward, out hit, maxFocusDist))
+        if (Physics.SphereCast(cameraTransform.position, sphereCastRadius, cameraTransform.forward, out hit, maxFocusDist, focusLayerMask))        
         {
             targetTrueDist = hit.distance;
         }
@@ -151,7 +159,7 @@ public class CameraFocus : MonoBehaviour
     private void UpdateFocusUI()
     {
         Color colorGreen = Color.green;
-        Color colorOrange = new Color(1f, 0.64f, 0f); // Orange
+        Color colorOrange = new Color(1f, 0.64f, 0f); 
         Color colorRed = Color.red;
 
         if (focusIndicatorText == null) return;

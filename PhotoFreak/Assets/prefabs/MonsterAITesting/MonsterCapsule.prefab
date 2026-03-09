@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &3133073391581241226
+--- !u!1 &8431522382228854584
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,49 +8,49 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 8927909453528144886}
-  - component: {fileID: 8083508358053831749}
-  - component: {fileID: 3850051037166872181}
-  - component: {fileID: 1655607856852723972}
-  - component: {fileID: 4012452634531747815}
-  - component: {fileID: 6831112809352391548}
+  - component: {fileID: 2580766856960774789}
+  - component: {fileID: 1051989076268356801}
+  - component: {fileID: 1777202362815079944}
+  - component: {fileID: 5484451708922596763}
+  - component: {fileID: 3261448417250373128}
+  - component: {fileID: 1349967337135749821}
   m_Layer: 0
-  m_Name: Guest (1)
+  m_Name: MonsterCapsule
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &8927909453528144886
+--- !u!4 &2580766856960774789
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3133073391581241226}
+  m_GameObject: {fileID: 8431522382228854584}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -6.01, y: 0.532, z: -9.57}
+  m_LocalPosition: {x: 4.76, y: 0.532, z: 1.61}
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &8083508358053831749
+--- !u!33 &1051989076268356801
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3133073391581241226}
+  m_GameObject: {fileID: 8431522382228854584}
   m_Mesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
---- !u!23 &3850051037166872181
+--- !u!23 &1777202362815079944
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3133073391581241226}
+  m_GameObject: {fileID: 8431522382228854584}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -69,7 +69,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 2a53426d9b38245d1b922dfeac26c145, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -93,13 +93,13 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!136 &1655607856852723972
+--- !u!136 &5484451708922596763
 CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3133073391581241226}
+  m_GameObject: {fileID: 8431522382228854584}
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -108,7 +108,7 @@ CapsuleCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
@@ -116,17 +116,17 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
---- !u!195 &4012452634531747815
+--- !u!195 &3261448417250373128
 NavMeshAgent:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3133073391581241226}
+  m_GameObject: {fileID: 8431522382228854584}
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.5
-  m_Speed: 1.5
+  m_Speed: 3.5
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 120
@@ -138,20 +138,20 @@ NavMeshAgent:
   m_BaseOffset: 1
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!114 &6831112809352391548
+--- !u!114 &1349967337135749821
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3133073391581241226}
+  m_GameObject: {fileID: 8431522382228854584}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0f89f7a79bf64e94f8aefe71c75388c2, type: 3}
+  m_Script: {fileID: 11500000, guid: 9a5d3826e29ff418aa9bf21f1444af33, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Pathfinding
+  m_EditorClassIdentifier: Assembly-CSharp::MonsterPathfinding
   cam: {fileID: 0}
-  agent: {fileID: 4012452634531747815}
+  agent: {fileID: 3261448417250373128}
   loopTmp: 0
   pathsContainer: {fileID: 0}
   isInfected: 0
@@ -160,6 +160,11 @@ MonoBehaviour:
   currVictim: {fileID: 0}
   groupIdx: 0
   groupTotalSize: 1
-  myRenderer: {fileID: 3850051037166872181}
+  myRenderer: {fileID: 1777202362815079944}
   monsterMaterial: {fileID: 2100000, guid: 2a53426d9b38245d1b922dfeac26c145, type: 2}
   follower: 0
+  minTimeBetweenTells: 5
+  maxTimeBetweenTells: 15
+  tellTriggerProbability: 0.7
+  stalkDuration: 8
+  stalkDistance: 6
