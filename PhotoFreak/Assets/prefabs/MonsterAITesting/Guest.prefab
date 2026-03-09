@@ -69,6 +69,10 @@ PrefabInstance:
       value: Guest
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: b88dda52e3c894000811d62d73113d93, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: b88dda52e3c894000811d62d73113d93, type: 3}
       propertyPath: m_TagString
       value: Guest
       objectReference: {fileID: 0}
@@ -99,6 +103,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: b88dda52e3c894000811d62d73113d93, type: 3}
       insertIndex: -1
       addedObject: {fileID: 7202748026104676315}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: b88dda52e3c894000811d62d73113d93, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 448337564520640067}
   m_SourcePrefab: {fileID: 100100000, guid: b88dda52e3c894000811d62d73113d93, type: 3}
 --- !u!137 &3860600277520522324 stripped
 SkinnedMeshRenderer:
@@ -250,3 +257,17 @@ CapsuleCollider:
   m_Height: 2.721946
   m_Direction: 1
   m_Center: {x: 0, y: 0.860973, z: 0}
+--- !u!114 &448337564520640067
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7125835813631488560}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8bb047a550d0d90418de2b1a7634f6a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PhotoTag
+  type: 1
+  poseScore: 0

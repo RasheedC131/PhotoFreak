@@ -1,7 +1,9 @@
 using UnityEngine;
 
 public class PhotoScore : MonoBehaviour
+
 {
+    [SerializeField] private Transform cameraTransform;
     [Header("SphereCast")]
     public float radius = 0.5f;
     public float maxDistance = 100f;
@@ -45,6 +47,9 @@ public class PhotoScore : MonoBehaviour
         ScoreParameters photo = new ScoreParameters();
         GameObject hitObject = null; 
 
+        Vector3 origin = cameraTransform ? cameraTransform.position : transform.position;
+        Vector3 direction = cameraTransform ? cameraTransform.forward : transform.forward;
+
         if(Physics.SphereCast(transform.position,radius,transform.forward,out subject,maxDistance, layer))
         {
            hitObject = subject.collider.gameObject;
@@ -76,7 +81,8 @@ public class PhotoScore : MonoBehaviour
 
     private int DistanceCalculation(Vector3 subjectPos)
     {
-        float distance = Vector3.Distance(transform.position, subjectPos);
+        Vector3 origin = cameraTransform ? cameraTransform.position : transform.position;
+        float distance = Vector3.Distance(origin, subjectPos);
 
         //Debug.Log("Distance: " + distance);
         //Debug.Log("Distance: " + (int)distanceCurve.Evaluate(distance));
@@ -88,7 +94,8 @@ public class PhotoScore : MonoBehaviour
     {
         //Angle from subject pov
         Vector3 fromSubject = subject.collider.transform.forward;
-        Vector3 toPlayer = transform.position - subject.point;
+        Vector3 origin = cameraTransform ? cameraTransform.position : transform.position;
+        Vector3 toPlayer = origin - subject.point;
         
         //Takes horizontals out of the calculation
         fromSubject.y = 0;

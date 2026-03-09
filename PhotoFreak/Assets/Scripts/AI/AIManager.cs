@@ -93,7 +93,18 @@ public class AIManager : MonoBehaviour
         }
 
         if (makeSmart) ApplySmartMonster(victim); 
-        else victim.ApplyStandardInfection(); 
+
+        // TODO: fix this later 
+        else
+        { 
+            // victim.ApplyStandardInfection(); 
+            // victim.gameObject.tag = "Monster";
+            // PhotoTag tag = victim.GetComponent<PhotoTag>();
+            // if (tag == null) tag = victim.AddComponent<PhotoTag>();
+            // tag.type = PhotoTag.SubjectType.Monster;
+
+            // victim.ApplyStandardInfection(); 
+        }
     }
 
     // replaces the references to the old guest to become a "smart" monster 
@@ -103,6 +114,12 @@ public class AIManager : MonoBehaviour
         Transform savedPaths = oldScript.pathsContainer;
         Renderer savedRenderer = oldScript.myRenderer;
         Material savedMat = oldScript.monsterMaterial;
+
+        body.tag = "Monster"; 
+        PhotoTag tag = body.GetComponent<PhotoTag>();
+        if (tag == null) tag = body.AddComponent<PhotoTag>();
+        tag.type = PhotoTag.SubjectType.Monster;
+        tag.poseScore = 3;          // maybe tweak this 
 
         Destroy(oldScript);
 
