@@ -134,8 +134,6 @@ public class PhotoCamera : MonoBehaviour, IEquippable
             Debug.Log("CameraRaised");
 
             cameraFocus.EnableDepthOfField();
-
-            
         } 
         
         else
@@ -204,19 +202,15 @@ public class PhotoCamera : MonoBehaviour, IEquippable
 
         if (hitSubject != null)
         {
-            if (hitSubject.CompareTag(guestTag))
+
+            // TODO: don't make hard-coded 
+            if (hitSubject.CompareTag(guestTag) || hitSubject.CompareTag("Elite"))
             {
-                Debug.Log("Photographed a Guest.");
+                Debug.Log($"Photographed a {hitSubject.tag}.");
+                
                 if (freakMeter != null) freakMeter.AddFreakScore(freakPenaltyAmount);
             }
-            else if (hitSubject.CompareTag(monsterTag))
-            {
-                float focusMultiplier = (cameraFocus != null) ? cameraFocus.GetFocusScore() : 1.0f;
-                int pointsEarned = Mathf.RoundToInt(monsterPoints * focusMultiplier);
-                
-                totalScore += pointsEarned;
-                Debug.Log($"Captured Monster, Points: {pointsEarned}. Total: {totalScore}");
-            }
+            
         }
 
         // draw ui/animate shutter

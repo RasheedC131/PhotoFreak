@@ -1,5 +1,6 @@
 using UnityEngine;
-
+using UnityEngine.SceneManagement; 
+using System.Collections;
 public class Timer : MonoBehaviour
 {
     [SerializeField] private FreakMeterUI UI;
@@ -32,7 +33,7 @@ public class Timer : MonoBehaviour
                 tmp = false;
                 if (MainTimer) // deletes player
                 {
-                    Destroy(player);
+                    StartCoroutine(RestartGameRoutine());                
                 }
             }
         }
@@ -48,5 +49,13 @@ public class Timer : MonoBehaviour
     public float getTime()
     {
         return currentTime;
+    }
+
+    private IEnumerator RestartGameRoutine()
+    {
+        Debug.Log("Time's Up! Restarting...");
+        if (player != null) player.SetActive(false); 
+        yield return new WaitForSeconds(3.0f);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }

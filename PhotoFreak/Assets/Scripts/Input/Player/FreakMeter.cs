@@ -1,6 +1,9 @@
 using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic; 
+using UnityEngine.SceneManagement;
+using System.Collections;
+
 public class FreakMeter : MonoBehaviour
 {
     [SerializeField] PhotoCamera CameraScript;
@@ -126,11 +129,17 @@ public class FreakMeter : MonoBehaviour
         isMeterDecaying = true;
     }
 
-    // TODO: load a scene or draw a game over ui 
+    // TODO: call on a script to destroy the scene and load the end screen 
     private void TriggerGameOver()
     {
         Debug.Log("GAME OVER: Too much freakiness!"); 
-        Destroy(this.gameObject); 
+        StartCoroutine(RestartGameRoutine());
+    }
+
+    private IEnumerator RestartGameRoutine()
+    {
+        yield return new WaitForSeconds(3.0f);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     public bool IsGameOver()
