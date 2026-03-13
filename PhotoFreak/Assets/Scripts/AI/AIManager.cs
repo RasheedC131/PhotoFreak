@@ -113,7 +113,7 @@ public class AIManager : MonoBehaviour
         GameObject body = oldScript.gameObject; 
         Transform savedPaths = oldScript.pathsContainer;
         Renderer savedRenderer = oldScript.myRenderer;
-        Material savedMat = oldScript.monsterMaterial;
+        // Material savedMat = oldScript.monsterMaterial;
 
         body.tag = "Monster"; 
         PhotoTag tag = body.GetComponent<PhotoTag>();
@@ -127,7 +127,7 @@ public class AIManager : MonoBehaviour
 
         newBrain.pathsContainer = savedPaths;
         newBrain.myRenderer = savedRenderer;
-        newBrain.monsterMaterial = savedMat;
+        // newBrain.monsterMaterial = savedMat;
 
         newBrain.SetupNavigation(true); 
         newBrain.Infect(); 
