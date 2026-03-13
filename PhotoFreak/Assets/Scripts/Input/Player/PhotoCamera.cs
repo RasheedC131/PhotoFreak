@@ -61,17 +61,10 @@ public class PhotoCamera : MonoBehaviour, IEquippable
     void Awake ()
     {
         if (inputManager == null) inputManager = GetComponentInParent<InputManager>(); 
-        if (cameraFlash == null) cameraFlash = GetComponentInChildren<CameraFlash>();
-
-    }
-
-    void Start()
-    {
-        // Initialize Film 
-        currFilm = maxFilm;
-
-        currentState = CaptureState.Idle;
-
+        
+        photoScore = GetComponent<PhotoScore>();
+        cameraFocus = GetComponent<CameraFocus>();
+        cameraFlash = GetComponentInChildren<CameraFlash>(); 
 
         if (topShutter != null)
         {
@@ -79,15 +72,22 @@ public class PhotoCamera : MonoBehaviour, IEquippable
             SetShuttersOpen(); 
         }
 
+    }
+
+    void Start()
+    {
+        // Initialize Film 
+        currFilm = maxFilm;
+        currentState = CaptureState.Idle;
+
         if (viewFinderUI != null) viewFinderUI.SetActive(false); 
         if (photoReviewUI != null) photoReviewUI.SetActive(false); 
 
-        //Getting Scripts
-        photoScore = GetComponent<PhotoScore>();
-        cameraFocus = GetComponent<CameraFocus>();
-        cameraFlash = GetComponent<CameraFlash>();
-
-        if (!cameraFocus) cameraFocus.DisableDepthOfField();
+        // Safely check if cameraFocus exists before calling methods on it
+        if (cameraFocus != null) 
+        {
+            cameraFocus.DisableDepthOfField();
+        }
 
     }
 
@@ -97,7 +97,7 @@ public class PhotoCamera : MonoBehaviour, IEquippable
         if (inputManager != null)
         {
             inputManager.OnAim += UpdateCaptureState;
-            inputManager.OnInteract += Interact;
+            // inputManager.OnInteract += Interact;
         }
     }
 
@@ -106,7 +106,7 @@ public class PhotoCamera : MonoBehaviour, IEquippable
         if (inputManager != null)
         {
             inputManager.OnAim -= UpdateCaptureState;
-            inputManager.OnInteract -= Interact;
+            // inputManager.OnInteract -= Interact;
         }
 
         UpdateCaptureState(false);
@@ -147,6 +147,41 @@ public class PhotoCamera : MonoBehaviour, IEquippable
         
     }
 
+    void OnEnable()
+    {
+        if (inputManager != null)
+        {
+            inputManager.OnAim += UpdateCaptureState;
+            inputManager.OnInteract += Interact;
+            inputManager.OnShoot += Shoot; 
+
+        }
+    }
+
+    void OnDisable()
+    {
+        if (inputManager != null)
+        {
+            inputManager.OnAim -= UpdateCaptureState;
+            inputManager.OnInteract -= Interact;
+            inputManager.OnShoot -= Shoot; 
+        }
+        
+        // Safety cleanup when disabled
+        UpdateCaptureState(false);
+        if (photoReviewUI != null) photoReviewUI.SetActive(false);
+        isReview = false;
+    }
+
+    private void Shoot()
+    {
+        if (currentState == CaptureState.Capturing && !isReview) 
+        {
+            AttemptTakePhoto(); 
+        }
+    }
+
+    // TODO: implement once we have our inventory system to switch from camera, journal and item
     private void Interact()
     {
         // I made left click to shoot but if we want to keep it I kept the logic 
@@ -158,15 +193,6 @@ public class PhotoCamera : MonoBehaviour, IEquippable
 
         if (currentState == CaptureState.Idle) Debug.Log("Interacting"); 
 
-    }
-
-    void OnDestroy()
-    {
-        if (inputManager != null) 
-        {
-            inputManager.OnAim -= UpdateCaptureState;
-            inputManager.OnInteract -= Interact;
-        }
     }
 
     // TODO: add some sort of ui feedback to indicate that the user is out of film 

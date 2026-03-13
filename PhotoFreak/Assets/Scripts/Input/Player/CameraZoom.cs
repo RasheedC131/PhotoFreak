@@ -9,6 +9,7 @@ public class CameraZoom : MonoBehaviour
     [SerializeField] private InputManager inputManager; 
     [SerializeField] private Camera photoCamera; 
     [SerializeField] private Volume globalVolume; 
+    [SerializeField] private PhotoCamera photoCameraScript;
     [SerializeField] private TextMeshProUGUI zoomIndicatorText; 
     [Header("Settings")]
     [SerializeField] private float maxZoom = 3f; 
@@ -22,8 +23,9 @@ public class CameraZoom : MonoBehaviour
 
     void Awake()
     {
+        if (photoCameraScript == null) photoCameraScript = FindAnyObjectByType<PhotoCamera>();
         if (inputManager == null) inputManager = FindAnyObjectByType<InputManager>(); 
-        if (photoCamera == null) photoCamera = GetComponent<Camera>(); 
+        if (photoCamera == null) photoCamera = GetComponentInParent<Camera>(); 
         
         defaultFOV = photoCamera.fieldOfView; 
 
@@ -48,6 +50,9 @@ public class CameraZoom : MonoBehaviour
 
     private void AdjustZoom(float scrollAmount)
     {
+        if (photoCameraScript == null || !photoCameraScript.getCameraState()) return; 
+        
+
         float direction = Mathf.Clamp(scrollAmount, -1f, 1f); 
         currZoomLevel += direction * zoomSpeed * Time.deltaTime; 
         currZoomLevel = Mathf.Clamp(currZoomLevel, minZoom, maxZoom); 
