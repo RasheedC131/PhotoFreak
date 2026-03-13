@@ -21,6 +21,8 @@ public class CameraZoom : MonoBehaviour
     private float defaultFocalLength = 50f; 
     private DepthOfField dof; 
 
+    private bool wasInCameraState = false;
+
     void Awake()
     {
         if (photoCameraScript == null) photoCameraScript = FindAnyObjectByType<PhotoCamera>();
@@ -37,6 +39,18 @@ public class CameraZoom : MonoBehaviour
         }
     }
 
+    void Update()
+    {
+        if (photoCameraScript != null)
+        {
+            bool isCurrentlyInCamera = photoCameraScript.getCameraState();
+
+            if (wasInCameraState && !isCurrentlyInCamera) ResetZoom();
+            
+            wasInCameraState = isCurrentlyInCamera;
+        }
+    }
+
     void OnEnable()
     {
         if (inputManager != null) inputManager.OnZoom += AdjustZoom;        
@@ -46,7 +60,9 @@ public class CameraZoom : MonoBehaviour
     void OnDisable()
     {
         if (inputManager != null) inputManager.OnZoom -= AdjustZoom; 
+        ResetZoom();
     }
+
 
     private void AdjustZoom(float scrollAmount)
     {

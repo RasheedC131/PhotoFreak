@@ -131,7 +131,7 @@ public class PhotoCamera : MonoBehaviour, IEquippable
             currentState = CaptureState.Capturing;
             viewFinderUI.SetActive(true);
             if (filmCounterText != null) filmCounterText.text = $"{currFilm} Shots";
-            Debug.Log("CameraRaised");
+            Debug.Log("Camera Raised");
 
             cameraFocus.EnableDepthOfField();
         } 
@@ -140,7 +140,7 @@ public class PhotoCamera : MonoBehaviour, IEquippable
         {
             currentState = CaptureState.Idle;
             viewFinderUI.SetActive(false); 
-            Debug.Log("CameraLowered");
+            Debug.Log("Camera Lowered");
 
            cameraFocus.DisableDepthOfField();
         }
@@ -171,6 +171,12 @@ public class PhotoCamera : MonoBehaviour, IEquippable
         UpdateCaptureState(false);
         if (photoReviewUI != null) photoReviewUI.SetActive(false);
         isReview = false;
+
+        // prevents the game from being stuck in a paused state
+        if (Time.timeScale == 0f)
+        {
+            Time.timeScale = 1f;
+        }
     }
 
     private void Shoot()
@@ -256,7 +262,9 @@ public class PhotoCamera : MonoBehaviour, IEquippable
         yield return new WaitForSecondsRealtime(photoReviewTime); 
 
         // cleanup the states 
-        Time.timeScale = 1f; 
+        if (freakMeter == null || !freakMeter.IsGameOver()) Time.timeScale = 1f; 
+        
+
         if (photoReviewUI != null) photoReviewUI.SetActive(false); 
         if (viewFinderUI != null && currentState == CaptureState.Capturing) viewFinderUI.SetActive(true); 
         isReview = false;
@@ -264,6 +272,8 @@ public class PhotoCamera : MonoBehaviour, IEquippable
         if(freakMeter != null && freakMeter.IsGameOver())
         {
             Debug.Log("Game loop done.");
+            freakMeter.TriggerGameOver(); 
+            if (viewFinderUI != null) viewFinderUI.SetActive(false); 
         }
     }
 

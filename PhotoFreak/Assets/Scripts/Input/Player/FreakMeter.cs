@@ -19,7 +19,9 @@ public class FreakMeter : MonoBehaviour
     private bool isMeterDecaying;
     private int count;
     private List<Transform> visibleNPCs = new List<Transform>();
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    
+    private bool isGameOver = false; 
+
     void Start()
     {
         count = 0;
@@ -27,14 +29,14 @@ public class FreakMeter : MonoBehaviour
         UpdateUI(); 
         currentFreak = 0f; 
 
-        // sanity check 
         if (UI == null) Debug.LogError("[]FreakMeter]: UI reference is missing in the Inspector!");
         if (CameraScript == null) Debug.LogError("[]FreakMeter]: CameraScript reference is missing!");
     }
 
-    // Update is called once per frame
     void Update()
     {
+        if (isGameOver) return; 
+
         if (count > maxNPC) count = maxNPC;
 
         if (currentFreak >= maxFreak)
@@ -43,9 +45,11 @@ public class FreakMeter : MonoBehaviour
             currentFreak = 0;
             if (UI != null) UI.UpdateMeter(currentFreak);
         }
+        
         if (maxStrikes <= 0)
         {
             TriggerGameOver(); 
+            return; 
         }
 
         bool isMeterRising = false; 
@@ -67,7 +71,6 @@ public class FreakMeter : MonoBehaviour
             UpdateUI();
             isMeterDecaying = true; 
         }
-
         else if (timer.getTime() <= 0 && isMeterDecaying)
         {
             if (currentFreak > 0)
@@ -82,10 +85,8 @@ public class FreakMeter : MonoBehaviour
                 UI.UpdateMeter(currentFreak);
             }
         }
-
     }
 
-    // simplified the logic to use the list and npc tags 
     void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Guest") || other.CompareTag("Monster")) 
@@ -97,7 +98,6 @@ public class FreakMeter : MonoBehaviour
                 Debug.Log("NPC Entered Range, Count: " + count);
             }
         }
-        
     }
 
     void OnTriggerExit(Collider other)
@@ -113,9 +113,10 @@ public class FreakMeter : MonoBehaviour
         }
     }
 
-    // called by the photocamera script when they take a pic of a guest 
     public void AddFreakScore(float amount)
     {
+        if (isGameOver) return; 
+
         currentFreak += amount; 
 
         if (currentFreak > maxFreak) currentFreak = maxFreak; 
@@ -129,22 +130,26 @@ public class FreakMeter : MonoBehaviour
         isMeterDecaying = true;
     }
 
-    // TODO: call on a script to destroy the scene and load the end screen 
-    private void TriggerGameOver()
+    public void TriggerGameOver()
     {
+        if (isGameOver) return; 
+        isGameOver = true;
+
         Debug.Log("GAME OVER: Too much freakiness!"); 
+        
+        Time.timeScale = 1f; 
+
         StartCoroutine(RestartGameRoutine());
     }
 
     private IEnumerator RestartGameRoutine()
     {
-        yield return new WaitForSeconds(3.0f);
+        yield return new WaitForSecondsRealtime(3.0f);
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     public bool IsGameOver()
     {
-        return maxStrikes <= 0;
+        return isGameOver;
     }
-
 }
