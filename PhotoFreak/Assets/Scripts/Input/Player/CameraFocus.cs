@@ -16,11 +16,11 @@ public class CameraFocus : MonoBehaviour
     [SerializeField] private Image focusStatusIndicator;
 
     [Header("Settings")]
-    [SerializeField] private float baseFocusSpeed = 0.2f;   
+    [SerializeField] private float baseFocusSpeed = 0.1f;   
     [SerializeField] private float focusOffset = 0.2f;  
     [SerializeField] private float aperture = 5.6f; 
     [SerializeField] private float blurRandomness = 5f; 
-    [SerializeField] private float focusTolerance = 0.25f;       
+    [SerializeField] private float focusTolerance = 1.5f;       
     [SerializeField] private float minFocusDist = 0.1f; 
     [SerializeField] private float maxFocusDist = 100f;
 
@@ -120,7 +120,8 @@ public class CameraFocus : MonoBehaviour
 
         float zoomLevel = (GetComponent<Camera>() != null) ? cameraZoom.currZoomLevel : 1f; // 1f is the minimum zoom level 
         
-        float tolerancePerct = aperture / 100f;
+        
+        float tolerancePerct = aperture / 50f; // made aperture percentage more forgiving 
         float allowedError = targetTrueDist * tolerancePerct; 
 
         // need to have some margin of error so it's easier to take a decent pic 
@@ -166,16 +167,20 @@ public class CameraFocus : MonoBehaviour
         
         if (focusStatusIndicator != null)
         {
-            if (score > 0.90f)
+            // TODO: fix later so that ranges are more consistent for scoring 
+            if (score > 0.70)
             {
+                score = 2.5f; 
                 focusStatusIndicator.color = colorGreen; 
             }
             else if (score > 0.30f)
             {
+                score = 1.5f; 
                 focusStatusIndicator.color = colorOrange; 
             }
             else
             {
+                score = 1.0f; 
                 focusStatusIndicator.color = colorRed; 
             }
         }
