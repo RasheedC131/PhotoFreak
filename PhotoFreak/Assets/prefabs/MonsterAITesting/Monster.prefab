@@ -14,7 +14,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: b88dda52e3c894000811d62d73113d93, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.048
+      value: 0.48
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: b88dda52e3c894000811d62d73113d93, type: 3}
       propertyPath: m_LocalPosition.z
@@ -62,7 +62,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -5315516861686679138, guid: b88dda52e3c894000811d62d73113d93, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.235
+      value: 1.81
+      objectReference: {fileID: 0}
+    - target: {fileID: -391188025202429193, guid: b88dda52e3c894000811d62d73113d93, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: b88dda52e3c894000811d62d73113d93, type: 3}
       propertyPath: m_Name
@@ -102,6 +106,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: b88dda52e3c894000811d62d73113d93, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1558780812145533022}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: b88dda52e3c894000811d62d73113d93, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6329361421984841552}
   m_SourcePrefab: {fileID: 100100000, guid: b88dda52e3c894000811d62d73113d93, type: 3}
 --- !u!1 &7125835813631488560 stripped
 GameObject:
@@ -140,10 +147,10 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.5
-  m_Speed: 1.5
+  m_Speed: 3
   m_Acceleration: 8
   avoidancePriority: 50
-  m_AngularSpeed: 80
+  m_AngularSpeed: 120
   m_StoppingDistance: 0
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
@@ -251,8 +258,24 @@ MonoBehaviour:
   minTimeBetweenTells: 5
   maxTimeBetweenTells: 15
   tellTriggerProbability: 0.7
-  stalkDuration: 60
+  stalkDuration: 1
   stalkDistance: 10
+  defaultModel: {fileID: 0}
+  killModel: {fileID: 0}
+--- !u!114 &6329361421984841552
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7125835813631488560}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8bb047a550d0d90418de2b1a7634f6a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PhotoTag
+  type: 0
+  poseScore: 5
 --- !u!4 &7615548794434922634 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: b88dda52e3c894000811d62d73113d93, type: 3}
