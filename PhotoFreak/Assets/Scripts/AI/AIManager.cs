@@ -25,7 +25,9 @@ public class AIManager : MonoBehaviour
     public float groupFormRate = 5.0f;                          // period of time that npcs try to form a group 
 
     [Header("Infection Monster Settings")]
-    public InfectionMode infectionMode = InfectionMode.RANDOM; 
+    public InfectionMode infectionMode = InfectionMode.ONLY_MONSTER;
+    [SerializeField] private GameObject defaultMonsterModelPrefab;
+    [SerializeField] private GameObject killMonsterModelPrefab; 
     public float smartAIChance = 50f;       // only works if set to random for infectionMode 
  
     private float movementTimer = 0f; 
@@ -115,6 +117,29 @@ public class AIManager : MonoBehaviour
         Renderer savedRenderer = oldScript.myRenderer;
         // Material savedMat = oldScript.monsterMaterial;
 
+ foreach (Transform child in body.transform)
+        {
+           child.gameObject.SetActive(false);
+        }
+
+        GameObject newDefaultModel = null;
+        GameObject newKillModel = null;
+
+        if (defaultMonsterModelPrefab != null)
+        {
+            newDefaultModel = Instantiate(defaultMonsterModelPrefab, body.transform);
+            newDefaultModel.transform.localPosition = Vector3.zero;
+            newDefaultModel.transform.localRotation = Quaternion.identity;
+        }
+
+        if (killMonsterModelPrefab != null)
+        {
+            newKillModel = Instantiate(killMonsterModelPrefab, body.transform);
+            newKillModel.transform.localPosition = Vector3.zero;
+            newKillModel.transform.localRotation = Quaternion.identity;
+            newKillModel.SetActive(false);
+        }
+
         body.tag = "Monster"; 
         PhotoTag tag = body.GetComponent<PhotoTag>();
         if (tag == null) tag = body.AddComponent<PhotoTag>();
@@ -127,6 +152,10 @@ public class AIManager : MonoBehaviour
 
         newBrain.pathsContainer = savedPaths;
         newBrain.myRenderer = savedRenderer;
+
+        // Assign the newly created models to the new script
+        newBrain.defaultModel = newDefaultModel; 
+        newBrain.killModel = newKillModel;
         // newBrain.monsterMaterial = savedMat;
 
         newBrain.SetupNavigation(true); 

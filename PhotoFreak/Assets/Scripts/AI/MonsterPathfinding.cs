@@ -11,10 +11,10 @@ public class MonsterPathfinding : Pathfinding
     [SerializeField] private float maxTimeBetweenTells = 15f; 
     [Range(0f, 1f)]
     [SerializeField] private float tellTriggerProbability = 0.7f; 
-    [SerializeField] private float stalkDuration = 8.0f; 
-    [SerializeField] private float stalkDistance = 6.0f; // TODO: maybe make this random range
-    [SerializeField] private GameObject defaultModel;
-    [SerializeField] private GameObject killModel;
+    [SerializeField] private float stalkDuration = 1.0f; 
+    [SerializeField] private float stalkDistance = 10.0f; // TODO: maybe make this random range
+    [SerializeField] public GameObject defaultModel;
+    [SerializeField] public GameObject killModel;
 
 
     private float nextTellTime = 0f; 

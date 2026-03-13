@@ -81,6 +81,7 @@ public class InputManager : MonoBehaviour
 
     private void OnEnable()
     {
+        // InitializeControls();
         playerControls.Ground.Enable();         
     }
 
