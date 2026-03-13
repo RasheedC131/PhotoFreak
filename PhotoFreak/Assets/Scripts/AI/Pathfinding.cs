@@ -8,7 +8,7 @@ public class Pathfinding : MonoBehaviour
     public NavMeshAgent agent;
     public bool loopTmp;
     public Transform pathsContainer;     // grabbed from the manager 
-    // public Material monsterMaterial;
+    public Material monsterMaterial;
     public Renderer myRenderer; 
     private bool playerInside;
 
@@ -266,8 +266,8 @@ public class Pathfinding : MonoBehaviour
         // TODO: this is just a visual to see who is a monster. We need to implement a 
         // way to switch over the models where the monster can actually transform
 
-        // if (myRenderer != null) myRenderer.material = monsterMaterial;
-        // else  Debug.LogError(name + ": Missing Renderer or Monster Material");
+        if (myRenderer != null) myRenderer.material = monsterMaterial;
+        else  Debug.LogError(name + ": Missing Renderer or Monster Material");
         Debug.Log(name + " has been infected");
         // cleanup the old guest behaivor
         customLeader = null; 

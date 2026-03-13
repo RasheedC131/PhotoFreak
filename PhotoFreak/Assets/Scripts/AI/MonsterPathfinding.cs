@@ -11,10 +11,8 @@ public class MonsterPathfinding : Pathfinding
     [SerializeField] private float maxTimeBetweenTells = 15f; 
     [Range(0f, 1f)]
     [SerializeField] private float tellTriggerProbability = 0.7f; 
-    [SerializeField] private float stalkDuration = 60.0f; 
-    [SerializeField] private float stalkDistance = 10.0f; // TODO: maybe make this random range
-    [SerializeField] public GameObject defaultModel;
-    [SerializeField] public GameObject killModel;
+    [SerializeField] private float stalkDuration = 8.0f; 
+    [SerializeField] private float stalkDistance = 6.0f; // TODO: maybe make this random range
 
 
     private float nextTellTime = 0f; 
@@ -32,10 +30,6 @@ public class MonsterPathfinding : Pathfinding
         currStalkTimer = stalkDuration; 
         defaultSpeed = agent.speed;
         defaultAngularSpeed = agent.angularSpeed; 
-        
-        if (defaultModel != null) defaultModel.SetActive(true);
-        if (killModel != null) killModel.SetActive(false);
-        
         // SetNextTellTime();
         Infect();
     }
@@ -53,10 +47,6 @@ public class MonsterPathfinding : Pathfinding
             FindNewVictim();
             isStalking = true;
             currStalkTimer = stalkDuration;
-            
-            if (defaultModel != null) defaultModel.SetActive(true);
-            if (killModel != null) killModel.SetActive(false);
-            
             return;
         }
 
@@ -89,10 +79,6 @@ public class MonsterPathfinding : Pathfinding
             {
                 isStalking = false;
                 agent.isStopped = false; 
-                
-                if (defaultModel != null) defaultModel.SetActive(false);
-                if (killModel != null) killModel.SetActive(true);
-                
                 Debug.Log("Monster is now attacking");
             }
         }
@@ -101,9 +87,6 @@ public class MonsterPathfinding : Pathfinding
         {
             agent.SetDestination(currVictim.transform.position);
             Debug.DrawLine(transform.position, currVictim.transform.position, Color.red);
-            
-            if (defaultModel != null && defaultModel.activeSelf) defaultModel.SetActive(false);
-            if (killModel != null && !killModel.activeSelf) killModel.SetActive(true);
 
             // Infect if close enough
             if (dist < 1.5f)
@@ -119,10 +102,6 @@ public class MonsterPathfinding : Pathfinding
         ApplyStandardInfection(); 
         currStalkTimer = stalkDuration; 
         isGlitching = false; 
-        
-        if (defaultModel != null) defaultModel.SetActive(true);
-        if (killModel != null) killModel.SetActive(false);
-        
         FindNewVictim(); 
     }
 
