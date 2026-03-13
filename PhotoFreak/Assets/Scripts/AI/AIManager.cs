@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Collections.Generic; 
-using UnityEngine;
 
 // controls whether infected AI can have the basic AI or the monster AI 
 
@@ -94,7 +93,7 @@ public class AIManager : MonoBehaviour
             case InfectionMode.RANDOM:          makeSmart = Random.Range(0f, 100f) < smartAIChance; break; 
         }
 
-        if (makeSmart) ApplySmartMonster(victim); 
+        if (makeSmart) ApplySmartMonster(victim, attacker); 
 
         // TODO: fix this later 
         else
@@ -110,14 +109,20 @@ public class AIManager : MonoBehaviour
     }
 
     // replaces the references to the old guest to become a "smart" monster 
-    private void ApplySmartMonster(Pathfinding oldScript)
+    private void ApplySmartMonster(Pathfinding oldScript, Pathfinding attacker)
     {
         GameObject body = oldScript.gameObject; 
         Transform savedPaths = oldScript.pathsContainer;
         Renderer savedRenderer = oldScript.myRenderer;
         // Material savedMat = oldScript.monsterMaterial;
 
- foreach (Transform child in body.transform)
+        Vector3 modelOffset = Vector3.zero;
+        if (attacker is MonsterPathfinding monsterAttacker && monsterAttacker.defaultModel != null)
+        {
+            modelOffset = new Vector3(0, monsterAttacker.defaultModel.transform.localPosition.y, 0);
+        }
+
+        foreach (Transform child in body.transform)
         {
            child.gameObject.SetActive(false);
         }
@@ -128,16 +133,25 @@ public class AIManager : MonoBehaviour
         if (defaultMonsterModelPrefab != null)
         {
             newDefaultModel = Instantiate(defaultMonsterModelPrefab, body.transform);
-            newDefaultModel.transform.localPosition = Vector3.zero;
-            newDefaultModel.transform.localRotation = Quaternion.identity;
+            newDefaultModel.transform.localPosition = modelOffset;
+            newDefaultModel.transform.rotation = body.transform.rotation; 
+            newDefaultModel.SetActive(true);
+        }
+        else
+        {
+            Debug.LogError("AIManager: Default Monster Model Prefab is not assigned in the Inspector!");
         }
 
         if (killMonsterModelPrefab != null)
         {
             newKillModel = Instantiate(killMonsterModelPrefab, body.transform);
-            newKillModel.transform.localPosition = Vector3.zero;
-            newKillModel.transform.localRotation = Quaternion.identity;
+            newKillModel.transform.localPosition = modelOffset;
+            newKillModel.transform.localRotation = killMonsterModelPrefab.transform.localRotation;            
             newKillModel.SetActive(false);
+        }
+        else
+        {
+            Debug.LogError("AIManager: Kill Monster Model Prefab is not assigned in the Inspector!");
         }
 
         body.tag = "Monster"; 
@@ -146,7 +160,7 @@ public class AIManager : MonoBehaviour
         tag.type = PhotoTag.SubjectType.Monster;
         tag.poseScore = 3;          // maybe tweak this 
 
-        Destroy(oldScript);
+        DestroyImmediate(oldScript);
 
         MonsterPathfinding newBrain = body.AddComponent<MonsterPathfinding>();
 
@@ -166,59 +180,58 @@ public class AIManager : MonoBehaviour
     }
 
     void FormPartyGroup(Pathfinding[] agents)
+    {
+        // get available guest (not busy, a monster, or in a group)
+        List<Pathfinding> available = new List<Pathfinding>();
+        foreach (var a in agents)
         {
-            // get available guest (not busy, a monster, or in a group)
-            List<Pathfinding> available = new List<Pathfinding>();
-            foreach (var a in agents)
-            {
-                if (!a.isInfected && !a.isBusy && !a.follower && !(a is MonsterPathfinding)) available.Add(a);
-            }
-
-            if (available.Count < 2) return; 
-
-            // assign the leader guest that other guest will follow 
-            Pathfinding leader = available[Random.Range(0, available.Count)];
-            available.Remove(leader);
-            leader.isBusy = true; 
-
-            // choose a group size 
-            int desiredSize = Random.Range(minGroupSize, maxGroupSize + 1);
-            int actualFollowers = Mathf.Min(desiredSize - 1, available.Count);
-
-            List<Pathfinding> currGroup = new List<Pathfinding>();
-            currGroup.Add(leader);
-
-            // assign npcs to the leader and form a circle 
-            for (int i = 0; i < actualFollowers; i++)
-            {
-                Pathfinding follower = available[Random.Range(0, available.Count)];
-                available.Remove(follower);
-
-                follower.customLeader = leader;
-                follower.isBusy = true;
-                
-                follower.groupIdx = i; 
-                follower.groupTotalSize = actualFollowers; 
-
-                currGroup.Add(follower);
-            }
-
-            Debug.Log($"Formed a group of {currGroup.Count} around {leader.name}");
-            StartCoroutine(DisbandGroup(currGroup, timeToBreakGroup));
+            if (!a.isInfected && !a.isBusy && !a.follower && !(a is MonsterPathfinding)) available.Add(a);
         }
 
-        System.Collections.IEnumerator DisbandGroup(List<Pathfinding> group, float delay)
-        {
-            yield return new WaitForSeconds(delay);
+        if (available.Count < 2) return; 
 
-            foreach (var member in group)
+        // assign the leader guest that other guest will follow 
+        Pathfinding leader = available[Random.Range(0, available.Count)];
+        available.Remove(leader);
+        leader.isBusy = true; 
+
+        // choose a group size 
+        int desiredSize = Random.Range(minGroupSize, maxGroupSize + 1);
+        int actualFollowers = Mathf.Min(desiredSize - 1, available.Count);
+
+        List<Pathfinding> currGroup = new List<Pathfinding>();
+        currGroup.Add(leader);
+
+        // assign npcs to the leader and form a circle 
+        for (int i = 0; i < actualFollowers; i++)
+        {
+            Pathfinding follower = available[Random.Range(0, available.Count)];
+            available.Remove(follower);
+
+            follower.customLeader = leader;
+            follower.isBusy = true;
+            
+            follower.groupIdx = i; 
+            follower.groupTotalSize = actualFollowers; 
+
+            currGroup.Add(follower);
+        }
+
+        Debug.Log($"Formed a group of {currGroup.Count} around {leader.name}");
+        StartCoroutine(DisbandGroup(currGroup, timeToBreakGroup));
+    }
+
+    System.Collections.IEnumerator DisbandGroup(List<Pathfinding> group, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        foreach (var member in group)
+        {
+            if (member != null)
             {
-                if (member != null)
-                {
-                    member.isBusy = false;
-                    member.customLeader = null;
-                }
+                member.isBusy = false;
+                member.customLeader = null;
             }
         }
-        
+    }
 }
