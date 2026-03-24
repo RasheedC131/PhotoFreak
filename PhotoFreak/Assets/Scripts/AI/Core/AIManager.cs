@@ -6,11 +6,7 @@ using System.Collections.Generic;
 public class AIManager : MonoBehaviour
 {
     public enum InfectionMode
-    {
-        ONLY_STANDARD, 
-        ONLY_MONSTER, 
-        RANDOM
-    } 
+    { ONLY_STANDARD, ONLY_MONSTER, RANDOM } 
 
     [Header("References")]
     public static AIManager AIInstance; // since our manager should be a singleton have one static reference 
@@ -28,10 +24,7 @@ public class AIManager : MonoBehaviour
     [SerializeField] private GameObject defaultMonsterModelPrefab;
     [SerializeField] private GameObject killMonsterModelPrefab; 
     public float smartAIChance = 50f;       // only works if set to random for infectionMode 
- 
-    private float movementTimer = 0f; 
     private float groupTimer = 0f; 
-    private int LOOP = 0;
 
     void Awake()
     {
@@ -41,29 +34,12 @@ public class AIManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Ais != null)
-        {
-            movementTimer = 8f; 
-            Pathfinding[] allAgents = Ais.GetComponentsInChildren<Pathfinding>();
-            LOOP++; 
-
-            foreach (var a in allAgents)
-            {
-                // move npcs if they're not 'socializing' in a group 
-                if (a != null && !a.follower && !a.isBusy && !a.isInfected) a.NodeMove(LOOP % 2);
-            }
-        }
-
-        // path finding 
-        Pathfinding[] activeAgents = Ais.GetComponentsInChildren<Pathfinding>();
-        foreach (var a in activeAgents) if (a != null) a.Run();
-
-        // group formation 
-        groupTimer += Time.deltaTime;
+        groupTimer += Time.deltaTime; 
         if (groupTimer > groupFormRate)
         {
-            FormPartyGroup(activeAgents);
-            groupTimer = 0;
+            AIContext[] activeAgents = Ais.GetComponentsInChildren<AIContext>(); 
+            FormPartyGroup(activeAgents); 
+            groupTimer = 0; 
         }
     }
 
