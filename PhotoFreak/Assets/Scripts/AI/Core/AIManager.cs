@@ -43,7 +43,7 @@ public class AIManager : MonoBehaviour
         }
     }
 
-    public void HandleInfection (Pathfinding victim, Pathfinding attacker)
+    public void HandleInfection (AIContext victim, AIContext attacker)
     {
         // if victim is already infected don't do anything 
         if (victim is MonsterPathfinding)
@@ -85,7 +85,7 @@ public class AIManager : MonoBehaviour
     }
 
     // replaces the references to the old guest to become a "smart" monster 
-    private void ApplySmartMonster(Pathfinding oldScript, Pathfinding attacker)
+    private void ApplySmartMonster(AIContext oldScript, AIContext attacker)
     {
         GameObject body = oldScript.gameObject; 
         Transform savedPaths = oldScript.pathsContainer;
@@ -155,10 +155,10 @@ public class AIManager : MonoBehaviour
 
     }
 
-    void FormPartyGroup(Pathfinding[] agents)
+    void FormPartyGroup(AIContext[] agents)
     {
         // get available guest (not busy, a monster, or in a group)
-        List<Pathfinding> available = new List<Pathfinding>();
+        List<AIContext> available = new List<AIContext>();
         foreach (var a in agents)
         {
             if (!a.isInfected && !a.isBusy && !a.follower && !(a is MonsterPathfinding)) available.Add(a);
@@ -167,7 +167,7 @@ public class AIManager : MonoBehaviour
         if (available.Count < 2) return; 
 
         // assign the leader guest that other guest will follow 
-        Pathfinding leader = available[Random.Range(0, available.Count)];
+        AIContext leader = available[Random.Range(0, available.Count)];
         available.Remove(leader);
         leader.isBusy = true; 
 
@@ -175,13 +175,13 @@ public class AIManager : MonoBehaviour
         int desiredSize = Random.Range(minGroupSize, maxGroupSize + 1);
         int actualFollowers = Mathf.Min(desiredSize - 1, available.Count);
 
-        List<Pathfinding> currGroup = new List<Pathfinding>();
+        List<AIContext> currGroup = new List<AIContext>();
         currGroup.Add(leader);
 
         // assign npcs to the leader and form a circle 
         for (int i = 0; i < actualFollowers; i++)
         {
-            Pathfinding follower = available[Random.Range(0, available.Count)];
+            AIContext follower = available[Random.Range(0, available.Count)];
             available.Remove(follower);
 
             follower.customLeader = leader;
@@ -197,7 +197,7 @@ public class AIManager : MonoBehaviour
         StartCoroutine(DisbandGroup(currGroup, timeToBreakGroup));
     }
 
-    System.Collections.IEnumerator DisbandGroup(List<Pathfinding> group, float delay)
+    System.Collections.IEnumerator DisbandGroup(List<AIContext> group, float delay)
     {
         yield return new WaitForSeconds(delay);
 
