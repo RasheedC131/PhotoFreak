@@ -1,16 +1,17 @@
 using UnityEngine;
 
-public class UtilityAction : MonoBehaviour
+public abstract class Consideration : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public AnimationCurve responseCurve = AnimationCurve.Linear(0, 0, 1, 1); 
+
+    // calculates a score to decide whether or not to take the action 
+    public float GetScore()
     {
-        
+        float rawValue = EvaluateRawValue(); 
+        float normalizedValue = Mathf.Clamp01(rawValue);
+        return responseCurve.Evaluate(normalizedValue); 
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    // gets implemented in derived class 
+    protected abstract float EvaluateRawValue(); 
 }

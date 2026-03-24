@@ -1,16 +1,21 @@
 using UnityEngine;
 
-public class Action_Stalk : MonoBehaviour
+public class ActionStalk : UtilityAction
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private UnityEngine.AI.NavMeshAgent agent; 
+    private AIContext blackboard; 
+
+    void Awake()
     {
-        
+        agent = GetComponentInParent<UnityEngine.AI.NavMeshAgent>();
+        blackboard = GetComponentInParent<AIContext>();
     }
 
-    // Update is called once per frame
-    void Update()
+    public override void ExecuteAction()
     {
-        
+        if (blackboard.currentVictim is not null) 
+        {
+            agent.SetDestination(blackboard.currentVictim.transform.position);
+        }
     }
 }
