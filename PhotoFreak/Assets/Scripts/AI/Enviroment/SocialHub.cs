@@ -1,6 +1,6 @@
 using UnityEngine;
 
-// used to create temporary areas where the npcs can travel to 
+// used to create temporary areas where the npcs can travel to
 public class SocialHub : MonoBehaviour
 {
     public int MaxCapacity { get; private set; }
@@ -19,9 +19,9 @@ public class SocialHub : MonoBehaviour
 
     void OnDestroy()
     {
-        if (SocialDirector.Instance != null)
+        if (SocialHubManager.Instance != null)
         {
-            SocialDirector.Instance.activeHubs.Remove(this);
+            SocialHubManager.Instance.activeHubs.Remove(this);
         }
     }
 

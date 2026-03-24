@@ -52,7 +52,10 @@ public class SocialHubManager : MonoBehaviour
         if (zoneCount == 0) return; 
 
         Transform randomZone = globalNodesContainer.GetChild(Random.Range(0, zoneCount)); 
+        if (randomZone.childCount == 0) return; 
 
+        Transform randomNode = randomZone.GetChild(Random.Range(0, randomZone.childCount));
+        
         GameObject newHubObj = Instantiate(socialHubPrefab, randomNode.position, Quaternion.identity); 
         SocialHub newHub = newHubObj.GetComponent<SocialHub>(); 
 

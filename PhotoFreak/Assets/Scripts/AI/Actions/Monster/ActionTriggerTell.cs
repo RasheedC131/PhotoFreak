@@ -14,20 +14,20 @@ public class ActionTriggerTell : UtilityAction
     void Awake()
     {
         agent = GetComponentInParent<NavMeshAgent>();
-        context = GetComponentInParent<AIContext>();
+        ctx = GetComponentInParent<AIContext>();
     }
 
     public override void ExecuteAction()
     {
-        if (!isGlitching)
+        if (!isPreformingTell)
         {
             // Start the glitch
             isPreformingTell = true;
-            tellTimer = glitchDuration;
+            tellTimer = tellDuration;
             agent.isStopped = true;
 
             // TODO: Implement tells with monster animations 
-            Debug.Log($"{context.gameObject.name} is performing a monster tell!");
+            Debug.Log($"{ctx.gameObject.name} is performing a monster tell!");
         }
         else
         {

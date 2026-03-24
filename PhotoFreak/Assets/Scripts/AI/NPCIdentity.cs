@@ -20,8 +20,8 @@ public class NPCIdentity : MonoBehaviour
     }
     public void Mutate(bool isSmartMonster)
     {
-        context.isMonster = true;
-        context.isOccupied = false; 
+        ctx.isMonster = true;
+        ctx.isOccupied = false; 
 
         gameObject.tag = "Monster"; 
         PhotoTag tag = GetComponent<PhotoTag>();
