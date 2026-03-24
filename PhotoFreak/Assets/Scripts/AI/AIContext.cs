@@ -17,6 +17,7 @@ public class AIContext : MonoBehaviour
 
     [Header("Social State")]
     public bool isOccupied = false; 
+    public SocialHub targetHub; 
     public AIContext customLeader; 
     public int groupIdx = 0; 
     public int groupTotalSize = 1; 
@@ -50,10 +51,11 @@ public class AIContext : MonoBehaviour
     {
         if (zoneGroups is not null && zoneGroups.Length > 0) return; 
 
-        if (nodesContainer is null && AIManager.AIInstance is not null)
-        {
-            nodesContainer = AIManager.AIInstance.globalPathsContainer; 
-        }
+        // TODO:: use new ai scripts 
+        // if (nodesContainer is null && AIManager.AIInstance is not null)
+        // {
+        //     nodesContainer = AIManager.AIInstance.globalPathsContainer; 
+        // }
 
         if (nodesContainer is null) return; 
 

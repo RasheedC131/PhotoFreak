@@ -1,5 +1,6 @@
 using UnityEngine;
 
+// Permanent nodes that the npcs travel to 
 public class ZoneNode : MonoBehaviour
 {
     public Transform NextNode { get; private set; }
