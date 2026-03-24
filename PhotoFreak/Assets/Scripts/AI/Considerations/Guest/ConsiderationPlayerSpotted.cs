@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class ActionInfect : MonoBehaviour
+public class ConsiderationPlayerSpotted : MonoBehaviour
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
