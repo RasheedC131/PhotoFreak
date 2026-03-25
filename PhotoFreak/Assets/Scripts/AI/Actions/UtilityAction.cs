@@ -1,32 +1,40 @@
 using UnityEngine;
 
-// base class that serves as actions that the npcs can take 
 public abstract class UtilityAction : MonoBehaviour
 {
-    [Header("Action Details")]
-    public string actionName;      
-    
-    // Consideration scripts (e.g., timer, dist. from target, etc.) 
-    public Consideration[] considerations; 
+    private Consideration[] considerations;
 
-    // calculate the score for the actions 
+    public abstract void ExecuteAction();
+
     public float CalculateUtilityScore()
     {
-        if (considerations == null || considerations.Length == 0) return 0f; 
-        
-        float finalScore = 1f; 
-        
-        foreach (Consideration cons in considerations)
+        if (considerations == null)
         {
-            float currScore = cons.GetScore(); 
-            finalScore *= currScore; 
-
-            if (finalScore == 0) break; 
+            considerations = GetComponents<Consideration>();
         }
 
-        return finalScore; 
-    }
+        if (considerations.Length == 0) return 0f;
 
-    // to be implemented in derived class 
-    public abstract void ExecuteAction(); 
+        float finalScore = 1.0f;
+
+        foreach (Consideration consideration in considerations)
+        {
+            if (consideration == null) continue; 
+
+            try 
+            {
+                float score = consideration.GetScore(); 
+                
+                if (score == 0) return 0f; 
+                finalScore *= score;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"[AI ERROR] The consideration '{consideration.GetType().Name}' on the object '{gameObject.name}' crashed. Error: {e.Message}");
+                return 0f; 
+            }
+        }
+
+        return finalScore;
+    }
 }

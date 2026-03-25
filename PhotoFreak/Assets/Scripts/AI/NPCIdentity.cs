@@ -42,6 +42,7 @@ public class NPCIdentity : MonoBehaviour
             if (standardActionsFolder != null) standardActionsFolder.SetActive(false);
             Debug.Log($"{gameObject.name} became a standard infected.");
         }
+        GetComponent<AIBrain>().availableActions = GetComponentsInChildren<UtilityAction>();
     }
 
     private void SwapModels()

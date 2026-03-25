@@ -51,11 +51,10 @@ public class AIContext : MonoBehaviour
     {
         if (zoneGroups is not null && zoneGroups.Length > 0) return; 
 
-        // TODO:: use new ai scripts 
-        // if (nodesContainer is null && AIManager.AIInstance is not null)
-        // {
-        //     nodesContainer = AIManager.AIInstance.globalPathsContainer; 
-        // }
+        if (nodesContainer is null && SocialHubManager.Instance is not null)
+        {
+            nodesContainer = SocialHubManager.Instance.globalNodesContainer; 
+        }
 
         if (nodesContainer is null) return; 
 

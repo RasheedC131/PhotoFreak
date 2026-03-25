@@ -28,21 +28,28 @@ public class AIBrain : MonoBehaviour
         {
             ChooseBestAction();
 
-            if (currentAction != null)
-            {
-                currentAction.ExecuteAction();
-            }
+        if (currentAction != null)
+        {
+            Debug.Log($"{gameObject.name} chose to execute {currentAction.gameObject.name}. Agent on NavMesh: {GetComponent<UnityEngine.AI.NavMeshAgent>().isOnNavMesh}");
+            currentAction.ExecuteAction();
+        }
+        else
+        {
+            Debug.LogWarning($"{gameObject.name} has no valid action, all scores are 0");
+        }
             yield return new WaitForSeconds(decisionInterval);
         }
     }
 
     private void ChooseBestAction()
     {
-        float highestScore = 0f;
+        float highestScore = 0.01f;
         UtilityAction bestAction = null;
 
         foreach (UtilityAction action in availableActions)
         {
+            if (!action.gameObject.activeInHierarchy) continue;
+
             float score = action.CalculateUtilityScore();
 
             if (score > highestScore)
@@ -52,10 +59,8 @@ public class AIBrain : MonoBehaviour
             }
         }
 
-        if (bestAction != null && bestAction != currentAction)
-        {
-            currentAction = bestAction;
-        }
+        if (bestAction is not null) currentAction = bestAction;
+        
     }
 
     void OnDisable()
