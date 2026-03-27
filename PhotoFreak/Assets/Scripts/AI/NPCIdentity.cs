@@ -4,63 +4,61 @@ using UnityEngine;
 public class NPCIdentity : MonoBehaviour
 {
     [Header("Models")]
-    [SerializeField] private GameObject humanModel;
-    [SerializeField] private GameObject defaultMonsterModelPrefab;
-    [SerializeField] private GameObject killMonsterModelPrefab;
+    [SerializeField] private GameObject guestModel;
+    [SerializeField] private GameObject monsterModel;
 
     [Header("Action References")]
-    [SerializeField] private GameObject standardActionsFolder;
-    [SerializeField] private GameObject monsterActionsFolder;
+    [SerializeField] private GameObject standardActionsObj;
+    [SerializeField] private GameObject monsterActionsObj;
 
     private AIContext ctx; 
 
     void Awake()
     {
         ctx = GetComponent<AIContext>();
+        ShowGuestModel(); 
     }
+
+    // TODO: Setup an animation/particle system for model swapping to monster 
     public void Mutate(bool isSmartMonster)
     {
         ctx.isMonster = true;
         ctx.isOccupied = false; 
 
+        // scoring logic 
         gameObject.tag = "Monster"; 
         PhotoTag tag = GetComponent<PhotoTag>();
-        if (tag == null) tag = gameObject.AddComponent<PhotoTag>();
+        if (tag is null) tag = gameObject.AddComponent<PhotoTag>();
         tag.type = PhotoTag.SubjectType.Monster;
-        tag.poseScore = 3;
-
-        SwapModels();
 
         if (isSmartMonster)
         {
-            if (standardActionsFolder != null) standardActionsFolder.SetActive(false);
-            if (monsterActionsFolder != null) monsterActionsFolder.SetActive(true);
+            if (standardActionsObj != null) standardActionsObj.SetActive(false);
+            if (monsterActionsObj != null) monsterActionsObj.SetActive(true);
+            tag.poseScore = 3;
             Debug.Log($"{gameObject.name} mutated into a Smart Monster!");
         }
         else
         {
-            if (standardActionsFolder != null) standardActionsFolder.SetActive(false);
+            if (standardActionsObj != null) standardActionsObj.SetActive(false);
+            tag.poseScore = 1; 
             Debug.Log($"{gameObject.name} became a standard infected.");
         }
+
         GetComponent<AIBrain>().availableActions = GetComponentsInChildren<UtilityAction>();
     }
 
-    private void SwapModels()
+    public void ShowGuestModel()
     {
-        if (humanModel != null) humanModel.SetActive(false);
+        if (guestModel is not null) guestModel.SetActive(true); 
+        if (monsterModel is not null) monsterModel.SetActive(false); 
+    }
 
-        if (defaultMonsterModelPrefab != null)
-        {
-            GameObject newDefault = Instantiate(defaultMonsterModelPrefab, transform);
-            newDefault.transform.localPosition = Vector3.zero;
-            newDefault.SetActive(true);
-        }
+    public void ShowMonsterModel()
+    {
+        if (guestModel is not null) guestModel.SetActive(false); 
+        if (monsterModel is not null) monsterModel.SetActive(true);
 
-        if (killMonsterModelPrefab != null)
-        {
-            GameObject newKill = Instantiate(killMonsterModelPrefab, transform);
-            newKill.transform.localPosition = Vector3.zero;
-            newKill.SetActive(false);
-        }
+        // TODO: Insert some particle or animation effect 
     }
 }

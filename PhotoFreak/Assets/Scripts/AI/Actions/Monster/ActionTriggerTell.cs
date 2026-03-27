@@ -5,6 +5,8 @@ using System.Collections;
 public class ActionTriggerTell : UtilityAction
 {
     private AIContext ctx; 
+    private NPCIdentity identity; 
+
     private bool isPreformingTell = false;
 
     [Header("Tell Settings")]
@@ -13,6 +15,7 @@ public class ActionTriggerTell : UtilityAction
     void Awake()
     {
         ctx = GetComponentInParent<AIContext>();
+        identity = GetComponentInParent<NPCIdentity>();
     }
 
     public override void ExecuteAction()
@@ -29,6 +32,7 @@ public class ActionTriggerTell : UtilityAction
         isPreformingTell = true; 
         ctx.agent.isStopped = true; 
 
+        
         Debug.Log($"{ctx.gameObject.name} is performing a monster tell");
 
         yield return new WaitForSeconds(tellDuration); 

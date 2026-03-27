@@ -6,6 +6,7 @@ public class Action_Stalk : UtilityAction
     private NavMeshAgent agent;
     private AIContext ctx;
     private AIBrain brain; 
+    private NPCIdentity identity; 
     
     [Header("Stalking Settings")]
     public float stalkDistance = 4.0f; 
@@ -16,6 +17,7 @@ public class Action_Stalk : UtilityAction
         agent = GetComponentInParent<NavMeshAgent>();
         ctx = GetComponentInParent<AIContext>();
         brain = GetComponentInParent<AIBrain>(); 
+        identity = GetComponentInParent<NPCIdentity>(); 
     }
 
     public override void ExecuteAction()
@@ -26,8 +28,11 @@ public class Action_Stalk : UtilityAction
             return;
         }
 
+        if (identity is not null) identity.ShowGuestModel(); 
+
         agent.isStopped = false;
 
+        // move to the current victim 
         Vector3 preyRear = ctx.currentVictim.transform.position - (ctx.currentVictim.transform.forward * stalkDistance);
         
         NavMeshHit hit;
@@ -39,18 +44,11 @@ public class Action_Stalk : UtilityAction
 
         float dist = Vector3.Distance(transform.position, ctx.currentVictim.transform.position); 
 
-        if (dist <= attackRange)
-        {
-            Debug.Log($"<color=red> MONSTER KILLED: {ctx.currentVictim.gameObject.name}!</color>");
-            ctx.currentVictim = null; 
-            return; 
-        }
-
         if (brain is not null) ctx.currentStalkTimer += brain.decisionInterval; 
 
         if (ctx.currentStalkTimer >= ctx.stalkDuration)
         {
-            Debug.Log($"Monster gave up current target: {ctx.currentVictim.gameObject.name}"); 
+            Debug.Log("Monster timed out stalking, looking for new victim..."); 
             ctx.currentVictim = null; 
             ctx.currentStalkTimer = 0f; 
         }

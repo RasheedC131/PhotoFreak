@@ -1,24 +1,27 @@
 using UnityEngine;
 
+// belongs to the stalking action 
 public class Consideration_PreyNearby : Consideration
 {
-    private AIContext context;
+    private AIContext ctx;
     [SerializeField] private float sightRadius = 15f;
 
     void Awake()
     {
-        context = GetComponentInParent<AIContext>();
+        ctx = GetComponentInParent<AIContext>();
     }
 
     protected override float EvaluateRawValue()
     {
-        if (context.currentVictim != null && !context.currentVictim.isMonster) return 1f;
+        if (ctx is null || !ctx.isMonster) return 0f; 
+        if (ctx.currentVictim is not null && !ctx.currentVictim.isMonster) return 0.8f;
 
-        Collider[] hits = Physics.OverlapSphere(transform.position, sightRadius);
+        Collider[] hits = Physics.OverlapSphere(ctx.transform.position, sightRadius);
         
         float closestDistance = Mathf.Infinity;
         AIContext bestTarget = null;
 
+        // TODO: Tweak this logic to take in more factors to select the best possible target 
         foreach (Collider hit in hits)
         {
             AIContext potentialPrey = hit.GetComponent<AIContext>();
@@ -34,12 +37,21 @@ public class Consideration_PreyNearby : Consideration
             }
         }
 
-        if (bestTarget != null)
+        if (bestTarget is not null)
         {
-            context.currentVictim = bestTarget;
-            return 1f; 
+            ctx.currentVictim = bestTarget;
+            return 0.8f; 
         }
 
         return 0f; 
+    }
+
+    void OnDrawGizmosSelected()
+    {
+        if (ctx != null)
+        {
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawWireSphere(ctx.transform.position, sightRadius);
+        }
     }
 }

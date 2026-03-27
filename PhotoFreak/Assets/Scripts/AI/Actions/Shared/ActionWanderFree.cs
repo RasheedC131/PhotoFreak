@@ -20,21 +20,22 @@ public class ActionWanderFree : UtilityAction
     public override void ExecuteAction()
     {
         agent.isStopped = false; 
-        float distToDest = Vector3.Distance(transform.position, ctx.currentDestination);    
 
-        if (ctx.forceNewPath || distToDest < arrivalDistance)
+        if (!agent.pathPending && (!agent.hasPath || agent.remainingDistance < arrivalDistance || ctx.forceNewPath))
         {
             ctx.forceNewPath = false; 
 
             Vector3 randomDirection = Random.insideUnitSphere * freeWanderRadius; 
-            randomDirection += transform.position; 
+            randomDirection += ctx.transform.position; 
 
-            UnityEngine.AI.NavMeshHit hit;
-            if (UnityEngine.AI.NavMesh.SamplePosition(randomDirection, out hit, freeWanderRadius, UnityEngine.AI.NavMesh.AllAreas))
+            NavMeshHit hit;
+            if (NavMesh.SamplePosition(randomDirection, out hit, freeWanderRadius, NavMesh.AllAreas))
             {
                 ctx.currentDestination = hit.position; 
                 agent.SetDestination(ctx.currentDestination); 
+                
+                agent.speed = 1.5f; 
             }
-        }    
+        }  
     }
 }
