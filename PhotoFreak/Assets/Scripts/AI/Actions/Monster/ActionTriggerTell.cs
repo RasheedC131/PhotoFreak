@@ -1,19 +1,17 @@
 using UnityEngine;
 using UnityEngine.AI;
+using System.Collections; 
 
 public class ActionTriggerTell : UtilityAction
 {
-    private NavMeshAgent agent;
-    private AIContext ctx;
+    private AIContext ctx; 
+    private bool isPreformingTell = false;
 
     [Header("Tell Settings")]
     [SerializeField] private float tellDuration = 2.0f;
-    private float tellTimer;
-    private bool isPreformingTell = false;
 
     void Awake()
     {
-        agent = GetComponentInParent<NavMeshAgent>();
         ctx = GetComponentInParent<AIContext>();
     }
 
@@ -21,24 +19,22 @@ public class ActionTriggerTell : UtilityAction
     {
         if (!isPreformingTell)
         {
-            // Start the glitch
-            isPreformingTell = true;
-            tellTimer = tellDuration;
-            agent.isStopped = true;
+            StartCoroutine(PreformTellRoutine()); 
+        }
+    }
 
-            // TODO: Implement tells with monster animations 
-            Debug.Log($"{ctx.gameObject.name} is performing a monster tell!");
-        }
-        else
-        {
-            tellTimer -= Time.deltaTime;
-            
-            if (tellTimer <= 0)
-            {
-                isPreformingTell = false;
-                ctx.currentStalkTimer = 0f; 
-                agent.isStopped = false;
-            }
-        }
+    // TODO: Implement actual tells 
+    private IEnumerator PreformTellRoutine()
+    {
+        isPreformingTell = true; 
+        ctx.agent.isStopped = true; 
+
+        Debug.Log($"{ctx.gameObject.name} is performing a monster tell");
+
+        yield return new WaitForSeconds(tellDuration); 
+        
+        ctx.currentStalkTimer = 0f; 
+        ctx.agent.isStopped = false; 
+        isPreformingTell = false; 
     }
 }
