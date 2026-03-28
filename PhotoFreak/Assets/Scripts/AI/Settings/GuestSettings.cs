@@ -3,14 +3,35 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "GuestSettings", menuName = "AI/Settings/GuestSettings")]
 public class GuestSettings : ScriptableObject
 {
-    private static GuestWeights _instance;
-    public static GuestWeights Instance {
+    private static GuestSettings _instance;
+    public static GuestSettings Instance {
         get {
             if (_instance == null) _instance = Resources.Load<GuestSettings>("GuestSettings");
             return _instance;
         }
     }
 
-    public float fleeDistance = 8f; 
+    [Header("Action Wander Nodes")]
+    [SerializeField] private float _wanderNodeFleeDistance = 8f; 
+    [SerializeField] private float _wanderMaxDistToDest = 1.5f; 
+
+    [Header("Action Socialize")]
+    [SerializeField] private float _socialArrivalDistance = 2.0f;    
+    [SerializeField] private float _socialTurnSpeed = 5f; 
+
+    [Header("Action Isolate")]
+    [SerializeField] private float _isolateTurnAngle = 30f;
+    [SerializeField] private float _isolateKillNodeArrivalDist = 1.0f; 
+
+    [Header("Action Flee")]
+    [SerializeField] private float _fleeDistance = 8f; 
+
+    public float wanderNodeFleeDistance => _wanderNodeFleeDistance;
+    public float wanderMaxDistToDest => _wanderMaxDistToDest; 
+    public float socialArrivalDistance => _socialArrivalDistance; 
+    public float socialTurnSpeed => _socialTurnSpeed; 
+    public float isolateTurnAngle => _isolateTurnAngle; 
+    public float isolateKillNodeArrivalDist => _isolateKillNodeArrivalDist; 
+    public float fleeDistance => _fleeDistance; 
 
 }

@@ -4,26 +4,27 @@ using UnityEngine.AI;
 public class Action_Flee : UtilityAction
 {
     private NavMeshAgent agent;
-    private AIContext context;
-    public float fleeDistance = 8f;
+    private AIContext ctx;
+    private GuestSettings gs; 
 
     void Awake()
     {
         agent = GetComponentInParent<NavMeshAgent>();
-        context = GetComponentInParent<AIContext>();
+        ctx = GetComponentInParent<AIContext>();
+        gs = GuestSettings.Instance; 
     }
 
     public override void ExecuteAction()
     {
-        if (context.currentVictim == null) return;
+        if (ctx.currentVictim == null) return;
 
         agent.isStopped = false;
         
-        Vector3 runDirection = transform.position - context.currentVictim.transform.position;
-        Vector3 fleeTarget = transform.position + (runDirection.normalized * fleeDistance);
+        Vector3 runDirection = transform.position - ctx.currentVictim.transform.position;
+        Vector3 fleeTarget = transform.position + (runDirection.normalized * gs.fleeDistance);
 
         NavMeshHit hit;
-        if (NavMesh.SamplePosition(fleeTarget, out hit, fleeDistance, NavMesh.AllAreas)) agent.SetDestination(hit.position);
+        if (NavMesh.SamplePosition(fleeTarget, out hit, gs.fleeDistance, NavMesh.AllAreas)) agent.SetDestination(hit.position);
         
     }
 }

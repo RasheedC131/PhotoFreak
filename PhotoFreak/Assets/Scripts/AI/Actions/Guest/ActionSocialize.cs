@@ -6,15 +6,16 @@ public class ActionSocialize : UtilityAction
 {
     private NavMeshAgent agent;
     private AIContext context;
+    private GuestSettings gs; 
     
     [Header("Social Settings")]
-    [SerializeField] private float arrivalDistance = 2.0f;
     private bool hasJoinedGroup = false;
 
     void Awake()
     {
         agent = GetComponentInParent<NavMeshAgent>();
         context = GetComponentInParent<AIContext>();
+        gs = GuestSettings.Instance; 
     }
 
     public override void ExecuteAction()
@@ -38,7 +39,7 @@ public class ActionSocialize : UtilityAction
 
             float dist = Vector3.Distance(transform.position, context.targetHub.transform.position);
             
-            if (dist <= arrivalDistance)
+            if (dist <= gs.socialArrivalDistance)
             {
                 if (context.targetHub.HasOpenSlots())
                 {
@@ -60,7 +61,11 @@ public class ActionSocialize : UtilityAction
             lookPos.y = transform.position.y; 
             
             Quaternion targetRotation = Quaternion.LookRotation(lookPos - transform.position);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 5f);
+            transform.rotation = Quaternion.Slerp(
+                transform.rotation, 
+                targetRotation, 
+                Time.deltaTime * gs.socialTurnSpeed
+            );
         }
     }
 

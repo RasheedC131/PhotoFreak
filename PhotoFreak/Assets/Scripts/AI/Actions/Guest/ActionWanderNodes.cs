@@ -6,14 +6,13 @@ public class ActionWanderNodes : UtilityAction
 
     private UnityEngine.AI.NavMeshAgent agent; 
     private AIContext ctx; 
-    private float MAX_DISTANCE_TO_DEST = 1.5f; 
-    // private float MIN_WALK_OFFSET = -2.0f; 
-    // private float MAX_WALK_OFFSET = 2.0f; 
+    private GuestSettings gs; 
 
     void Start()
     {
         agent = GetComponent<UnityEngine.AI.NavMeshAgent>(); 
         ctx = GetComponent<AIContext>(); 
+        gs = GuestSettings.Instance; 
     }
 
     public override void ExecuteAction()
@@ -23,7 +22,7 @@ public class ActionWanderNodes : UtilityAction
         {
             float distToDest = Vector3.Distance(transform.position, ctx.currentDestination); 
 
-            if (ctx.forceNewPath || distToDest < MAX_DISTANCE_TO_DEST)
+            if (ctx.forceNewPath || distToDest < gs.isolateKillNodeArrivalDist)
             {
                 if (!ctx.forceNewPath)
                 {
@@ -32,13 +31,7 @@ public class ActionWanderNodes : UtilityAction
                 }
 
                 ctx.forceNewPath = false; 
-
-                // provide an offset so they don't walk in a perfect straight line to the next targetNode 
-                // Vector3 randomOffset = new Vector3(
-                //     Random.Range(MIN_WALK_OFFSET, MAX_WALK_OFFSET), 
-                //     0, 
-                //     Random.Range(MIN_WALK_OFFSET, MAX_WALK_OFFSET)); 
-
+                
                 Vector3 randomOffset = Random.insideUnitSphere * 2.0f; 
                 randomOffset.y = 0; 
 
