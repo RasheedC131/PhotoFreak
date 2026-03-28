@@ -31,17 +31,21 @@ public class ActionIsolate : UtilityAction
 
     public override void ExecuteAction()
     {
-        if (killRoomNodes is null || killRoomNodes.Count == 0) return; 
-        agent.isStopped = false; 
-        
-        if (!agent.pathPending && (!agent.hasPath || agent.remainingDistance < 1.0f))
+        if (killRoomNodes.Count == 0) return; 
+
+        if (!ctx.isBeingStalked) 
         {
             Transform chosenKillNode = killRoomNodes[Random.Range(0, killRoomNodes.Count)]; 
-
+            agent.isStopped = false; 
             ctx.currentDestination = chosenKillNode.position; 
             agent.SetDestination(ctx.currentDestination); 
-            
-            Debug.Log($"Guest {ctx.gameObject.name} is moving towards kill room");
+        }
+        
+        if (ctx.isBeingStalked && !agent.pathPending && agent.remainingDistance < 1.0f)        
+        {
+            agent.isStopped = true; 
+            // TODO: maybe rotate them with the rig 
+            transform.Rotate(0, 30f * Time.deltaTime, 0);   
         }
     } 
 }

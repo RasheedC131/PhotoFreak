@@ -41,7 +41,6 @@ public class Action_Stalk : UtilityAction
         if (NavMesh.SamplePosition(preyRear, out hit, 2.0f, NavMesh.AllAreas))
         {
             agent.SetDestination(hit.position);
-            agent.speed = 2.5f; 
         }
 
         float dist = Vector3.Distance(transform.position, ctx.currentVictim.transform.position); 

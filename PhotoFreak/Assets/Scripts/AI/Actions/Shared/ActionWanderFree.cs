@@ -33,8 +33,6 @@ public class ActionWanderFree : UtilityAction
             {
                 ctx.currentDestination = hit.position; 
                 agent.SetDestination(ctx.currentDestination); 
-                
-                agent.speed = 1.5f; 
             }
         }  
     }

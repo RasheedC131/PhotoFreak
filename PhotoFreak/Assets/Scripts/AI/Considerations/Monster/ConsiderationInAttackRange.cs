@@ -5,7 +5,7 @@ public class ConsiderationInAttackRange : Consideration
     private AIContext ctx; 
 
     [Header("Attack Settings")]
-    public float attackRange = 1.5f; 
+    public float attackRange = 2.5f; 
 
     void Awake()
     {
@@ -16,7 +16,7 @@ public class ConsiderationInAttackRange : Consideration
     {
         if (ctx is null || !ctx.isMonster || ctx.currentVictim is null) return 0f; 
 
-        float dist = Vector3.Distance(transform.position, ctx.currentVictim.transform.position); 
+        float dist = Vector3.Distance(ctx.transform.position, ctx.currentVictim.transform.position); 
 
         if (dist <= attackRange) return 1.0f; 
         
