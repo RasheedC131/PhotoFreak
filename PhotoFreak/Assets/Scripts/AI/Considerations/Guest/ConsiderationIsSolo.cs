@@ -3,10 +3,12 @@ using UnityEngine;
 public class ConsiderationIsSolo : Consideration
 {
     private AIContext ctx; 
+    private GuestWeights gw; 
 
     void Awake()
     {
         ctx = GetComponentInParent<AIContext>(); 
+        gw = GuestWeights.Instance; 
     }
 
     protected override float EvaluateRawValue()
@@ -14,6 +16,6 @@ public class ConsiderationIsSolo : Consideration
         if (ctx == null) return 0f;
         if (ctx.isOccupied || ctx.isMonster) return 0f;
         
-        return 0.5f;
+        return gw.soloWeight;
     }
 }

@@ -22,7 +22,7 @@ public class ActionWanderNodes : UtilityAction
         {
             float distToDest = Vector3.Distance(transform.position, ctx.currentDestination); 
 
-            if (ctx.forceNewPath || distToDest < gs.isolateKillNodeArrivalDist)
+            if (ctx.forceNewPath || distToDest < gs.wanderMaxDistToDest)
             {
                 if (!ctx.forceNewPath)
                 {

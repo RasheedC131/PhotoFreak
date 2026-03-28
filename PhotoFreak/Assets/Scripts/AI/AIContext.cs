@@ -7,6 +7,7 @@ public class AIContext : MonoBehaviour
     public NavMeshAgent agent; 
     public Renderer myRenderer; 
     public Transform nodesContainer;       
+    public Transform currentThreat; 
 
     [Header("Navigation Data")]
     public Transform[] zoneGroups; 

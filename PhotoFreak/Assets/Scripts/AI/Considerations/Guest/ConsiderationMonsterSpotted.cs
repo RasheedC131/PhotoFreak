@@ -3,11 +3,13 @@ using UnityEngine;
 public class ConsiderationMonsterSpotted : Consideration
 {
     private AIContext ctx; 
+    private GuestWeights gw; 
     [SerializeField] private float panicRadius = 10f; 
 
     void Awake()
     {
         ctx = GetComponentInParent<AIContext>(); 
+        gw = GuestWeights.Instance; 
     }
 
     protected override float EvaluateRawValue()
@@ -22,7 +24,7 @@ public class ConsiderationMonsterSpotted : Consideration
             if (nearbyActor != null && nearbyActor.isMonster)
             {
                 ctx.currentVictim = nearbyActor; 
-                return 1f; 
+                return gw.monsterSpottedWeight; 
             }
         }
 

@@ -3,10 +3,12 @@ using UnityEngine;
 public class Consideration_GroupAvailable : Consideration
 {
     private AIContext context;
+    private GuestWeights gw; 
 
     void Awake()
     {
         context = GetComponentInParent<AIContext>();
+        gw = GuestWeights.Instance; 
     }
 
     protected override float EvaluateRawValue()
@@ -19,7 +21,7 @@ public class Consideration_GroupAvailable : Consideration
         {
             if (hub != null && hub.HasOpenSlots())
             {
-                return 0.8f; // found an open hub 
+                return gw.groupAvailWeight;  // found an open hub 
             }
         }
 

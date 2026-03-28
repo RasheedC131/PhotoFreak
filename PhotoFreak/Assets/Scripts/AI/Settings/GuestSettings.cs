@@ -23,8 +23,10 @@ public class GuestSettings : ScriptableObject
     [SerializeField] private float _isolateTurnAngle = 30f;
     [SerializeField] private float _isolateKillNodeArrivalDist = 1.0f; 
 
-    [Header("Action Flee")]
+    [Header("Fleeing and Threats")] [Tooltip("Used for both player fleeing and monster fleeing actions")]
     [SerializeField] private float _fleeDistance = 8f; 
+    [SerializeField] private float _fleePlayerSightRadius = 10f; 
+    [SerializeField] private float _fleePanicSpeed = 3.5f; 
 
     public float wanderNodeFleeDistance => _wanderNodeFleeDistance;
     public float wanderMaxDistToDest => _wanderMaxDistToDest; 
@@ -33,5 +35,7 @@ public class GuestSettings : ScriptableObject
     public float isolateTurnAngle => _isolateTurnAngle; 
     public float isolateKillNodeArrivalDist => _isolateKillNodeArrivalDist; 
     public float fleeDistance => _fleeDistance; 
+    public float fleePlayerSightRadius => _fleePlayerSightRadius; 
+    public float fleePanicSpeed => _fleePanicSpeed; 
 
 }
