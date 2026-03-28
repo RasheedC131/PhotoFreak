@@ -6,6 +6,7 @@ public class Action_Flee : UtilityAction
     private NavMeshAgent agent;
     private AIContext ctx;
     private GuestSettings gs; 
+    
 
     void Awake()
     {
@@ -16,15 +17,23 @@ public class Action_Flee : UtilityAction
 
     public override void ExecuteAction()
     {
-        if (ctx.currentVictim == null) return;
+        if (ctx.currentThreat == null) return;
 
         agent.isStopped = false;
-        
-        Vector3 runDirection = transform.position - ctx.currentVictim.transform.position;
-        Vector3 fleeTarget = transform.position + (runDirection.normalized * gs.fleeDistance);
+        agent.speed = gs.fleePanicSpeed; 
 
-        NavMeshHit hit;
-        if (NavMesh.SamplePosition(fleeTarget, out hit, gs.fleeDistance, NavMesh.AllAreas)) agent.SetDestination(hit.position);
-        
+        if (!agent.pathPending && (!agent.hasPath || agent.remainingDistance < 1.0f))
+        {
+            Vector3 directionAway = (ctx.transform.position - ctx.currentThreat.position).normalized;
+
+            Vector3 targetPosition = ctx.transform.position + (directionAway * gs.fleeDistance);
+
+            NavMeshHit hit;
+            if (NavMesh.SamplePosition(targetPosition, out hit, 4.0f, NavMesh.AllAreas))
+            {
+                ctx.currentDestination = hit.position;
+                agent.SetDestination(ctx.currentDestination);
+            }
+        }
     }
 }
