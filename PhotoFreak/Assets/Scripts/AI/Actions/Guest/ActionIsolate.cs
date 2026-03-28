@@ -46,6 +46,7 @@ public class ActionIsolate : UtilityAction
             agent.isStopped = true; 
             // TODO: maybe rotate them with the rig 
             transform.Rotate(0, 30f * Time.deltaTime, 0);   
+            Debug.Log($"Guest: {gameObject.name} arrived at kill node"); 
         }
     } 
 }

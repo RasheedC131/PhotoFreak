@@ -19,7 +19,7 @@ public class Consideration_GroupAvailable : Consideration
         {
             if (hub != null && hub.HasOpenSlots())
             {
-                return 1.0f; // found an open hub 
+                return 0.8f; // found an open hub 
             }
         }
 

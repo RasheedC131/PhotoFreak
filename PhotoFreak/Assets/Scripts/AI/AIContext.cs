@@ -6,7 +6,7 @@ public class AIContext : MonoBehaviour
     [Header("References")]
     public NavMeshAgent agent; 
     public Renderer myRenderer; 
-    public Transform nodesContainer;        
+    public Transform nodesContainer;       
 
     [Header("Navigation Data")]
     public Transform[] zoneGroups; 

@@ -11,7 +11,7 @@ public class ConsiderationIsStalked : Consideration
 
     protected override float EvaluateRawValue()
     {
-        if (ctx is not null && ctx.isBeingStalked) return 0.9f;
+        if (ctx is not null && ctx.isBeingStalked) return 1.0f;
         
         return 0f; 
     }
