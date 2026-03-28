@@ -5,16 +5,15 @@ using System.Collections;
 public class ActionTriggerTell : UtilityAction
 {
     private AIContext ctx; 
+    private MonsterSettings ms; 
     private NPCIdentity identity; 
 
     private bool isPreformingTell = false;
 
-    [Header("Tell Settings")]
-    [SerializeField] private float tellDuration = 2.0f;
-
     void Awake()
     {
         ctx = GetComponentInParent<AIContext>();
+        ms = MonsterSettings.Instance; 
         identity = GetComponentInParent<NPCIdentity>();
     }
 
@@ -32,10 +31,9 @@ public class ActionTriggerTell : UtilityAction
         isPreformingTell = true; 
         ctx.agent.isStopped = true; 
 
-        
         Debug.Log($"{ctx.gameObject.name} is performing a monster tell");
 
-        yield return new WaitForSeconds(tellDuration); 
+        yield return new WaitForSeconds(ms.tellDuration); 
         
         ctx.currentStalkTimer = 0f; 
         ctx.agent.isStopped = false; 

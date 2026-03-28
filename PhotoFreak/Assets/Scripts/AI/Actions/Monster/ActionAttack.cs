@@ -5,16 +5,15 @@ public class ActionAttack : UtilityAction
 {
     private NavMeshAgent agent;
     private AIContext ctx;
+    private MonsterSettings ms; 
     private NPCIdentity myIdentity; 
     private NPCIdentity victimIdentity; 
     
-    [Header("Attack Settings")]
-    [SerializeField] private float attackRange = 1.5f;
-
     void Awake()
     {
         agent = GetComponentInParent<NavMeshAgent>();
         ctx = GetComponentInParent<AIContext>();
+        ms = MonsterSettings.Instance; 
         myIdentity = GetComponentInParent<NPCIdentity>();
     }
 

@@ -3,13 +3,12 @@ using UnityEngine;
 public class ConsiderationInAttackRange : Consideration
 {
     private AIContext ctx; 
-
-    [Header("Attack Settings")]
-    public float attackRange = 2.5f; 
+    private MonsterSettings ms; 
 
     void Awake()
     {
         ctx = GetComponentInParent<AIContext>(); 
+        ms = MonsterSettings.Instance; 
     }
 
     protected override float EvaluateRawValue()
@@ -18,7 +17,7 @@ public class ConsiderationInAttackRange : Consideration
 
         float dist = Vector3.Distance(ctx.transform.position, ctx.currentVictim.transform.position); 
 
-        if (dist <= attackRange) return 1.0f; 
+        if (dist <= ms.attackRange) return 1.0f; // go for the kill 
         
         return 0f; 
     }

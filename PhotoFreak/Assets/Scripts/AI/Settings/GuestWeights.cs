@@ -1,10 +1,13 @@
 using UnityEngine; 
 
-[CreateAssetMenu(fileName = "GuestWeights", menuName = "AI/Settings/GuestWeights")]
-public class GuestWeights : ScriptableObject {
+[CreateAssetMenu(fileName = "GuestWeights", menuName = "AI/GuestWeights")]
+public class GuestWeights : ScriptableObject 
+{
     private static GuestWeights _instance;
-    public static GuestWeights Instance {
-        get {
+    public static GuestWeights Instance 
+    {
+        get
+        {
             if (_instance == null) _instance = Resources.Load<GuestWeights>("GuestWeights");
             return _instance;
         }

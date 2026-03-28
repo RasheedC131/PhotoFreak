@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "GuestSettings", menuName = "AI/Settings/GuestSettings")]
+[CreateAssetMenu(fileName = "GuestSettings", menuName = "AI/GuestSettings")]
 public class GuestSettings : ScriptableObject
 {
     private static GuestSettings _instance;
