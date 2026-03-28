@@ -24,11 +24,11 @@ public class Consideration_PreyNearby : Consideration
         // TODO: Tweak this logic to take in more factors to select the best possible target 
         foreach (Collider hit in hits)
         {
-            AIContext potentialPrey = hit.GetComponent<AIContext>();
+            AIContext potentialPrey = hit.GetComponentInParent<AIContext>();
             
             if (potentialPrey != null && !potentialPrey.isMonster)
             {
-                float dist = Vector3.Distance(transform.position, hit.transform.position);
+                float dist = Vector3.Distance(ctx.transform.position, potentialPrey.transform.position);
                 if (dist < closestDistance)
                 {
                     closestDistance = dist;

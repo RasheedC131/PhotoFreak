@@ -12,7 +12,7 @@ public class Action_Stalk : UtilityAction
     public float stalkDistance = 4.0f; 
     public float attackRange = 1.5f; 
 
-    void Awake()
+    void Awake() 
     {
         agent = GetComponentInParent<NavMeshAgent>();
         ctx = GetComponentInParent<AIContext>();
@@ -27,6 +27,8 @@ public class Action_Stalk : UtilityAction
             ctx.currentVictim = null;
             return;
         }
+
+        ctx.currentVictim.isBeingStalked = true; 
 
         if (identity is not null) identity.ShowGuestModel(); 
 
@@ -46,11 +48,11 @@ public class Action_Stalk : UtilityAction
 
         if (brain is not null) ctx.currentStalkTimer += brain.decisionInterval; 
 
-        if (ctx.currentStalkTimer >= ctx.stalkDuration)
-        {
-            Debug.Log("Monster timed out stalking, looking for new victim..."); 
-            ctx.currentVictim = null; 
-            ctx.currentStalkTimer = 0f; 
-        }
+        // if (ctx.currentStalkTimer >= ctx.stalkDuration)
+        // {
+        //     Debug.Log("Monster timed out stalking, looking for new victim..."); 
+        //     ctx.currentVictim = null; 
+        //     ctx.currentStalkTimer = 0f; 
+        // }
     }
 }

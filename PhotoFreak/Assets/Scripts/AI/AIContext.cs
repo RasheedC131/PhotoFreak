@@ -21,6 +21,7 @@ public class AIContext : MonoBehaviour
     public AIContext customLeader; 
     public int groupIdx = 0; 
     public int groupTotalSize = 1; 
+    public bool isBeingStalked = false; 
 
     [Header("Monster State")]
     public bool isMonster = false; 

@@ -52,7 +52,7 @@ public class ActionSocialize : UtilityAction
                 {
                     context.targetHub = null;
                 }
-            }
+            } 
         }
         else
         {
