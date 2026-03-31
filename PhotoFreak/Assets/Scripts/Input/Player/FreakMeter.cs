@@ -6,14 +6,22 @@ using System.Collections;
 
 public class FreakMeter : MonoBehaviour
 {
+    [Header("FreakMeter settings")]
+    [SerializeField] private int maxNPC;
+    [SerializeField] private float maxFreak;
+    [SerializeField] private int maxStrikes;
+    [Header("Camera Freak Function")]
+    [SerializeField] private float k1;
+    [SerializeField] private float x1;
+    [Header("Sprint Freak Function")]
+    [SerializeField] private float k2;
+    [SerializeField] private float x2;
+    [Header("Script info")]
     [SerializeField] PhotoCamera CameraScript;
     [SerializeField] PlayerMovement player;
     [SerializeField] private FreakMeterUI UI;
     [SerializeField] private Timer timer;
-
-    [SerializeField] private int maxNPC;
-    [SerializeField] private float maxFreak;
-    [SerializeField] private int maxStrikes;
+    [SerializeField] private FreakMeterTimer freakTimer;
 
     private float currentFreak;
     private bool isMeterDecaying;
@@ -21,6 +29,7 @@ public class FreakMeter : MonoBehaviour
     private List<Transform> visibleNPCs = new List<Transform>();
     
     private bool isGameOver = false; 
+    private float prevVal = 0;
 
     void Start()
     {
@@ -56,22 +65,23 @@ public class FreakMeter : MonoBehaviour
 
         if (player.getSprint() && count > 0)
         {
-            currentFreak += count * .01f;
+            timer.restart();
+            currentFreak += sprintFunction(count, freakTimer.getTime()) * 1f;
             isMeterRising = true; 
         }
 
         if (CameraScript.getCameraState())
         {
-            currentFreak += count* .03f;
+            timer.restart();
+            currentFreak += cameraFunction(count, freakTimer.getTime()) * 1f;
             isMeterRising = true; 
         }
-
+        
         if (isMeterRising)
         {
             UpdateUI();
-            isMeterDecaying = true; 
         }
-        else if (timer.getTime() <= 0 && isMeterDecaying)
+        else if (isMeterDecaying)
         {
             if (currentFreak > 0)
             {
@@ -81,10 +91,32 @@ public class FreakMeter : MonoBehaviour
                     currentFreak = 0;
                     isMeterDecaying = false;
                 }
-                Debug.Log(currentFreak);
+                freakTimer.restartTime();
                 UI.UpdateMeter(currentFreak);
             }
         }
+        if (timer.getTime() <= 0)
+        {
+            isMeterDecaying = true;
+        }
+        else
+        {
+            isMeterDecaying = false;
+        }
+    }
+
+    float sprintFunction(int count, float time)
+    {
+        float val = k2 * Mathf.Pow(x2, time);
+        prevVal = val * count - prevVal;
+        Debug.Log(prevVal);
+        return prevVal;
+    }
+    float cameraFunction(int count, float time)
+    {
+        float val = k1 * Mathf.Pow(x1, time);
+        prevVal = val * count - prevVal;
+        return prevVal;
     }
 
     void OnTriggerEnter(Collider other)
