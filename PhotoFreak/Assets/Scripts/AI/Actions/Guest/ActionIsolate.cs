@@ -11,43 +11,51 @@ public class ActionIsolate : UtilityAction
     [Header("Kill Room nodes")]
     public Transform killRoomNodesContainer;
     private List<Transform> killRoomNodes = new List<Transform>(); 
+    private Transform currentKillNode = null; 
+
     void Awake()
     {
         agent = GetComponentInParent<NavMeshAgent>(); 
         ctx = GetComponentInParent<AIContext>(); 
         gs = GuestSettings.Instance; 
 
-        if (killRoomNodesContainer is not null)
+        if (killRoomNodesContainer != null)
         {
             foreach(Transform child in killRoomNodesContainer)
             {
                 killRoomNodes.Add(child); 
             }
-
-            return; 
         }
+        else
+        {
+            Debug.LogWarning($"{gameObject.name} is missing the killRoomNodesContainer");
+        }
+    }
 
-        Debug.LogWarning($"{gameObject.name} is missing the killRoomNodesContainer");
+    void Update()
+    {
+        if (ctx != null && !ctx.isBeingStalked) currentKillNode = null;
     }
 
     public override void ExecuteAction()
     {
         if (killRoomNodes.Count == 0) return; 
 
-        if (!ctx.isBeingStalked) 
+        if (currentKillNode == null) 
         {
-            Transform chosenKillNode = killRoomNodes[Random.Range(0, killRoomNodes.Count)]; 
+            currentKillNode = killRoomNodes[Random.Range(0, killRoomNodes.Count)]; 
+            agent.ResetPath(); 
             agent.isStopped = false; 
-            ctx.currentDestination = chosenKillNode.position; 
+            ctx.currentDestination = currentKillNode.position; 
             agent.SetDestination(ctx.currentDestination); 
+            
+            Debug.Log($"Guest: {gameObject.name} is isolating! Heading to {currentKillNode.name}");
         }
         
-        if (ctx.isBeingStalked && !agent.pathPending && agent.remainingDistance < gs.isolateKillNodeArrivalDist)        
+        if (currentKillNode != null && !agent.pathPending && agent.remainingDistance <= gs.isolateKillNodeArrivalDist)        
         {
             agent.isStopped = true; 
-            // TODO: maybe rotate them with the rig 
             transform.Rotate(0, gs.isolateTurnAngle * Time.deltaTime, 0);   
-            Debug.Log($"Guest: {gameObject.name} arrived at kill node"); 
         }
     } 
 }

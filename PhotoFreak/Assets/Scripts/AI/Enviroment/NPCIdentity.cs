@@ -24,6 +24,10 @@ public class NPCIdentity : MonoBehaviour
     {
         ctx.isMonster = true;
         ctx.isOccupied = false; 
+        ctx.currentVictim = null;
+
+        UnityEngine.AI.NavMeshAgent agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
+        if (agent != null && agent.isActiveAndEnabled) agent.ResetPath(); 
 
         // scoring logic 
         gameObject.tag = "Monster"; 

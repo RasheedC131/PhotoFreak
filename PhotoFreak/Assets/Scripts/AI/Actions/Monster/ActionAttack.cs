@@ -7,7 +7,6 @@ public class ActionAttack : UtilityAction
     private AIContext ctx;
     private MonsterSettings ms; 
     private NPCIdentity myIdentity; 
-    private NPCIdentity victimIdentity; 
     
     void Awake()
     {
@@ -22,13 +21,16 @@ public class ActionAttack : UtilityAction
         if (ctx.currentVictim == null || ctx.currentVictim.isMonster) return;
         
         agent.isStopped = false;
-        if (myIdentity is not null) myIdentity.ShowMonsterModel(); 
+        if (myIdentity != null) myIdentity.ShowMonsterModel(); 
 
-        victimIdentity = ctx.currentVictim.GetComponent<NPCIdentity>(); 
-        if (victimIdentity is not null) 
+        if (MatchManager.Instance != null)
         {
             ctx.currentVictim.isBeingStalked = false; 
-            victimIdentity.Mutate(true);
+            MatchManager.Instance.HandleInfection(ctx.currentVictim, ctx);
+        }
+        else
+        {
+            Debug.LogError("MatchManager Instance not found!");
         }
 
         Debug.Log($"Monster: [{ctx.gameObject.name}] infected: [{ctx.currentVictim.gameObject.name}]"); 

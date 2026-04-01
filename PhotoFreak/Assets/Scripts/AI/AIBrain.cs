@@ -14,7 +14,7 @@ public class AIBrain : MonoBehaviour
 
     void Start()
     {
-        availableActions = GetComponentsInChildren<UtilityAction>();
+        availableActions = GetComponentsInChildren<UtilityAction>(true);
         brainCoroutine = StartCoroutine(BrainTickRoutine());
     }
 
@@ -59,7 +59,7 @@ public class AIBrain : MonoBehaviour
             }
         }
 
-        if (bestAction is not null) currentAction = bestAction;
+        currentAction = bestAction;
         
     }
 
