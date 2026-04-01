@@ -22,6 +22,8 @@ public class NPCIdentity : MonoBehaviour
     // TODO: Setup an animation/particle system for model swapping to monster 
     public void Mutate(bool isSmartMonster)
     {
+        Debug.Log($"Mutate called on {gameObject.name} | isSmartMonster = {isSmartMonster} | standardActionsObj assigned? {standardActionsObj != null} | monsterModel assigned? {monsterModel != null}");
+
         ctx.isMonster = true;
         ctx.isOccupied = false; 
         ctx.currentVictim = null;

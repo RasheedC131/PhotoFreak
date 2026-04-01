@@ -32,16 +32,19 @@ public class Action_Stalk : UtilityAction
 
         agent.isStopped = false;
 
-        // move to the current victim 
-        Vector3 preyRear = ctx.currentVictim.transform.position - (ctx.currentVictim.transform.forward * ms.stalkDistance);
+        NavMeshAgent preyAgent = ctx.currentVictim.GetComponent<NavMeshAgent>();
+        Vector3 targetDestination;
+
+        if (preyAgent != null && preyAgent.velocity.sqrMagnitude < 0.1f) targetDestination = ctx.currentVictim.transform.position;
+        
+        else
+        {
+            targetDestination = ctx.currentVictim.transform.position - (ctx.currentVictim.transform.forward * ms.stalkDistance);
+        }
         
         NavMeshHit hit;
-        if (NavMesh.SamplePosition(preyRear, out hit, 2.0f, NavMesh.AllAreas))
-        {
-            agent.SetDestination(hit.position);
-        }
-
-        float dist = Vector3.Distance(transform.position, ctx.currentVictim.transform.position); 
+        if (NavMesh.SamplePosition(targetDestination, out hit, 2.0f, NavMesh.AllAreas)) agent.SetDestination(hit.position);
+        
 
         if (brain is not null) ctx.currentStalkTimer += brain.decisionInterval; 
     }

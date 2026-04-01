@@ -17,7 +17,7 @@ public class ConsiderationInAttackRange : Consideration
 
         float dist = Vector3.Distance(ctx.transform.position, ctx.currentVictim.transform.position); 
 
-        if (dist <= ms.attackRange) return 1.0f; // go for the kill 
+        if (dist <= ms.attackRange) return 2.0f; 
         
         return 0f; 
     }
