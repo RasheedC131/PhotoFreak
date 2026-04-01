@@ -17,8 +17,12 @@ public class GuestSettings : ScriptableObject
     [SerializeField] private float _wanderNodeFleeDistance = 8f; 
     [SerializeField] private float _wanderMaxDistToDest = 1.5f; 
     [SerializeField] private float _wanderNodeSpreadRadius = 6.0f; 
-    [SerializeField] private float _wanderMinWaitAtNode = 20.0f; 
+    [SerializeField] private float _wanderMinWaitAtNode = 30.0f; 
     [SerializeField] private float _wanderMaxWaitAtNode = 60.0f; 
+    [SerializeField] private float _wanderBaseSpeed = 2.5f; 
+    [SerializeField] private float _wanderMinAcceleration = 5f; 
+    [SerializeField] private float _wanderMaxAcceleration = 12f; 
+    [SerializeField] private int _wanderNodeMaxCapacity = 5; 
     
 
     [Header("Action Socialize")]
@@ -39,6 +43,10 @@ public class GuestSettings : ScriptableObject
     public float wanderNodeSpreadRadius => _wanderNodeSpreadRadius; 
     public float wanderMinWaitAtNode => _wanderMinWaitAtNode; 
     public float wanderMaxWaitAtNode => _wanderMaxWaitAtNode; 
+    public float wanderBaseSpeed => _wanderBaseSpeed; 
+    public float wanderMinAcceleration => _wanderMinAcceleration; 
+    public float wanderMaxAcceleration => _wanderMaxAcceleration; 
+    public int wanderNodeMaxCapacity => _wanderNodeMaxCapacity; 
     public float socialArrivalDistance => _socialArrivalDistance; 
     public float socialTurnSpeed => _socialTurnSpeed; 
     public float isolateTurnAngle => _isolateTurnAngle; 

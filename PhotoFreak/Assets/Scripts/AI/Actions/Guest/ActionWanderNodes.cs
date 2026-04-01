@@ -1,10 +1,10 @@
 using UnityEngine;
+using UnityEngine.AI;
+using System.Collections.Generic; 
 
-// get a random group of npcs and pick a node to travel to on the navmesh 
 public class ActionWanderNodes : UtilityAction
 {
-
-    private UnityEngine.AI.NavMeshAgent agent; 
+    private NavMeshAgent agent; 
     private AIContext ctx; 
     private GuestSettings gs; 
 
@@ -12,14 +12,16 @@ public class ActionWanderNodes : UtilityAction
 
     void Start()
     {
-        agent = GetComponentInParent<UnityEngine.AI.NavMeshAgent>(); 
-        ctx = GetComponent<AIContext>(); 
+        agent = GetComponentInParent<NavMeshAgent>(); 
+        ctx = GetComponentInParent<AIContext>(); 
         gs = GuestSettings.Instance; 
     }
 
     public override void ExecuteAction()
     {
-        if (ctx.targetNode == null || ctx == null || agent == null) return; 
+        if (ctx == null || agent == null) return; 
+
+        if (ctx.targetHub == null) ctx.isOccupied = false;
 
         if (Time.time < movementTime)
         {
@@ -28,25 +30,83 @@ public class ActionWanderNodes : UtilityAction
         }
         
         agent.isStopped = false; 
-        float distToDest = Vector3.Distance(transform.position, ctx.currentDestination); 
 
-        if (ctx.forceNewPath || distToDest < gs.wanderMaxDistToDest)
+        bool hasArrived = !agent.pathPending && agent.hasPath && (agent.remainingDistance <= gs.wanderMaxDistToDest);
+
+        if (hasArrived)
         {
-            if (!ctx.forceNewPath)
-            {
-                ZoneNode nodeScript = ctx.targetNode.GetComponent<ZoneNode>(); 
-                if (nodeScript != null) ctx.targetNode = nodeScript.GetRandomNeighbor(ctx.transform); 
-            }
-
-            ctx.forceNewPath = false; 
-            
             float waitDuration = Random.Range(gs.wanderMinWaitAtNode, gs.wanderMaxWaitAtNode);
             movementTime = Time.time + waitDuration;
-            Vector3 randomOffset = Random.insideUnitSphere * gs.wanderNodeSpreadRadius; 
-            randomOffset.y = 0; 
+            agent.isStopped = true;
+            agent.ResetPath(); 
+            PickNextNodeGlobally();
+            
+            return; 
+        }
 
-            agent.SetDestination(ctx.targetNode.position + randomOffset);        }
+        if (!agent.hasPath || ctx.forceNewPath)
+        {
+            ctx.forceNewPath = false; 
+
+            if (ctx.targetNode == null) PickNextNodeGlobally();
+
+            if (ctx.targetNode != null)
+            {
+                Vector3 randomOffset = Random.insideUnitSphere * gs.wanderNodeSpreadRadius; 
+                randomOffset.y = 0;
+                Vector3 pathingNoise = Random.insideUnitSphere * 1.5f; 
+                pathingNoise.y = 0;
+                
+                ctx.currentDestination = ctx.targetNode.position + randomOffset + pathingNoise;
+            }
+            else
+            {
+                ctx.currentDestination = GetRandomFreeWanderPoint(transform.position, 10f);
+            }
+
+            agent.SetDestination(ctx.currentDestination);        
+        }
     }
-    
 
+    private void PickNextNodeGlobally()
+    {
+        ZoneNode[] allNodes = FindObjectsOfType<ZoneNode>();
+        List<ZoneNode> validNodes = new List<ZoneNode>();
+
+        foreach (ZoneNode node in allNodes)
+        {
+            if (ctx.targetNode != null && node.transform == ctx.targetNode) continue;
+
+            if (node.GetCurrentCrowd() < node.activeCapacity)
+            {
+                validNodes.Add(node);
+            }
+        }
+
+        if (validNodes.Count > 0)
+        {
+            int randomIdx = Random.Range(0, validNodes.Count);
+            ctx.targetNode = validNodes[randomIdx].transform;
+        }
+        else
+        {
+            ctx.targetNode = null;
+        }
+    }
+
+    private Vector3 GetRandomFreeWanderPoint(Vector3 origin, float radius)
+    {
+        Vector3 randomDirection = Random.insideUnitSphere * radius;
+        randomDirection += origin;
+        
+        NavMeshHit hit;
+        if (NavMesh.SamplePosition(randomDirection, out hit, radius, NavMesh.AllAreas)) return hit.position;
+        
+        return origin; 
+    }
+
+    public bool IsWaiting()
+    {
+        return Time.time < movementTime;
+    }
 }

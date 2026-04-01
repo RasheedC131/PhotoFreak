@@ -5,6 +5,7 @@ public class SocialHub : MonoBehaviour
 {
     public int MaxCapacity { get; private set; }
     public int CurrentAttendees { get; set; } = 0;
+    public int IncomingAttendees { get; set; } = 0;
     
     public void Initialize(int capacity, float timeToLive)
     {

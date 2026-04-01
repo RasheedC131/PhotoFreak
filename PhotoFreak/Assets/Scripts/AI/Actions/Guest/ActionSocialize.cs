@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.AI;
 
-// handles navigation to the social hub where other agents wander to 
+// have npcs "talk" to one another 
 public class ActionSocialize : UtilityAction
 {
     private NavMeshAgent agent;
@@ -20,7 +20,6 @@ public class ActionSocialize : UtilityAction
 
     public override void ExecuteAction()
     {
-        
         if (ctx.targetHub == null)
         {
             FindClosestHub();
@@ -80,7 +79,8 @@ public class ActionSocialize : UtilityAction
             if (hub != null && hub.HasOpenSlots())
             {
                 float dist = Vector3.Distance(transform.position, hub.transform.position);
-                if (dist < closestDist)
+                
+                if (dist < closestDist && dist <= 15.0f)
                 {
                     closestDist = dist;
                     bestHub = hub;
@@ -97,5 +97,7 @@ public class ActionSocialize : UtilityAction
         ctx.targetHub = null;
         hasJoinedGroup = false;
         agent.isStopped = false;
+        ctx.targetNode = null;
+        ctx.forceNewPath = true;
     }
 }

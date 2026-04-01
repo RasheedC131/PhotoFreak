@@ -13,6 +13,9 @@ public class Consideration_GroupAvailable : Consideration
 
     protected override float EvaluateRawValue()
     {
+
+        if (context.isOccupied && context.targetHub != null) return 1.0f;
+
         if (context.isOccupied || context.isMonster) return 0f;
 
         if (SocialHubManager.Instance == null || SocialHubManager.Instance.activeHubs.Count == 0) return 0f;
@@ -21,10 +24,16 @@ public class Consideration_GroupAvailable : Consideration
         {
             if (hub != null && hub.HasOpenSlots())
             {
-                return gw.groupAvailWeight;  // found an open hub 
+      
+                float dist = Vector3.Distance(context.transform.position, hub.transform.position);
+                
+                if (dist <= 15.0f) 
+                {
+                    return gw.groupAvailWeight; 
+                }
             }
         }
 
-        return 0f;      // couldn't find one 
+        return 0f; 
     }
 }

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Consideration_WanderNodes : Consideration
+public class ConsiderationWanderNodes : Consideration
 {
     private AIContext ctx;
     private GuestWeights gw; 
@@ -15,13 +15,15 @@ public class Consideration_WanderNodes : Consideration
     {
         if (ctx == null) return 0f;
 
-        // if they're busy stay in their position 
-        if (ctx.isOccupied) return 0f;
+        if (ctx.isOccupied && ctx.targetHub == null) ctx.isOccupied = false;
         
-        // if monster focus on the current victim 
+
+        ActionWanderNodes wanderAction = GetComponent<ActionWanderNodes>();
+        
+        if (wanderAction != null && wanderAction.IsWaiting()) return 1.0f;
+        if (ctx.isOccupied) return 0f;   
         if (ctx.isMonster && ctx.currentVictim != null) return 0f;
         
-        // assign a low score so that it can be changed by another event later 
         return gw.wanderNodesWeight; 
     }
 }
