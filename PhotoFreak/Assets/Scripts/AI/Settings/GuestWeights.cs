@@ -8,7 +8,7 @@ public class GuestWeights : ScriptableObject
     {
         get
         {
-            if (_instance == null) _instance = Resources.Load<GuestWeights>("GuestWeights");
+            if (_instance == null) _instance = Resources.Load<GuestWeights>("AI/GuestWeights");
             return _instance;
         }
     }

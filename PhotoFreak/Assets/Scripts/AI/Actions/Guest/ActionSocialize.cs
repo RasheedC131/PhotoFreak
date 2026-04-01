@@ -5,7 +5,7 @@ using UnityEngine.AI;
 public class ActionSocialize : UtilityAction
 {
     private NavMeshAgent agent;
-    private AIContext context;
+    private AIContext ctx;
     private GuestSettings gs; 
     
     [Header("Social Settings")]
@@ -14,19 +14,20 @@ public class ActionSocialize : UtilityAction
     void Awake()
     {
         agent = GetComponentInParent<NavMeshAgent>();
-        context = GetComponentInParent<AIContext>();
+        ctx = GetComponentInParent<AIContext>();
         gs = GuestSettings.Instance; 
     }
 
     public override void ExecuteAction()
     {
-        if (context.targetHub == null)
+        
+        if (ctx.targetHub == null)
         {
             FindClosestHub();
             hasJoinedGroup = false;
         }
 
-        if (context.targetHub == null)
+        if (ctx.targetHub == null)
         {
             ResetSocialState();
             return;
@@ -35,29 +36,29 @@ public class ActionSocialize : UtilityAction
         if (!hasJoinedGroup)
         {
             agent.isStopped = false;
-            agent.SetDestination(context.targetHub.transform.position);
+            agent.SetDestination(ctx.targetHub.transform.position);
 
-            float dist = Vector3.Distance(transform.position, context.targetHub.transform.position);
+            float dist = Vector3.Distance(transform.position, ctx.targetHub.transform.position);
             
             if (dist <= gs.socialArrivalDistance)
             {
-                if (context.targetHub.HasOpenSlots())
+                if (ctx.targetHub.HasOpenSlots())
                 {
-                    context.targetHub.CurrentAttendees++;
-                    context.isOccupied = true;
+                    ctx.targetHub.CurrentAttendees++;
+                    ctx.isOccupied = true;
                     hasJoinedGroup = true;
                     
                     agent.isStopped = true; 
                 }
                 else 
                 {
-                    context.targetHub = null;
+                    ctx.targetHub = null;
                 }
             } 
         }
         else
         {
-            Vector3 lookPos = context.targetHub.transform.position;
+            Vector3 lookPos = ctx.targetHub.transform.position;
             lookPos.y = transform.position.y; 
             
             Quaternion targetRotation = Quaternion.LookRotation(lookPos - transform.position);
@@ -87,13 +88,13 @@ public class ActionSocialize : UtilityAction
             }
         }
 
-        context.targetHub = bestHub;
+        ctx.targetHub = bestHub;
     }
 
     private void ResetSocialState()
     {
-        context.isOccupied = false;
-        context.targetHub = null;
+        ctx.isOccupied = false;
+        ctx.targetHub = null;
         hasJoinedGroup = false;
         agent.isStopped = false;
     }

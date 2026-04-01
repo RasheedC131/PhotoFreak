@@ -4,16 +4,22 @@ using UnityEngine;
 public class GuestSettings : ScriptableObject
 {
     private static GuestSettings _instance;
-    public static GuestSettings Instance {
-        get {
-            if (_instance == null) _instance = Resources.Load<GuestSettings>("GuestSettings");
+    public static GuestSettings Instance 
+    {
+        get 
+        {
+            if (_instance == null) _instance = Resources.Load<GuestSettings>("AI/GuestSettings");
             return _instance;
         }
     }
 
-    [Header("Action Wander Nodes")]
+    [Header("Wander Nodes")]
     [SerializeField] private float _wanderNodeFleeDistance = 8f; 
     [SerializeField] private float _wanderMaxDistToDest = 1.5f; 
+    [SerializeField] private float _wanderNodeSpreadRadius = 6.0f; 
+    [SerializeField] private float _wanderMinWaitAtNode = 20.0f; 
+    [SerializeField] private float _wanderMaxWaitAtNode = 60.0f; 
+    
 
     [Header("Action Socialize")]
     [SerializeField] private float _socialArrivalDistance = 2.0f;    
@@ -30,6 +36,9 @@ public class GuestSettings : ScriptableObject
 
     public float wanderNodeFleeDistance => _wanderNodeFleeDistance;
     public float wanderMaxDistToDest => _wanderMaxDistToDest; 
+    public float wanderNodeSpreadRadius => _wanderNodeSpreadRadius; 
+    public float wanderMinWaitAtNode => _wanderMinWaitAtNode; 
+    public float wanderMaxWaitAtNode => _wanderMaxWaitAtNode; 
     public float socialArrivalDistance => _socialArrivalDistance; 
     public float socialTurnSpeed => _socialTurnSpeed; 
     public float isolateTurnAngle => _isolateTurnAngle; 

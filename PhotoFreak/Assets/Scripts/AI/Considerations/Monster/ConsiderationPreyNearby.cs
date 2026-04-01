@@ -1,14 +1,15 @@
 using UnityEngine;
 
 // belongs to the stalking action 
-public class Consideration_PreyNearby : Consideration
+public class ConsiderationPreyNearby : Consideration
 {
     private AIContext ctx;
-    [SerializeField] private float sightRadius = 15f;
+    private MonsterSettings ms; 
 
     void Awake()
     {
         ctx = GetComponentInParent<AIContext>();
+        ms = MonsterSettings.Instance; 
     }
 
     protected override float EvaluateRawValue()
@@ -16,7 +17,7 @@ public class Consideration_PreyNearby : Consideration
         if (ctx is null || !ctx.isMonster) return 0f; 
         if (ctx.currentVictim is not null && !ctx.currentVictim.isMonster) return 0.8f;
 
-        Collider[] hits = Physics.OverlapSphere(ctx.transform.position, sightRadius);
+        Collider[] hits = Physics.OverlapSphere(ctx.transform.position, ms.stalkSenseRadius);
         
         float closestDistance = Mathf.Infinity;
         AIContext bestTarget = null;
@@ -44,14 +45,5 @@ public class Consideration_PreyNearby : Consideration
         }
 
         return 0f; 
-    }
-
-    void OnDrawGizmosSelected()
-    {
-        if (ctx != null)
-        {
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawWireSphere(ctx.transform.position, sightRadius);
-        }
     }
 }

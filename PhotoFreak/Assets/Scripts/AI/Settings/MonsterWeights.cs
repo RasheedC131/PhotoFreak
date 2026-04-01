@@ -6,7 +6,7 @@ public class MonsterWeights : ScriptableObject
     private static MonsterWeights _instance;
     public static MonsterWeights Instance {
         get {
-            if (_instance == null) _instance = Resources.Load<MonsterWeights>("MonsterWeights");
+            if (_instance == null) _instance = Resources.Load<MonsterWeights>("AI/MonsterWeights");
             return _instance;
         }
     }

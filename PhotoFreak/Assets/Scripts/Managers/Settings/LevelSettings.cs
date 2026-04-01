@@ -7,7 +7,7 @@ public class LevelSettings : ScriptableObject
     public static LevelSettings Instance
     {
         get {
-            if (_instance == null) _instance = Resources.Load<LevelSettings>("LevelSettings");
+            if (_instance == null) _instance = Resources.Load<LevelSettings>("Managers/LevelSettings");
             return _instance;
         }
     }

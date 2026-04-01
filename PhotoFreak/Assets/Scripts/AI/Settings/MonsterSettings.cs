@@ -8,7 +8,8 @@ public class MonsterSettings : ScriptableObject
     {
         get 
         {
-            if (_instance == null) _instance = Resources.Load<MonsterSettings>("MonsterSettings");
+            if (_instance == null) _instance = Resources.Load<MonsterSettings>("AI/MonsterSettings");
+
             return _instance;
         }
     }
