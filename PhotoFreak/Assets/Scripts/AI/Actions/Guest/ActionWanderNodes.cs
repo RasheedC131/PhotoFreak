@@ -5,42 +5,50 @@ using System.Collections.Generic;
 public class ActionWanderNodes : UtilityAction
 {
     private NavMeshAgent agent; 
+    private NavMeshObstacle obstacle;
     private AIContext ctx; 
     private GuestSettings gs; 
 
     private float movementTime = 0f; 
 
-    void Start()
+void Start()
     {
         agent = GetComponentInParent<NavMeshAgent>(); 
+        obstacle = GetComponentInParent<NavMeshObstacle>(); 
         ctx = GetComponentInParent<AIContext>(); 
         gs = GuestSettings.Instance; 
+        if (obstacle != null) obstacle.enabled = false;
     }
 
     public override void ExecuteAction()
     {
         if (ctx == null || agent == null) return; 
 
-        if (ctx.targetHub == null) ctx.isOccupied = false;
-
         if (Time.time < movementTime)
         {
-            agent.isStopped = true;
+            if (agent.enabled) 
+            {
+                agent.enabled = false;
+                if (obstacle != null) obstacle.enabled = true;      // become and obstacle if waiting 
+            }
             return; 
         }
         
-        agent.isStopped = false; 
+        // movement 
+        if (!agent.enabled)
+        {
+            if (obstacle != null) obstacle.enabled = false;
+            agent.enabled = true;
 
+        }
         bool hasArrived = !agent.pathPending && agent.hasPath && (agent.remainingDistance <= gs.wanderMaxDistToDest);
-
         if (hasArrived)
         {
             float waitDuration = Random.Range(gs.wanderMinWaitAtNode, gs.wanderMaxWaitAtNode);
             movementTime = Time.time + waitDuration;
-            agent.isStopped = true;
+
             agent.ResetPath(); 
-            PickNextNodeGlobally();
-            
+            PickNextRandomNode();
             return; 
         }
 
@@ -48,7 +56,7 @@ public class ActionWanderNodes : UtilityAction
         {
             ctx.forceNewPath = false; 
 
-            if (ctx.targetNode == null) PickNextNodeGlobally();
+            if (ctx.targetNode == null) PickNextRandomNode();
 
             if (ctx.targetNode != null)
             {
@@ -68,7 +76,7 @@ public class ActionWanderNodes : UtilityAction
         }
     }
 
-    private void PickNextNodeGlobally()
+    private void PickNextRandomNode()
     {
         ZoneNode[] allNodes = FindObjectsOfType<ZoneNode>();
         List<ZoneNode> validNodes = new List<ZoneNode>();

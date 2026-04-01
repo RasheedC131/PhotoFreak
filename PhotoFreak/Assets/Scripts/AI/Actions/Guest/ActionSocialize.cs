@@ -1,21 +1,23 @@
 using UnityEngine;
 using UnityEngine.AI;
 
-// have npcs "talk" to one another 
 public class ActionSocialize : UtilityAction
 {
     private NavMeshAgent agent;
+    private NavMeshObstacle obstacle;
     private AIContext ctx;
     private GuestSettings gs; 
     
     [Header("Social Settings")]
     private bool hasJoinedGroup = false;
-
+    private float joinHubRange; 
     void Awake()
     {
         agent = GetComponentInParent<NavMeshAgent>();
+        obstacle = GetComponentInParent<NavMeshObstacle>();
         ctx = GetComponentInParent<AIContext>();
         gs = GuestSettings.Instance; 
+        if (obstacle != null) obstacle.enabled = false;
     }
 
     public override void ExecuteAction()
@@ -34,6 +36,12 @@ public class ActionSocialize : UtilityAction
 
         if (!hasJoinedGroup)
         {
+            if (!agent.enabled)
+            {
+                if (obstacle != null) obstacle.enabled = false;
+                agent.enabled = true;
+            }
+
             agent.isStopped = false;
             agent.SetDestination(ctx.targetHub.transform.position);
 
@@ -41,18 +49,13 @@ public class ActionSocialize : UtilityAction
             
             if (dist <= gs.socialArrivalDistance)
             {
-                if (ctx.targetHub.HasOpenSlots())
-                {
-                    ctx.targetHub.CurrentAttendees++;
-                    ctx.isOccupied = true;
-                    hasJoinedGroup = true;
-                    
-                    agent.isStopped = true; 
-                }
-                else 
-                {
-                    ctx.targetHub = null;
-                }
+                ctx.targetHub.IncomingAttendees = Mathf.Max(0, ctx.targetHub.IncomingAttendees - 1);
+                ctx.targetHub.CurrentAttendees++;
+                ctx.isOccupied = true;
+                hasJoinedGroup = true;
+                
+                agent.enabled = false;
+                if (obstacle != null) obstacle.enabled = true;
             } 
         }
         else
@@ -79,8 +82,8 @@ public class ActionSocialize : UtilityAction
             if (hub != null && hub.HasOpenSlots())
             {
                 float dist = Vector3.Distance(transform.position, hub.transform.position);
-                
-                if (dist < closestDist && dist <= 15.0f)
+    
+                if (dist < closestDist && dist <= joinHubRange)
                 {
                     closestDist = dist;
                     bestHub = hub;
@@ -88,16 +91,27 @@ public class ActionSocialize : UtilityAction
             }
         }
 
-        ctx.targetHub = bestHub;
+        if (bestHub != null)
+        {
+            ctx.targetHub = bestHub;
+            bestHub.IncomingAttendees++; 
+        }
     }
 
     private void ResetSocialState()
     {
+        if (ctx.targetHub != null && !hasJoinedGroup)
+        {
+            ctx.targetHub.IncomingAttendees = Mathf.Max(0, ctx.targetHub.IncomingAttendees - 1);
+        }
+
         ctx.isOccupied = false;
         ctx.targetHub = null;
         hasJoinedGroup = false;
-        agent.isStopped = false;
         ctx.targetNode = null;
         ctx.forceNewPath = true;
+
+        if (obstacle != null) obstacle.enabled = false;
+        agent.enabled = true;
     }
 }
