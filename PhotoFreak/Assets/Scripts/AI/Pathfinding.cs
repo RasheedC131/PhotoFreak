@@ -51,13 +51,13 @@ public class Pathfinding : MonoBehaviour
     public virtual void Run()
     {
         // monster logic 
-        if (isInfected)
-        {
-            Vector3 pos = defaultLeader.GetComponent<Pathfinding>().getBehind(); // get position of defaultLeader
-            pos = new Vector3(pos.x, 0, pos.z);
-            agent.SetDestination(pos);
-            new WaitForSeconds(2);
-        }
+        // if (isInfected)
+        // {
+        //     Vector3 pos = defaultLeader.GetComponent<Pathfinding>().getBehind(); // get position of defaultLeader
+        //     pos = new Vector3(pos.x, 0, pos.z);
+        //     agent.SetDestination(pos);
+        //     new WaitForSeconds(2);
+        // }
 
         // group logic (socializing with guest)
         if (customLeader != null)
