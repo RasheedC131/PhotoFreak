@@ -44,6 +44,10 @@ public class PhotoCamera : MonoBehaviour, IEquippable
     [SerializeField] private int maxFilm = 10; 
     [SerializeField] private int currFilm;
 
+    [Header("UI Settings")]
+    [SerializeField] private Sprite cameraIcon;
+    public Sprite itemIcon => cameraIcon;
+
     //Scripts
     private PhotoScore photoScore;
     private CameraFocus cameraFocus;

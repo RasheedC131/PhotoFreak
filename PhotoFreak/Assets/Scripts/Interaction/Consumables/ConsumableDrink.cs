@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class DrinkItem : ConsumableItem
+public class ConsumableDrink : ConsumableItem
 {
     [Header("Drink Settings")]
     [SerializeField] private float freakMeterReduction = 10f;
@@ -19,12 +19,12 @@ public class DrinkItem : ConsumableItem
         if (currentSips > 0)
         {
             currentSips--; 
-            Debug.Log($"Drank Item");
-            
+            Debug.Log($"Drank Item. Uses left: {currentSips}");
             
             if (currentSips <= 0)
             {
                 Debug.Log($"The {itemName} is empty");
+                FindObjectOfType<PlayerInventory>().RemoveCurrentItem(); 
                 Destroy(gameObject); 
             }
         }

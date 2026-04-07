@@ -10,5 +10,6 @@ public interface IEquippable
     void OnDrop(); 
     bool isDroppable {get; }
     bool isInUse {get; }
+    Sprite itemIcon { get; }
     GameObject gameObject { get; }
 }

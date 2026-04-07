@@ -8,6 +8,9 @@ public class ConsumableItem : MonoBehaviour, IEquippable
 
     [Header("Item Details")]
     [SerializeField] protected string itemName = "Default Item";
+    [SerializeField] protected Sprite icon; 
+
+    public virtual Sprite itemIcon => icon; 
 
     [Header("Equip Positioning")]
     [SerializeField] protected Vector3 equipPositionOffset = Vector3.zero;
