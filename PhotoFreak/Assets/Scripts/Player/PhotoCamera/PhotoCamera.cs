@@ -13,12 +13,14 @@ public class PhotoCamera : MonoBehaviour, IEquippable
     };
 
     public bool isDroppable => false; 
+    public bool isInUse => cameraRaised || isReview; 
     public void OnPickup(Transform holdParent) {}
     public void OnDrop() {}
 
     [Header("References")]
     [SerializeField] private InputManager inputManager; 
     [SerializeField] private GameObject viewFinderUI; 
+    [SerializeField] private GameObject cameraModel; 
     [SerializeField] private RectTransform topShutter;    
     [SerializeField] private RectTransform bottomShutter;
     [SerializeField] private TextMeshProUGUI filmCounterText; 
@@ -130,7 +132,8 @@ public class PhotoCamera : MonoBehaviour, IEquippable
             if (filmCounterText != null) filmCounterText.text = $"{currFilm} Shots";
             Debug.Log("Camera Raised");
 
-            cameraFocus.EnableDepthOfField();
+            cameraFocus?.EnableDepthOfField();
+            if (cameraModel != null) cameraModel.SetActive(false);
         } 
         
         else
@@ -139,7 +142,8 @@ public class PhotoCamera : MonoBehaviour, IEquippable
             viewFinderUI.SetActive(false); 
             Debug.Log("Camera Lowered");
 
-           cameraFocus.DisableDepthOfField();
+           cameraFocus?.DisableDepthOfField();
+           if (cameraModel != null) cameraModel.SetActive(true);
         }
         
     }

@@ -9,5 +9,6 @@ public interface IEquippable
     void OnPickup(Transform holdParent); 
     void OnDrop(); 
     bool isDroppable {get; }
+    bool isInUse {get; }
     GameObject gameObject { get; }
 }

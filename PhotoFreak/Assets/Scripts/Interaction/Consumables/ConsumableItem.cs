@@ -7,6 +7,7 @@ public class ConsumableItem : MonoBehaviour, IEquippable
     private Collider col;
 
     public bool isDroppable => true; 
+    public bool isInUse => true; 
 
     void Awake()
     {
@@ -26,6 +27,7 @@ public class ConsumableItem : MonoBehaviour, IEquippable
         transform.SetParent(holdParent);
         transform.localPosition = Vector3.zero;
         transform.localRotation = Quaternion.identity;
+        SetLayerRecursively(gameObject, 7);
     }
 
     public void OnDrop()
@@ -34,5 +36,15 @@ public class ConsumableItem : MonoBehaviour, IEquippable
         rb.isKinematic = false;
         col.enabled = true;
         gameObject.SetActive(true); 
+        SetLayerRecursively(gameObject, 0);
+    }
+
+    private void SetLayerRecursively(GameObject obj, int newLayer)
+    {
+        obj.layer = newLayer;
+        foreach (Transform child in obj.transform)
+        {
+            SetLayerRecursively(child.gameObject, newLayer);
+        }
     }
 }

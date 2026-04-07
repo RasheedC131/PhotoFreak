@@ -34,12 +34,10 @@ public class PlayerInventory : MonoBehaviour
             Debug.LogError("Camera Object is missing an IEquippable script!");
         }
 
-        // Event Subscriptions
         inputManager.OnShoot += UseCurrentItem;       
         inputManager.OnZoom += CycleInventory;        
         inputManager.OnInteract += HandleInteraction; 
         
-        // Highly recommended: Add a specific drop key (e.g., 'Q' or 'G') to your InputManager
         // inputManager.OnDrop += HandleManualDrop; 
     }
 
@@ -47,13 +45,15 @@ public class PlayerInventory : MonoBehaviour
     {
         if (Mathf.Abs(scrollValue) < 0.01f) return;
 
+        if (inventorySlots[currentSlotIndex] != null && inventorySlots[currentSlotIndex].isInUse) return; 
+        
+
         if (inventorySlots[currentSlotIndex] != null)
             inventorySlots[currentSlotIndex].OnUnequip();
 
         int direction = scrollValue > 0 ? 1 : -1;
         currentSlotIndex += direction;
 
-        // Wrap around logic
         if (currentSlotIndex >= inventorySize) currentSlotIndex = 0;
         if (currentSlotIndex < 0) currentSlotIndex = inventorySize - 1;
 
@@ -77,12 +77,11 @@ public class PlayerInventory : MonoBehaviour
             if (itemOnGround != null)
             {
                 TryPickupItem(itemOnGround);
-                return; // Stop here if we successfully interacted with an item
+                return; 
             }
         }
 
-        // Fallback: If player presses E into thin air, they drop their item. 
-        // (Better UX practice is separating pickup and drop keys, but this keeps your original intent).
+
         DropCurrentItem();
     }
 
@@ -90,7 +89,6 @@ public class PlayerInventory : MonoBehaviour
     {
         int targetSlot = -1;
 
-        // 1. Look for an empty slot (starting at 1, skipping camera slot 0)
         for (int i = 1; i < inventorySize; i++)
         {
             if (inventorySlots[i] == null)
@@ -100,7 +98,6 @@ public class PlayerInventory : MonoBehaviour
             }
         }
 
-        // 2. If no empty slot, swap with the current equipped slot (if droppable)
         if (targetSlot == -1)
         {
             if (inventorySlots[currentSlotIndex] != null && inventorySlots[currentSlotIndex].isDroppable)
@@ -115,7 +112,6 @@ public class PlayerInventory : MonoBehaviour
             }
         }
 
-        // 3. Execute Pickup
         SwitchToSlot(targetSlot);
         inventorySlots[targetSlot] = newItem;
         newItem.OnPickup(handHoldPos);
@@ -128,13 +124,12 @@ public class PlayerInventory : MonoBehaviour
 
         IEquippable itemToDrop = inventorySlots[currentSlotIndex];
 
-        if (itemToDrop.isDroppable)
+        if (itemToDrop.isDroppable && !itemToDrop.isInUse)
         {
             itemToDrop.OnUnequip();
             itemToDrop.OnDrop();
             inventorySlots[currentSlotIndex] = null;
             
-            // Auto-switch back to camera when dropping an item
             SwitchToSlot(0); 
         }
     }
