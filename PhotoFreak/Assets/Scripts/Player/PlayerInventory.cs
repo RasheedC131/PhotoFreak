@@ -1,190 +1,160 @@
-// using UnityEngine;
+using UnityEngine;
 
-// public class PlayerInventory : MonoBehaviour
-// {
-//     // Define your slots here
-//     private enum InventorySlot
-//     {
-//         CAMERA = 0,
-//         ITEM = 1
-//     }
+public class PlayerInventory : MonoBehaviour
+{
+    [Header("Inventory Settings")]
+    [SerializeField] private int inventorySize = 3; // 0 = Camera, 1 = Item1, 2 = Item2
+    [SerializeField] private float interactionRange = 3f;
+    [SerializeField] private LayerMask interactableLayer;
 
-//     [Header("Inventory Settings")]
-//     [SerializeField] private int inventorySize = 2; 
+    [Header("References")]
+    [SerializeField] private InputManager inputManager;
+    [SerializeField] private Transform handHoldPos;
+    [SerializeField] private Camera playerCamera;
+    [SerializeField] private GameObject photoCameraObj; 
 
-//     [Header("References")]
-//     [SerializeField] private InputManager inputManager;
-//     [SerializeField] private Transform handHoldPos; // Parent object for held items
-//     [SerializeField] private Camera playerCamera;   // Origin of Raycast
-    
-//     [Header("Inventory Config")]
-//     [SerializeField] private GameObject photoCameraObj; 
-//     [SerializeField] private LayerMask interactableLayer;
-//     [SerializeField] private float interactionRange = 3f;
+    private IEquippable[] inventorySlots;
+    private int currentSlotIndex = 0; 
 
-//     private IEquippable[] inventorySlots;
-    
-//     private int currentSlotIndex = (int)InventorySlot.CAMERA; 
+    void Start()
+    {
+        if (inputManager == null) inputManager = GetComponent<InputManager>();
 
-//     void Start()
-//     {
-//         if (inputManager == null) inputManager = GetComponent<InputManager>();
+        inventorySlots = new IEquippable[inventorySize];
 
-//         // ensure size is at least 2 (Camera + 1 Item slot)
-//         if (inventorySize < 2) inventorySize = 2;
-//         inventorySlots = new IEquippable[inventorySize];
+        // Initialize Camera in Slot 0
+        IEquippable camTool = photoCameraObj.GetComponent<IEquippable>();
+        if (camTool != null)
+        {
+            inventorySlots[0] = camTool;
+            camTool.OnEquip(); 
+        }
+        else
+        {
+            Debug.LogError("Camera Object is missing an IEquippable script!");
+        }
 
-//         IEquippable camTool = photoCameraObj.GetComponent<IEquippable>();
-//         if (camTool != null)
-//         {
-//             inventorySlots[(int)InventorySlot.CAMERA] = camTool;
-//             camTool.OnEquip(); // Start with camera equipped
-//         }
-//         else
-//         {
-//             Debug.LogError("Camera Object is missing the IEquippable script!");
-//         }
-
-//         inputManager.OnShoot += UseCurrentItem;         // Left Click
-//         inputManager.OnZoom += CycleInventory;          // Scroll Wheel
-//         inputManager.OnInteract += HandleInteraction;   // E Key
-//     }
-
-//     private void CycleInventory(float scrollValue)
-//     {
-//         if (Mathf.Abs(scrollValue) < 0.01f) return;
-
-//         if (inventorySlots[currentSlotIndex] != null)
-//         {
-//             inventorySlots[currentSlotIndex].OnUnequip();
-//         }
-
-//         int direction = scrollValue > 0 ? 1 : -1;
-
-//         currentSlotIndex = (currentSlotIndex + direction);
-
-//         if (currentSlotIndex >= inventorySize) currentSlotIndex = 0;
-//         if (currentSlotIndex < 0) currentSlotIndex = inventorySize - 1;
-
-//         if (inventorySlots[currentSlotIndex] != null)
-//         {
-//             inventorySlots[currentSlotIndex].OnEquip();
-//         }
-//         else
-//         {
-//             Debug.Log($"Switched to Empty Slot {currentSlotIndex}");
-//         }
-//     }
-
-//     private void UseCurrentItem()
-//     {
-//         if (inventorySlots[currentSlotIndex] != null)
-//         {
-//             inventorySlots[currentSlotIndex].OnUse();
-//         }
-//     }
-
-//     private void HandleInteraction()
-//     {
-
-//         // if holding an item drop it 
-//         if (currentSlotIndex != (int)InventorySlot.CAMERA && inventorySlots[currentSlotIndex] != null)
-//         {
-//             DropItem();
-//         }
-
-//         // if camera is equipped or free hand 
-//         else
-//         {
-//             TryPickup();
-//         }
-//     }
-
-//     private void TryPickup()
-//     {
-//         Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
+        // Event Subscriptions
+        inputManager.OnShoot += UseCurrentItem;       
+        inputManager.OnZoom += CycleInventory;        
+        inputManager.OnInteract += HandleInteraction; 
         
-//         if (Physics.Raycast(ray, out RaycastHit hit, interactionRange, interactableLayer))
-//         {
-//             DrinkItem newItem = hit.collider.GetComponent<DrinkItem>();
+        // Highly recommended: Add a specific drop key (e.g., 'Q' or 'G') to your InputManager
+        // inputManager.OnDrop += HandleManualDrop; 
+    }
+
+    private void CycleInventory(float scrollValue)
+    {
+        if (Mathf.Abs(scrollValue) < 0.01f) return;
+
+        if (inventorySlots[currentSlotIndex] != null)
+            inventorySlots[currentSlotIndex].OnUnequip();
+
+        int direction = scrollValue > 0 ? 1 : -1;
+        currentSlotIndex += direction;
+
+        // Wrap around logic
+        if (currentSlotIndex >= inventorySize) currentSlotIndex = 0;
+        if (currentSlotIndex < 0) currentSlotIndex = inventorySize - 1;
+
+        if (inventorySlots[currentSlotIndex] != null)
+            inventorySlots[currentSlotIndex].OnEquip();
+    }
+
+    private void UseCurrentItem()
+    {
+        inventorySlots[currentSlotIndex]?.OnUse();
+    }
+
+    private void HandleInteraction()
+    {
+        Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
+        
+        if (Physics.Raycast(ray, out RaycastHit hit, interactionRange, interactableLayer))
+        {
+            IEquippable itemOnGround = hit.collider.GetComponent<IEquippable>();
             
-//             if (newItem != null)
-//             {
-//                 int targetSlot = currentSlotIndex;
+            if (itemOnGround != null)
+            {
+                TryPickupItem(itemOnGround);
+                return; // Stop here if we successfully interacted with an item
+            }
+        }
 
-//                 if (currentSlotIndex == (int)InventorySlot.CAMERA)
-//                 {
-//                     targetSlot = (int)InventorySlot.ITEM;
+        // Fallback: If player presses E into thin air, they drop their item. 
+        // (Better UX practice is separating pickup and drop keys, but this keeps your original intent).
+        DropCurrentItem();
+    }
 
-//                     // TODO: maybe added swapping slots 
-//                 }
+    private void TryPickupItem(IEquippable newItem)
+    {
+        int targetSlot = -1;
 
-//                 // Switch to that slot visually before picking up
-//                 SwitchToSlot(targetSlot);
-                
-//                 // Perform the pickup
-//                 PickupItem(newItem, targetSlot);
-//             }
-//         }
-//     }
+        // 1. Look for an empty slot (starting at 1, skipping camera slot 0)
+        for (int i = 1; i < inventorySize; i++)
+        {
+            if (inventorySlots[i] == null)
+            {
+                targetSlot = i;
+                break;
+            }
+        }
 
-//     private void PickupItem(DrinkItem item, int slotIndex)
-//     {
-//         // swapping slots 
-//         if (inventorySlots[slotIndex] != null)
-//         {
-//             DrinkItem oldItem = inventorySlots[slotIndex] as DrinkItem;
-//             if (oldItem != null)
-//             {
-//                 oldItem.OnUnequip();
-//                 oldItem.OnDrop(); // Make sure DrinkItem has this method
-//                 oldItem.transform.SetParent(null);
-//             }
-//         }
+        // 2. If no empty slot, swap with the current equipped slot (if droppable)
+        if (targetSlot == -1)
+        {
+            if (inventorySlots[currentSlotIndex] != null && inventorySlots[currentSlotIndex].isDroppable)
+            {
+                DropCurrentItem();
+                targetSlot = currentSlotIndex;
+            }
+            else
+            {
+                Debug.Log("Inventory full, and you cannot drop the Camera to swap!");
+                return;
+            }
+        }
 
-//         inventorySlots[slotIndex] = item;
+        // 3. Execute Pickup
+        SwitchToSlot(targetSlot);
+        inventorySlots[targetSlot] = newItem;
+        newItem.OnPickup(handHoldPos);
+        newItem.OnEquip();
+    }
 
-//         // Visuals
-//         item.transform.SetParent(handHoldPos);
-//         item.transform.localPosition = Vector3.zero;
-//         item.transform.localRotation = Quaternion.identity;
+    private void DropCurrentItem()
+    {
+        if (inventorySlots[currentSlotIndex] == null) return;
 
-//         item.OnPickup(); 
-//         item.OnEquip();    
-//     }
+        IEquippable itemToDrop = inventorySlots[currentSlotIndex];
 
-//     private void DropItem()
-//     {
-//         DrinkItem item = inventorySlots[currentSlotIndex] as DrinkItem;
-        
-//         if (item != null)
-//         {
-//             item.OnUnequip();
-//             item.OnDrop(); 
-//             item.transform.SetParent(null);
-//         }
+        if (itemToDrop.isDroppable)
+        {
+            itemToDrop.OnUnequip();
+            itemToDrop.OnDrop();
+            inventorySlots[currentSlotIndex] = null;
+            
+            // Auto-switch back to camera when dropping an item
+            SwitchToSlot(0); 
+        }
+    }
 
-//         inventorySlots[currentSlotIndex] = null; 
-//     }
+    private void SwitchToSlot(int newSlot)
+    {
+        if (currentSlotIndex == newSlot) return;
 
-//     private void SwitchToSlot(int newSlot)
-//     {
-//         if (currentSlotIndex == newSlot) return;
+        inventorySlots[currentSlotIndex]?.OnUnequip();
+        currentSlotIndex = newSlot;
+        inventorySlots[currentSlotIndex]?.OnEquip();
+    }
 
-//         if (inventorySlots[currentSlotIndex] != null) inventorySlots[currentSlotIndex].OnUnequip();
-
-//         currentSlotIndex = newSlot;
-
-//         if (inventorySlots[currentSlotIndex] != null) inventorySlots[currentSlotIndex].OnEquip();
-//     }
-
-//     void OnDestroy()
-//     {
-//         if (inputManager != null)
-//         {
-//             inputManager.OnShoot -= UseCurrentItem;
-//             inputManager.OnZoom -= CycleInventory;
-//             inputManager.OnInteract -= HandleInteraction;
-//         }
-//     }
-// }
+    void OnDestroy()
+    {
+        if (inputManager != null)
+        {
+            inputManager.OnShoot -= UseCurrentItem;
+            inputManager.OnZoom -= CycleInventory;
+            inputManager.OnInteract -= HandleInteraction;
+        }
+    }
+}

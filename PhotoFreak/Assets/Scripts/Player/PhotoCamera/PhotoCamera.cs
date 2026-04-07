@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.InputSystem; 
 using UnityEngine.UI; 
 using System.Collections; 
-using TMPro; 
+using TMPro;
 
 public class PhotoCamera : MonoBehaviour, IEquippable
 {
@@ -11,6 +11,10 @@ public class PhotoCamera : MonoBehaviour, IEquippable
         Idle,
         Capturing,
     };
+
+    public bool isDroppable => false; 
+    public void OnPickup(Transform holdParent) {}
+    public void OnDrop() {}
 
     [Header("References")]
     [SerializeField] private InputManager inputManager; 
@@ -50,10 +54,7 @@ public class PhotoCamera : MonoBehaviour, IEquippable
     [SerializeField] private Color emptyStarColor = Color.gray;
 
     private int totalScore = 0; 
-    
     private bool cameraRaised; // flag for checking if camera is raised for freakmeter
-    // private CharacterController controller; This was never used 
-
     private CaptureState currentState;
     private bool isReview = false; 
     private float shutterOpenHeight; 
@@ -94,24 +95,19 @@ public class PhotoCamera : MonoBehaviour, IEquippable
     public void OnEquip()
     {
         gameObject.SetActive(true);
-        if (inputManager != null)
-        {
-            inputManager.OnAim += UpdateCaptureState;
-            // inputManager.OnInteract += Interact;
-        }
+        if (inputManager != null) inputManager.OnAim += UpdateCaptureState;
     }
 
     public void OnUnequip()
     {
-        if (inputManager != null)
-        {
-            inputManager.OnAim -= UpdateCaptureState;
-            // inputManager.OnInteract -= Interact;
-        }
+        if (inputManager != null) inputManager.OnAim -= UpdateCaptureState;
+        
 
         UpdateCaptureState(false);
         if (photoReviewUI != null) photoReviewUI.SetActive(false);
         isReview = false;
+
+        if (Time.timeScale == 0f) Time.timeScale = 1f;
         
         gameObject.SetActive(false);
     }
@@ -119,6 +115,7 @@ public class PhotoCamera : MonoBehaviour, IEquippable
     public void OnUse()
     {
         if (currentState == CaptureState.Capturing && !isReview) AttemptTakePhoto(); 
+        else if (currentState == CaptureState.Idle) Debug.Log("Can't take photo with camera being aimed"); 
     }
 
     private void UpdateCaptureState(bool isCapturing)
@@ -145,46 +142,6 @@ public class PhotoCamera : MonoBehaviour, IEquippable
            cameraFocus.DisableDepthOfField();
         }
         
-    }
-
-    void OnEnable()
-    {
-        if (inputManager != null)
-        {
-            inputManager.OnAim += UpdateCaptureState;
-            inputManager.OnInteract += Interact;
-            inputManager.OnShoot += Shoot; 
-
-        }
-    }
-
-    void OnDisable()
-    {
-        if (inputManager != null)
-        {
-            inputManager.OnAim -= UpdateCaptureState;
-            inputManager.OnInteract -= Interact;
-            inputManager.OnShoot -= Shoot; 
-        }
-        
-        // Safety cleanup when disabled
-        UpdateCaptureState(false);
-        if (photoReviewUI != null) photoReviewUI.SetActive(false);
-        isReview = false;
-
-        // prevents the game from being stuck in a paused state
-        if (Time.timeScale == 0f)
-        {
-            Time.timeScale = 1f;
-        }
-    }
-
-    private void Shoot()
-    {
-        if (currentState == CaptureState.Capturing && !isReview) 
-        {
-            AttemptTakePhoto(); 
-        }
     }
 
     // TODO: implement once we have our inventory system to switch from camera, journal and item
