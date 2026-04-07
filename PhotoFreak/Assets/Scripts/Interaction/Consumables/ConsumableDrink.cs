@@ -28,11 +28,5 @@ public class ConsumableDrink : ConsumableItem
                 Destroy(gameObject); 
             }
         }
-
-        if (currentSips <= 0)
-        {
-            FindObjectOfType<PlayerInventory>().RemoveCurrentItem();
-            Destroy(gameObject); 
-        }
     }
 }

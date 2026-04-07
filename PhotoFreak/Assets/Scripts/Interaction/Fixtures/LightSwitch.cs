@@ -1,16 +1,20 @@
 using UnityEngine;
 
-public class LightSwitch : MonoBehaviour
+public class LightSwitch : MonoBehaviour, IInteractable
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    [Header("Switch Settings")]
+    [SerializeField] private Light targetLight; 
+    [SerializeField] private bool isOn = true;  
+    public string promptText => isOn ? "Turn Off Light" : "Turn On Light";
+
+    private void Start()
     {
-        
+        if (targetLight != null) targetLight.enabled = isOn;
     }
 
-    // Update is called once per frame
-    void Update()
+    public void Interact()
     {
-        
+        isOn = !isOn;
+        if (targetLight != null)targetLight.enabled = isOn;
     }
 }
