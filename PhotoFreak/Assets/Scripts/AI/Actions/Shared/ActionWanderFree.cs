@@ -1,10 +1,10 @@
 using UnityEngine;
 using UnityEngine.AI;
 
-// pick a random spot to travel to on the navmesh 
 public class ActionWanderFree : UtilityAction
 {
-    private UnityEngine.AI.NavMeshAgent agent; 
+    private NavMeshAgent agent; 
+    private NavMeshObstacle obstacle; 
     private AIContext ctx; 
 
     [Header("Solo Wander Settings")]
@@ -13,14 +13,25 @@ public class ActionWanderFree : UtilityAction
 
     void Awake()
     {
-        agent = GetComponentInParent<UnityEngine.AI.NavMeshAgent>(); 
+        agent = GetComponentInParent<NavMeshAgent>(); 
+        obstacle = GetComponentInParent<NavMeshObstacle>(); 
         ctx = GetComponentInParent<AIContext>(); 
     }
 
     public override void ExecuteAction()
     {
-        agent.isStopped = false; 
+        if (ctx == null || agent == null) return;
 
+        if (!agent.enabled)
+        {
+            if (obstacle != null) obstacle.enabled = false;
+            agent.enabled = true;
+        }
+
+        if (agent.isOnNavMesh && agent.isStopped) agent.isStopped = false; 
+        
+        if (ctx.targetNode != null) ctx.targetNode = null;
+        
         if (!agent.pathPending && (!agent.hasPath || agent.remainingDistance < arrivalDistance || ctx.forceNewPath))
         {
             ctx.forceNewPath = false; 
@@ -32,7 +43,7 @@ public class ActionWanderFree : UtilityAction
             if (NavMesh.SamplePosition(randomDirection, out hit, freeWanderRadius, NavMesh.AllAreas))
             {
                 ctx.currentDestination = hit.position; 
-                agent.SetDestination(ctx.currentDestination); 
+                if (agent.isOnNavMesh) agent.SetDestination(ctx.currentDestination); 
             }
         }  
     }

@@ -28,6 +28,6 @@ public class SocialHub : MonoBehaviour
 
     public bool HasOpenSlots()
     {
-        return CurrentAttendees < MaxCapacity;
+        return (CurrentAttendees + IncomingAttendees) < MaxCapacity;    
     }
 }

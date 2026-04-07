@@ -24,6 +24,9 @@ public class MonsterSettings : ScriptableObject
     [SerializeField] private float _stalkDistance = 4.0f; 
     [SerializeField] private float _stalkSpeed = 2.5f; 
 
+    [Header("Action Idle")]
+    [SerializeField] private float _idleMaxFatigue = 8.0f; 
+
     [Header("Consideration Stalk")]
     [SerializeField] private float _stalkSenseRadius = 100f; 
     [SerializeField] private float _stalkIsolationCheckRadius = 5f;
@@ -44,4 +47,5 @@ public class MonsterSettings : ScriptableObject
     public float tellDuration => _tellDuration; 
     public float tellTimerMinTime => _tellTimerMinTime; 
     public float tellTimerMaxTime => _tellTimerMaxTime; 
+    public float idleMaxFatigue => _idleMaxFatigue; 
 }

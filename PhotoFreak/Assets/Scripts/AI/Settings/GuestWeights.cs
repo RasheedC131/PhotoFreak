@@ -17,7 +17,7 @@ public class GuestWeights : ScriptableObject
     [SerializeField] [Range(0, 1)] private float _groupAvailWeight = 0.7f;
 
     [Header("Consideration Wander Nodes")]
-    [SerializeField] [Range(0, 1)] private float _wanderNodesWeight = 0.4f; 
+    [SerializeField] [Range(0, 1)] private float _wanderNodesWeight = 0.6f; 
   
     [Header("Consideration Is Solo")]
     [SerializeField] [Range(0, 1)] private float _soloWeight = 0.5f;
@@ -29,6 +29,9 @@ public class GuestWeights : ScriptableObject
     [SerializeField] [Range(0, 1)] private float _monsterSpottedWeight = 1.0f; 
     [SerializeField] [Range(0, 1)] private float _playerSpottedWeight = 0.9f;  
 
+    [Header("Consideration Idle")]
+    [SerializeField] [Range(0, 1)] private float _idleWeight = 0.9f; 
+
 
     public float groupAvailWeight => _groupAvailWeight; 
     public float wanderNodesWeight => _wanderNodesWeight; 
@@ -36,5 +39,7 @@ public class GuestWeights : ScriptableObject
     public float isStalkedWeight => _isStalkedWeight; 
     public float monsterSpottedWeight => _monsterSpottedWeight; 
     public float playerSpottedWeight => _playerSpottedWeight; 
+    public float idleWeight => _idleWeight; 
+
 
 }

@@ -19,13 +19,21 @@ public class Action_Flee : UtilityAction
     {
         if (ctx.currentThreat == null) return;
 
+        if (!agent.enabled)
+        {
+            NavMeshObstacle obstacle = GetComponentInParent<NavMeshObstacle>();
+            if (obstacle != null) obstacle.enabled = false;
+            agent.enabled = true;
+        }
+
+        if (!agent.isOnNavMesh) return; 
+
         agent.isStopped = false;
         agent.speed = gs.fleePanicSpeed; 
 
         if (!agent.pathPending && (!agent.hasPath || agent.remainingDistance < 1.0f))
         {
             Vector3 directionAway = (ctx.transform.position - ctx.currentThreat.position).normalized;
-
             Vector3 targetPosition = ctx.transform.position + (directionAway * gs.fleeDistance);
 
             NavMeshHit hit;

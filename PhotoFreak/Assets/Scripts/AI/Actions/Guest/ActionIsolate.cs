@@ -41,6 +41,15 @@ public class ActionIsolate : UtilityAction
     {
         if (killRoomNodes.Count == 0) return; 
 
+        if (!agent.enabled)
+        {
+            NavMeshObstacle obstacle = GetComponentInParent<NavMeshObstacle>();
+            if (obstacle != null) obstacle.enabled = false;
+            agent.enabled = true;
+        }
+
+        if (!agent.isOnNavMesh) return; 
+
         if (currentKillNode == null) 
         {
             currentKillNode = killRoomNodes[Random.Range(0, killRoomNodes.Count)]; 
@@ -57,5 +66,5 @@ public class ActionIsolate : UtilityAction
             agent.isStopped = true; 
             transform.Rotate(0, gs.isolateTurnAngle * Time.deltaTime, 0);   
         }
-    } 
+    }
 }

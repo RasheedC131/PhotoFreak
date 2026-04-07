@@ -1,16 +1,25 @@
 using UnityEngine;
+using UnityEngine.AI;
 
-public class ActionIdle : MonoBehaviour
+public class ActionIdle : UtilityAction
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private NavMeshAgent agent;
+    private NavMeshObstacle obstacle;
+
+    void Awake()
     {
-        
+        agent = GetComponentInParent<NavMeshAgent>();
+        obstacle = GetComponentInParent<NavMeshObstacle>();
     }
 
-    // Update is called once per frame
-    void Update()
+    public override void ExecuteAction()
     {
-        
+        if (!agent.enabled)
+        {
+            if (obstacle != null) obstacle.enabled = false;
+            agent.enabled = true;
+        }
+
+        if (agent.isOnNavMesh && !agent.isStopped) agent.isStopped = true;
     }
 }

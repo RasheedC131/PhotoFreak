@@ -68,29 +68,5 @@ public class AIContext : MonoBehaviour
         {
             zoneGroups[i] = nodesContainer.GetChild(i); 
         }
-
-        if (zoneGroups.Length > 0)
-        {
-            currentZone = zoneGroups[0]; 
-
-            if (!isMutating && currentZone.childCount > 0)
-            {
-                int randStart = Random.Range(0, currentZone.childCount); 
-                targetNode = currentZone.GetChild(randStart); 
-
-                Vector3 offsetVec = new Vector3
-                (
-                    Random.Range(MIN_WARP_OFFSET, MAX_WARP_OFFSET), 
-                    0, 
-                    Random.Range(MIN_WARP_OFFSET, MAX_WARP_OFFSET)
-                ); 
-
-                agent.Warp(targetNode.position + offsetVec); 
-            }
-
-            forceNewPath = true; 
-
-        }
-
     }
 }

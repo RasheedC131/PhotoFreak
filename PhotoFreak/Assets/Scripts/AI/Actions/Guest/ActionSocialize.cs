@@ -7,10 +7,9 @@ public class ActionSocialize : UtilityAction
     private NavMeshObstacle obstacle;
     private AIContext ctx;
     private GuestSettings gs; 
-    
-    [Header("Social Settings")]
-    private bool hasJoinedGroup = false;
-    private float joinHubRange; 
+    private bool hasJoinedGroup = false;    
+    private Vector3 assignedSpot; 
+
     void Awake()
     {
         agent = GetComponentInParent<NavMeshAgent>();
@@ -18,6 +17,18 @@ public class ActionSocialize : UtilityAction
         ctx = GetComponentInParent<AIContext>();
         gs = GuestSettings.Instance; 
         if (obstacle != null) obstacle.enabled = false;
+    }
+
+    void Update()
+    {
+        if (hasJoinedGroup && ctx != null && ctx.targetHub != null)
+        {
+            Vector3 lookPos = ctx.targetHub.transform.position;
+            lookPos.y = transform.position.y; 
+            
+            Quaternion targetRotation = Quaternion.LookRotation(lookPos - transform.position);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * gs.socialTurnSpeed);
+        }
     }
 
     public override void ExecuteAction()
@@ -34,6 +45,12 @@ public class ActionSocialize : UtilityAction
             return;
         }
 
+        if (!hasJoinedGroup && !ctx.targetHub.HasOpenSlots())
+        {
+            LeaveGroup();
+            return;
+        }
+
         if (!hasJoinedGroup)
         {
             if (!agent.enabled)
@@ -42,10 +59,11 @@ public class ActionSocialize : UtilityAction
                 agent.enabled = true;
             }
 
-            agent.isStopped = false;
-            agent.SetDestination(ctx.targetHub.transform.position);
+            if (agent.isOnNavMesh && agent.isStopped) agent.isStopped = false;
 
-            float dist = Vector3.Distance(transform.position, ctx.targetHub.transform.position);
+            if (agent.isOnNavMesh) agent.SetDestination(assignedSpot);
+
+            float dist = Vector3.Distance(transform.position, assignedSpot);
             
             if (dist <= gs.socialArrivalDistance)
             {
@@ -58,18 +76,20 @@ public class ActionSocialize : UtilityAction
                 if (obstacle != null) obstacle.enabled = true;
             } 
         }
-        else
+    }
+
+    public void LeaveGroup()
+    {
+        if (hasJoinedGroup && ctx.targetHub != null)
         {
-            Vector3 lookPos = ctx.targetHub.transform.position;
-            lookPos.y = transform.position.y; 
-            
-            Quaternion targetRotation = Quaternion.LookRotation(lookPos - transform.position);
-            transform.rotation = Quaternion.Slerp(
-                transform.rotation, 
-                targetRotation, 
-                Time.deltaTime * gs.socialTurnSpeed
-            );
+            ctx.targetHub.CurrentAttendees = Mathf.Max(0, ctx.targetHub.CurrentAttendees - 1);
         }
+        ResetSocialState();
+    }
+
+    public override void OnExit()
+    {
+        LeaveGroup();
     }
 
     private void FindClosestHub()
@@ -77,13 +97,15 @@ public class ActionSocialize : UtilityAction
         float closestDist = Mathf.Infinity;
         SocialHub bestHub = null;
 
+        if (SocialHubManager.Instance == null) return; 
+
         foreach (SocialHub hub in SocialHubManager.Instance.activeHubs)
         {
             if (hub != null && hub.HasOpenSlots())
             {
                 float dist = Vector3.Distance(transform.position, hub.transform.position);
     
-                if (dist < closestDist && dist <= joinHubRange)
+                if (dist < closestDist && dist <= gs.socialJoinHubRange)
                 {
                     closestDist = dist;
                     bestHub = hub;
@@ -95,6 +117,9 @@ public class ActionSocialize : UtilityAction
         {
             ctx.targetHub = bestHub;
             bestHub.IncomingAttendees++; 
+            float randomAngle = Random.Range(0f, Mathf.PI * 2f);
+            Vector3 offset = new Vector3(Mathf.Sin(randomAngle), 0, Mathf.Cos(randomAngle)) * gs.socialConvRadius;
+            assignedSpot = bestHub.transform.position + offset;
         }
     }
 
@@ -112,6 +137,6 @@ public class ActionSocialize : UtilityAction
         ctx.forceNewPath = true;
 
         if (obstacle != null) obstacle.enabled = false;
-        agent.enabled = true;
+        if (agent != null) agent.enabled = true; 
     }
 }

@@ -15,7 +15,7 @@ public class ConsiderationStalkTimer : Consideration
     {
         if (ctx is null || !ctx.isMonster) return 0f; 
 
-        if (ctx.currentVictim is null) return 1.0f;     // prioritize stalking when we don't have a set victim
+        if (ctx.currentVictim is null) return 1.0f;    
 
         float timeRatio = ctx.currentStalkTimer / ctx.stalkDuration;
 

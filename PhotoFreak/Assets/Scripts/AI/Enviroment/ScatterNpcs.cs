@@ -1,27 +1,42 @@
 using UnityEngine;
+using System.Collections;
 using System.Collections.Generic; 
 
-// randomizes the placement of npcs on startup 
-public class CrowdScatterer : MonoBehaviour
+public class ScatterNpcs : MonoBehaviour
 {
-    GuestSettings gs; 
-    void Start()
+    private GuestSettings gs; 
+
+    private IEnumerator Start()
     {
         gs = GuestSettings.Instance; 
+        
+        yield return new WaitForEndOfFrame(); 
+
         ZoneNode[] allNodes = FindObjectsOfType<ZoneNode>();
-        if (allNodes.Length == 0) return;
+        if (allNodes.Length == 0) yield break; 
+
         AIContext[] allAgents = FindObjectsOfType<AIContext>();
 
         foreach (AIContext agent in allAgents)
         {
             if (agent != null && !agent.isMonster)
             {
-                agent.targetNode = GetRandomOpenNode(allNodes);
+                Transform placementNode = allNodes[Random.Range(0, allNodes.Length)].transform;
+                Transform assignedNode = GetRandomOpenNode(allNodes);
+
+                agent.targetNode = assignedNode; 
                 agent.forceNewPath = true; 
 
                 UnityEngine.AI.NavMeshAgent navAgent = agent.GetComponent<UnityEngine.AI.NavMeshAgent>();
+                
                 if (navAgent != null)
                 {
+                    Vector3 offsetVec = new Vector3(Random.Range(-4.0f, 4.0f), 0, Random.Range(-4.0f, 4.0f));
+                    Vector3 targetPos = placementNode.position + offsetVec;
+                    navAgent.enabled = false;
+                    agent.transform.position = targetPos;
+                    navAgent.enabled = true;
+
                     float baseSpeed = gs.wanderBaseSpeed * 0.5f; 
                     navAgent.speed = Random.Range(gs.wanderBaseSpeed * 0.8f, gs.wanderBaseSpeed * 1.2f);
                     navAgent.acceleration = Random.Range(gs.wanderMinAcceleration, gs.wanderMaxAcceleration);
@@ -48,6 +63,6 @@ public class CrowdScatterer : MonoBehaviour
         {
             if (node.GetCurrentCrowd() < node.activeCapacity) return node.transform;
         }
-        return null; 
+        return null;
     }
 }

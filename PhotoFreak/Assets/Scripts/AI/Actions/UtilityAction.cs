@@ -5,6 +5,8 @@ public abstract class UtilityAction : MonoBehaviour
     private Consideration[] considerations;
 
     public abstract void ExecuteAction();
+    public virtual void OnEnter() {} 
+    public virtual void OnExit() {} 
 
     public float CalculateUtilityScore()
     {
