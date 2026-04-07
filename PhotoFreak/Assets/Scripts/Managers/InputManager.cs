@@ -9,7 +9,6 @@ public class InputManager : MonoBehaviour
     // events 
     public event Action<Vector2> OnMove; 
     public event Action<Vector2> OnLook; 
-    public event Action OnJump; 
     public event Action<bool> OnSprint; 
     public event Action <bool> OnCrouch;
     public event Action<bool> OnAim;
@@ -40,7 +39,6 @@ public class InputManager : MonoBehaviour
         playerControls.Ground.Look.performed += ctx => OnLook?.Invoke(ctx.ReadValue<Vector2>());        
         playerControls.Ground.Look.canceled += ctx => OnLook?.Invoke(Vector2.zero); 
 
-        playerControls.Ground.Jump.performed += ctx => OnJump?.Invoke(); 
 
         playerControls.Ground.Sprint.performed += ctx => OnSprint?.Invoke(true); 
         playerControls.Ground.Sprint.canceled += ctx => OnSprint?.Invoke(false); 

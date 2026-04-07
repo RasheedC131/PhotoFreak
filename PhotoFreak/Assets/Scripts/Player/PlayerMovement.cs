@@ -13,8 +13,8 @@ public class PlayerMovement : MonoBehaviour
     public float sprintSpeed = 10f; 
     public float crouchSpeed = 4f; 
 
-    [Header("Jump and Gravity")]
-    public float jumpHeight = 1.5f; 
+    [Header("Gravity")]
+
     public float gravity = -9.81f; 
 
     [Header("Crouching")]
@@ -49,7 +49,6 @@ public class PlayerMovement : MonoBehaviour
         if (inputManager != null)
         {
             inputManager.OnMove += UpdateMoveInput; 
-            inputManager.OnJump += Jump; 
             inputManager.OnSprint += ToggleSprint; 
             inputManager.OnCrouch += ToggleCrouch; 
         }
@@ -103,7 +102,6 @@ public class PlayerMovement : MonoBehaviour
         if (inputManager != null)
         {
             inputManager.OnMove -= UpdateMoveInput; 
-            inputManager.OnJump -= Jump; 
             inputManager.OnSprint -= ToggleSprint; 
             inputManager.OnCrouch -= ToggleCrouch; 
         }
@@ -113,11 +111,6 @@ public class PlayerMovement : MonoBehaviour
     private void UpdateMoveInput(Vector2 input)
     {
         currMovementInput = input; 
-    }
-
-    private void Jump()
-    {
-        if (isGrounded) velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity); 
     }
 
     private void ToggleSprint(bool isSprinting)
