@@ -1,6 +1,7 @@
 using UnityEngine;
 using System; 
 using System.Collections; 
+using TMPro; 
 
 public class PlayerInventory : MonoBehaviour
 {
@@ -18,15 +19,17 @@ public class PlayerInventory : MonoBehaviour
     [SerializeField] private Camera playerCamera;
     [SerializeField] private GameObject photoCameraObj; 
 
+    [Header("UI References (World Space)")]
+    [SerializeField] private TextMeshProUGUI interactPromptText; 
+    [SerializeField] private float promptHeightOffset = 0.5f; 
+
     private IEquippable[] inventorySlots;
     private int currentSlotIndex = 0; 
 
     void Start()
     {
         if (inputManager == null) inputManager = GetComponent<InputManager>();
-
         inventorySlots = new IEquippable[inventorySize];
-
         IEquippable camTool = photoCameraObj.GetComponent<IEquippable>();
         if (camTool != null)
         {
@@ -34,7 +37,10 @@ public class PlayerInventory : MonoBehaviour
             camTool.OnEquip(); 
             StartCoroutine(InitializeCameraUI(camTool.itemIcon));
         }
-        else Debug.LogError("Camera Object is missing an IEquippable script!");
+        else
+        {
+            Debug.LogError("Camera Object is missing an IEquippable script!");
+        }
 
         inputManager.OnShoot += UseCurrentItem;       
         inputManager.OnZoom += CycleInventory;        
@@ -43,16 +49,37 @@ public class PlayerInventory : MonoBehaviour
 
     private IEnumerator InitializeCameraUI(Sprite camIcon)
     {
-        yield return new WaitForEndOfFrame(); 
+        yield return new WaitForEndOfFrame();
         OnSlotUpdated?.Invoke(0, camIcon);
         OnSlotChanged?.Invoke(0);
     }
 
-    public void RemoveCurrentItem()
+    void Update()
     {
-        inventorySlots[currentSlotIndex] = null;         
-        OnSlotUpdated?.Invoke(currentSlotIndex, null);   
-        SwitchToSlot(0);                               
+        CheckForInteractable();
+    }
+
+    private void CheckForInteractable()
+    {
+        if (interactPromptText == null) return; 
+
+        Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
+        
+        if (Physics.Raycast(ray, out RaycastHit hit, interactionRange, interactableLayer))
+        {
+            IEquippable itemOnGround = hit.collider.GetComponent<IEquippable>();
+            
+            if (itemOnGround != null)
+            {
+                interactPromptText.text = $"[E]) {itemOnGround.itemName}";
+                interactPromptText.transform.position = hit.collider.transform.position + (Vector3.up * promptHeightOffset);
+                interactPromptText.transform.rotation = Quaternion.LookRotation(interactPromptText.transform.position - playerCamera.transform.position);
+                interactPromptText.gameObject.SetActive(true);
+                return; 
+            }
+        }
+
+        interactPromptText.gameObject.SetActive(false);
     }
 
     private void CycleInventory(float scrollValue)
@@ -77,23 +104,25 @@ public class PlayerInventory : MonoBehaviour
     private void HandleInteraction()
     {
         Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
-        Debug.DrawRay(ray.origin, ray.direction * interactionRange, Color.red, 2f);
         
         if (Physics.Raycast(ray, out RaycastHit hit, interactionRange, interactableLayer))
         {
             IEquippable itemOnGround = hit.collider.GetComponent<IEquippable>();
+            
             if (itemOnGround != null)
             {
                 TryPickupItem(itemOnGround);
                 return; 
             }
         }
+
         DropCurrentItem();
     }
 
     private void TryPickupItem(IEquippable newItem)
     {
         int targetSlot = -1;
+
         for (int i = 1; i < inventorySize; i++)
         {
             if (inventorySlots[i] == null)
@@ -112,7 +141,7 @@ public class PlayerInventory : MonoBehaviour
             }
             else
             {
-                Debug.Log("Inventory full, and you cannot drop the Camera to swap!");
+                Debug.Log("Inventory full!");
                 return;
             }
         }
@@ -124,9 +153,19 @@ public class PlayerInventory : MonoBehaviour
         OnSlotUpdated?.Invoke(targetSlot, newItem.itemIcon);
     }
 
+    public void RemoveCurrentItem()
+    {
+        if (inventorySlots[currentSlotIndex] == null) return;
+
+        inventorySlots[currentSlotIndex] = null;
+        OnSlotUpdated?.Invoke(currentSlotIndex, null); 
+        SwitchToSlot(0); 
+    }
+
     private void DropCurrentItem()
     {
         if (inventorySlots[currentSlotIndex] == null) return;
+
         IEquippable itemToDrop = inventorySlots[currentSlotIndex];
 
         if (itemToDrop.isDroppable && !itemToDrop.isInUse)
@@ -142,9 +181,11 @@ public class PlayerInventory : MonoBehaviour
     private void SwitchToSlot(int newSlot)
     {
         if (currentSlotIndex == newSlot) return;
+
         if (inventorySlots[currentSlotIndex] != null) inventorySlots[currentSlotIndex].OnUnequip();
         currentSlotIndex = newSlot;
         if (inventorySlots[currentSlotIndex] != null) inventorySlots[currentSlotIndex].OnEquip();
+        
         OnSlotChanged?.Invoke(currentSlotIndex);
     }
 

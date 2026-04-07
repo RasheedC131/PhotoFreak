@@ -5,12 +5,14 @@ public class ConsumableItem : MonoBehaviour, IEquippable
 {
     protected Rigidbody rb;
     protected Collider col;
+    private int originalLayer; 
 
     [Header("Item Details")]
-    [SerializeField] protected string itemName = "Default Item";
+    [SerializeField] protected string _itemName = "Default Item";
     [SerializeField] protected Sprite icon; 
 
     public virtual Sprite itemIcon => icon; 
+    public virtual string itemName => _itemName; 
 
     [Header("Equip Positioning")]
     [SerializeField] protected Vector3 equipPositionOffset = Vector3.zero;
@@ -23,6 +25,7 @@ public class ConsumableItem : MonoBehaviour, IEquippable
     {
         rb = GetComponent<Rigidbody>();
         col = GetComponent<Collider>();
+        originalLayer = gameObject.layer; 
     }
 
     public virtual void OnEquip() => gameObject.SetActive(true);
@@ -41,16 +44,17 @@ public class ConsumableItem : MonoBehaviour, IEquippable
         transform.SetParent(holdParent);
         transform.localPosition = equipPositionOffset;
         transform.localRotation = Quaternion.Euler(equipRotationOffset);
-        SetLayerRecursively(gameObject, 7); // Consumable Item Layer
+        
+        SetLayerRecursively(gameObject, 7); 
     }
 
     public virtual void OnDrop()
     {
-        transform.SetParent(null);
+        transform.SetParent(null); 
         rb.isKinematic = false;
         col.enabled = true;
         gameObject.SetActive(true); 
-        SetLayerRecursively(gameObject, 0); // Default world layer
+        SetLayerRecursively(gameObject, originalLayer); 
     }
 
     protected void SetLayerRecursively(GameObject obj, int newLayer)

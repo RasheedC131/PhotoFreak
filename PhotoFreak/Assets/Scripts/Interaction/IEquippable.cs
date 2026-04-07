@@ -11,5 +11,6 @@ public interface IEquippable
     bool isDroppable {get; }
     bool isInUse {get; }
     Sprite itemIcon { get; }
+    string itemName { get; }
     GameObject gameObject { get; }
 }

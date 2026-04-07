@@ -14,6 +14,7 @@ public class PhotoCamera : MonoBehaviour, IEquippable
 
     public bool isDroppable => false; 
     public bool isInUse => cameraRaised || isReview; 
+    public string itemName => "Photo Camera"; 
     public void OnPickup(Transform holdParent) {}
     public void OnDrop() {}
 
