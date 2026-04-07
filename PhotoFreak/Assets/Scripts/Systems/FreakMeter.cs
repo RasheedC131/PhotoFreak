@@ -6,14 +6,23 @@ using System.Collections;
 
 public class FreakMeter : MonoBehaviour
 {
+    [Header("FreakMeter settings")]
+    [SerializeField] private int maxNPC;
+    [SerializeField] private float maxFreak;
+    [SerializeField] private int maxStrikes;
+    [SerializeField] private int decayRate;
+    [Header("Camera Freak Function")]
+    [SerializeField] private float k1;
+    [SerializeField] private float x1;
+    [Header("Sprint Freak Function")]
+    [SerializeField] private float k2;
+    [SerializeField] private float x2;
+    [Header("Script info")]
     [SerializeField] PhotoCamera CameraScript;
     [SerializeField] PlayerMovement player;
     [SerializeField] private FreakMeterUI UI;
     [SerializeField] private Timer timer;
-
-    [SerializeField] private int maxNPC;
-    [SerializeField] private float maxFreak;
-    [SerializeField] private int maxStrikes;
+    [SerializeField] private FreakMeterTimer freakTimer;
 
     private float currentFreak;
     private bool isMeterDecaying;
@@ -21,7 +30,8 @@ public class FreakMeter : MonoBehaviour
     private List<Transform> visibleNPCs = new List<Transform>();
     
     private bool isGameOver = false; 
-
+    private float prevVal = 0;
+    private int currentStrikes = 0;
     void Start()
     {
         count = 0;
@@ -31,6 +41,7 @@ public class FreakMeter : MonoBehaviour
 
         if (UI == null) Debug.LogError("[]FreakMeter]: UI reference is missing in the Inspector!");
         if (CameraScript == null) Debug.LogError("[]FreakMeter]: CameraScript reference is missing!");
+        UI.UpdateStrikes(currentStrikes);
     }
 
     void Update()
@@ -41,12 +52,14 @@ public class FreakMeter : MonoBehaviour
 
         if (currentFreak >= maxFreak)
         {
-            maxStrikes -= 1;
+            freakTimer.restartTime();
+            currentStrikes += 1;
             currentFreak = 0;
             if (UI != null) UI.UpdateMeter(currentFreak);
+            UI.UpdateStrikes(currentStrikes);
         }
         
-        if (maxStrikes <= 0)
+        if (currentStrikes >= maxStrikes)
         {
             TriggerGameOver(); 
             return; 
@@ -56,35 +69,66 @@ public class FreakMeter : MonoBehaviour
 
         if (player.getSprint() && count > 0)
         {
-            currentFreak += count * .01f;
+            timer.restart();
+            currentFreak += sprintFunction(count, freakTimer.getTime()) * 1f;
             isMeterRising = true; 
         }
 
         if (CameraScript.getCameraState())
         {
-            currentFreak += count* .03f;
+            timer.restart();
+            currentFreak += cameraFunction(count, freakTimer.getTime()) * 1f;
             isMeterRising = true; 
         }
-
+        
         if (isMeterRising)
         {
             UpdateUI();
-            isMeterDecaying = true; 
         }
-        else if (timer.getTime() <= 0 && isMeterDecaying)
+        else if (isMeterDecaying)
         {
             if (currentFreak > 0)
             {
-                currentFreak -= .01f;
+                currentFreak -= .01f * decayRate;
                 if (currentFreak < 0)
                 {
                     currentFreak = 0;
                     isMeterDecaying = false;
                 }
-                Debug.Log(currentFreak);
+                freakTimer.restartTime();
                 UI.UpdateMeter(currentFreak);
             }
         }
+        if (timer.getTime() <= 0)
+        {
+            isMeterDecaying = true;
+        }
+        else
+        {
+            isMeterDecaying = false;
+        }
+    }
+
+    float sprintFunction(int count, float time)
+    {
+        float val = k2 * Mathf.Pow(x2, time);
+        Debug.Log(time);
+        prevVal = val  * count - prevVal;
+        if (prevVal < 0)
+        {
+            prevVal = 0;
+        }
+        return prevVal;
+    }
+    float cameraFunction(int count, float time)
+    {
+        float val = k1 * Mathf.Pow(x1, time);
+        prevVal = val * count - prevVal;
+         if (prevVal < 0)
+        {
+            prevVal = 0;
+        }
+        return prevVal;
     }
 
     void OnTriggerEnter(Collider other)
