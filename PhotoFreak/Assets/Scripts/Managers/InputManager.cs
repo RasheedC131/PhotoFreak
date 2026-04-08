@@ -5,6 +5,7 @@ using UnityEngine.InputSystem;
 public class InputManager : MonoBehaviour
 {
     private PlayerControls playerControls; 
+    private bool isPaused = false; 
 
     // events 
     public event Action<Vector2> OnMove; 
@@ -16,8 +17,6 @@ public class InputManager : MonoBehaviour
     public event Action OnShoot; 
     public event Action<float> OnZoom; 
     public event Action<float> OnFocus; 
-
-    // TODO: still needs to be implemented 
     public event Action OnPause; 
     public event Action OnResume; 
 
@@ -48,8 +47,8 @@ public class InputManager : MonoBehaviour
 
         playerControls.Ground.Shoot.performed += ctx => OnShoot?.Invoke(); 
 
-        // playerControls.Ground.Pause.performed += ctx => TogglePause(); 
-        // playerControls.UI.Resume.performed += ctx => TogglePause();  
+        playerControls.Ground.Pause.performed += ctx => TogglePause(); 
+        playerControls.UIMap.Resume.performed += ctx => TogglePause();  
 
         playerControls.Ground.Aim.started += ctx => OnAim?.Invoke(true); 
         playerControls.Ground.Aim.canceled += ctx => OnAim?.Invoke(false);
@@ -64,16 +63,10 @@ public class InputManager : MonoBehaviour
             if (Mathf.Abs(scrollVal) < 0.01f) return;
 
             // Focus
-            if (Keyboard.current != null && Keyboard.current.ctrlKey.isPressed)
-            {
-                OnFocus?.Invoke(scrollVal);
-            }
-
+            if (Keyboard.current != null && Keyboard.current.ctrlKey.isPressed) OnFocus?.Invoke(scrollVal);
+            
             // zoom 
-            else
-            {
-                OnZoom?.Invoke(scrollVal);
-            }
+            else OnZoom?.Invoke(scrollVal);
         };
     }
 
@@ -88,19 +81,23 @@ public class InputManager : MonoBehaviour
         playerControls.Ground.Disable(); 
     }
 
-    // Todo: tweak this later when we have resume/pause
-    public void EnableGameplayControls()
+    public void TogglePause()
     {
-        // if (playerControls.Ground.enabled)
-        // {
-        //     OnPause?.Invoke(); 
-        //     // EnableUIControls(); 
-        // }
 
-        // else
-        // {
-        //     OnResume?.Invoke(); 
-        //     // EnableGameplayControls(); 
-        // }
+        isPaused = !isPaused; 
+
+        if (isPaused)
+        {
+            playerControls.Ground.Disable(); 
+            playerControls.UIMap.Enable(); 
+            OnPause?.Invoke(); 
+        }
+
+        else
+        {
+            playerControls.Ground.Enable(); 
+            playerControls.UIMap.Disable(); 
+            OnResume?.Invoke(); 
+        }
     }
 }

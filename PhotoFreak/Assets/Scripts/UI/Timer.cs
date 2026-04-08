@@ -6,56 +6,48 @@ public class Timer : MonoBehaviour
     [SerializeField] private FreakMeterUI UI;
     [SerializeField] private GameObject player;
     [SerializeField] private bool MainTimer;
-    public float timeRemaining = 10;
+    public float timeRemaining = 10f;
     private float currentTime;
-    private bool tmp;
+    private bool isTimerFinished;
 
     void Start()
     {
-        tmp = true;
-        currentTime = timeRemaining;
+        restart(); 
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (currentTime >= 0)
-        {
-            currentTime -= Time.deltaTime;
-            // Debug.Log(currentTime);
+        if (isTimerFinished) return;
 
-        }
-        else
-        {
-            if (tmp)
-            {
-                Debug.Log("Timeout");
-                tmp = false;
-                if (MainTimer) // deletes player
-                {
-                    StartCoroutine(RestartGameRoutine());                
-                }
-            }
-        }
-        if (UI != null)
-            UI.UpdateTime(currentTime);
+        currentTime -= Time.deltaTime; 
+
+        if (UI != null) UI.UpdateTime(Mathf.Max(0, currentTime)); 
+
+        if (currentTime <= 0) HandleTimeOut(); 
+
     }
 
     public void restart()
     {
         currentTime = timeRemaining;
-        tmp = true;
+        isTimerFinished = true;
     }
+
     public float getTime()
     {
         return currentTime;
     }
 
-    private IEnumerator RestartGameRoutine()
+    private void HandleTimeOut()
     {
-        Debug.Log("Time's Up! Restarting...");
-        if (player != null) player.SetActive(false); 
-        yield return new WaitForSeconds(3.0f);
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        isTimerFinished = true; 
+        currentTime = 0f; 
+
+        if (MainTimer && GlobalGameState.Instance != null)
+        { 
+            GlobalGameState.Instance.TriggerGameOver(); 
+        }
+
     }
 }

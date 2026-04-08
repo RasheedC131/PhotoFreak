@@ -6,7 +6,7 @@ public class GlobalGameState : MonoBehaviour
     public enum GameState { PLAYING, PAUSED, GAMEOVER }
     public GameState currentState { get; private set; }
     
-    public static GlobalGameState instance; 
+    public static GlobalGameState Instance; 
 
     public event Action onGamePaused; 
     public event Action onGameResumed; 
@@ -16,7 +16,7 @@ public class GlobalGameState : MonoBehaviour
 
     void Awake()
     {
-        if (instance == null) instance = this; 
+        if (Instance == null) Instance = this; 
         else Destroy(gameObject); 
     }
 

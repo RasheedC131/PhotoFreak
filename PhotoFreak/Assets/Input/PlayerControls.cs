@@ -120,15 +120,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Jump"",
-                    ""type"": ""Button"",
-                    ""id"": ""0435cfef-a7c9-402a-b8f7-fc7e43f17902"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
                     ""name"": ""Pause"",
                     ""type"": ""Button"",
                     ""id"": ""47ed365e-115f-4e23-bccf-4ad333409e89"",
@@ -263,17 +254,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""a52eeda0-a737-4a5c-b003-5ea12fc3da97"",
-                    ""path"": ""<Keyboard>/space"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Jump"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
                     ""id"": ""e3647a06-b371-4c3f-afd5-d0dd8ec14500"",
                     ""path"": ""<Keyboard>/escape"",
                     ""interactions"": """",
@@ -345,7 +325,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             ""id"": ""4cb4b613-6abc-4af9-a275-e479096ea517"",
             ""actions"": [
                 {
-                    ""name"": ""New action"",
+                    ""name"": ""Resume"",
                     ""type"": ""Button"",
                     ""id"": ""de89ba0d-ff8e-44d3-82f8-13fbfbea2209"",
                     ""expectedControlType"": """",
@@ -358,11 +338,11 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""4a0ff757-50fd-41b7-9da7-ba92a9cf9ac2"",
-                    ""path"": """",
+                    ""path"": ""<Keyboard>/escape"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""New action"",
+                    ""action"": ""Resume"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -376,7 +356,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Ground_Movement = m_Ground.FindAction("Movement", throwIfNotFound: true);
         m_Ground_Look = m_Ground.FindAction("Look", throwIfNotFound: true);
         m_Ground_Aim = m_Ground.FindAction("Aim", throwIfNotFound: true);
-        m_Ground_Jump = m_Ground.FindAction("Jump", throwIfNotFound: true);
         m_Ground_Pause = m_Ground.FindAction("Pause", throwIfNotFound: true);
         m_Ground_Interact = m_Ground.FindAction("Interact", throwIfNotFound: true);
         m_Ground_Crouch = m_Ground.FindAction("Crouch", throwIfNotFound: true);
@@ -385,7 +364,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Ground_ScrollAction = m_Ground.FindAction("ScrollAction", throwIfNotFound: true);
         // UIMap
         m_UIMap = asset.FindActionMap("UIMap", throwIfNotFound: true);
-        m_UIMap_Newaction = m_UIMap.FindAction("New action", throwIfNotFound: true);
+        m_UIMap_Resume = m_UIMap.FindAction("Resume", throwIfNotFound: true);
     }
 
     ~@PlayerControls()
@@ -470,7 +449,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Ground_Movement;
     private readonly InputAction m_Ground_Look;
     private readonly InputAction m_Ground_Aim;
-    private readonly InputAction m_Ground_Jump;
     private readonly InputAction m_Ground_Pause;
     private readonly InputAction m_Ground_Interact;
     private readonly InputAction m_Ground_Crouch;
@@ -500,10 +478,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Ground/Aim".
         /// </summary>
         public InputAction @Aim => m_Wrapper.m_Ground_Aim;
-        /// <summary>
-        /// Provides access to the underlying input action "Ground/Jump".
-        /// </summary>
-        public InputAction @Jump => m_Wrapper.m_Ground_Jump;
         /// <summary>
         /// Provides access to the underlying input action "Ground/Pause".
         /// </summary>
@@ -563,9 +537,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Aim.started += instance.OnAim;
             @Aim.performed += instance.OnAim;
             @Aim.canceled += instance.OnAim;
-            @Jump.started += instance.OnJump;
-            @Jump.performed += instance.OnJump;
-            @Jump.canceled += instance.OnJump;
             @Pause.started += instance.OnPause;
             @Pause.performed += instance.OnPause;
             @Pause.canceled += instance.OnPause;
@@ -604,9 +575,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Aim.started -= instance.OnAim;
             @Aim.performed -= instance.OnAim;
             @Aim.canceled -= instance.OnAim;
-            @Jump.started -= instance.OnJump;
-            @Jump.performed -= instance.OnJump;
-            @Jump.canceled -= instance.OnJump;
             @Pause.started -= instance.OnPause;
             @Pause.performed -= instance.OnPause;
             @Pause.canceled -= instance.OnPause;
@@ -662,7 +630,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     // UIMap
     private readonly InputActionMap m_UIMap;
     private List<IUIMapActions> m_UIMapActionsCallbackInterfaces = new List<IUIMapActions>();
-    private readonly InputAction m_UIMap_Newaction;
+    private readonly InputAction m_UIMap_Resume;
     /// <summary>
     /// Provides access to input actions defined in input action map "UIMap".
     /// </summary>
@@ -675,9 +643,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// </summary>
         public UIMapActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
         /// <summary>
-        /// Provides access to the underlying input action "UIMap/Newaction".
+        /// Provides access to the underlying input action "UIMap/Resume".
         /// </summary>
-        public InputAction @Newaction => m_Wrapper.m_UIMap_Newaction;
+        public InputAction @Resume => m_Wrapper.m_UIMap_Resume;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -704,9 +672,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         {
             if (instance == null || m_Wrapper.m_UIMapActionsCallbackInterfaces.Contains(instance)) return;
             m_Wrapper.m_UIMapActionsCallbackInterfaces.Add(instance);
-            @Newaction.started += instance.OnNewaction;
-            @Newaction.performed += instance.OnNewaction;
-            @Newaction.canceled += instance.OnNewaction;
+            @Resume.started += instance.OnResume;
+            @Resume.performed += instance.OnResume;
+            @Resume.canceled += instance.OnResume;
         }
 
         /// <summary>
@@ -718,9 +686,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UIMapActions" />
         private void UnregisterCallbacks(IUIMapActions instance)
         {
-            @Newaction.started -= instance.OnNewaction;
-            @Newaction.performed -= instance.OnNewaction;
-            @Newaction.canceled -= instance.OnNewaction;
+            @Resume.started -= instance.OnResume;
+            @Resume.performed -= instance.OnResume;
+            @Resume.canceled -= instance.OnResume;
         }
 
         /// <summary>
@@ -783,13 +751,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnAim(InputAction.CallbackContext context);
         /// <summary>
-        /// Method invoked when associated input action "Jump" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-        /// </summary>
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnJump(InputAction.CallbackContext context);
-        /// <summary>
         /// Method invoked when associated input action "Pause" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
@@ -840,11 +801,11 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     public interface IUIMapActions
     {
         /// <summary>
-        /// Method invoked when associated input action "New action" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// Method invoked when associated input action "Resume" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnNewaction(InputAction.CallbackContext context);
+        void OnResume(InputAction.CallbackContext context);
     }
 }
