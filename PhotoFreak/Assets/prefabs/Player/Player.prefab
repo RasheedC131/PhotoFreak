@@ -1118,7 +1118,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.21960784, g: 0.21960784, b: 0.21960784, a: 0.78431374}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -1173,6 +1173,7 @@ GameObject:
   - component: {fileID: 949225059836024382}
   - component: {fileID: 354265123027015243}
   - component: {fileID: 4645469748073848643}
+  - component: {fileID: 6387361361939780898}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -1271,8 +1272,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Timer
   UI: {fileID: 0}
   player: {fileID: 0}
-  MainTimer: 0
-  timeRemaining: 3
+  MainTimer: 1
+  timeRemaining: 600
 --- !u!135 &7336599285751389772
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -1306,13 +1307,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ca7e61cfd093044abe4bf82c32cb9f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FreakMeter
+  maxNPC: 20
+  maxFreak: 20
+  maxStrikes: 3
+  decayRate: 0
+  k1: 0
+  x1: 0
+  k2: 0
+  x2: 0
   CameraScript: {fileID: 3172967152751098486}
   player: {fileID: 1527766073637076163}
   UI: {fileID: 949225059836024382}
   timer: {fileID: 209242629486176167}
-  maxNPC: 20
-  maxFreak: 20
-  maxStrikes: 3
+  freakTimer: {fileID: 6387361361939780898}
 --- !u!114 &949225059836024382
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1327,6 +1334,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FreakMeterUI
   freakText: {fileID: 5243542948526740319}
   timeText: {fileID: 7400692902835977353}
+  strikeText: {fileID: 0}
 --- !u!54 &354265123027015243
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1377,6 +1385,18 @@ MonoBehaviour:
   photoCameraObj: {fileID: 8764776978092254463}
   interactPromptText: {fileID: 179784641823919842}
   promptHeightOffset: 0.5
+--- !u!114 &6387361361939780898
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2037803872167456665}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 324751f187b344341bbd3060271e3414, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FreakMeterTimer
 --- !u!1 &2151360198555010868
 GameObject:
   m_ObjectHideFlags: 0
@@ -1548,7 +1568,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.29803923, g: 0.29803923, b: 0.29803923, a: 0.78431374}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -1849,7 +1869,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.3137255, g: 0.3137255, b: 0.3137255, a: 1}
+  m_Color: {r: 0.21960784, g: 0.21960784, b: 0.21960784, a: 0.78431374}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -2481,7 +2501,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.21960784, g: 0.21960784, b: 0.21960784, a: 0.78431374}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -2700,7 +2720,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.21960784, g: 0.21960784, b: 0.21960784, a: 0.78431374}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
