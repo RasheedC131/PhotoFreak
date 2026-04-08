@@ -62,7 +62,7 @@ public class PlayerInventory : MonoBehaviour
         CheckForInteractable();
     }
 
-    private void CheckForInteractable()
+private void CheckForInteractable()
     {
         if (interactPromptText == null) return; 
 
@@ -73,14 +73,14 @@ public class PlayerInventory : MonoBehaviour
             IInteractable interactableFixture = hit.collider.GetComponent<IInteractable>();
             if (interactableFixture != null)
             {
-                ShowPrompt(hit, $"[E]) {interactableFixture.promptText}");
+                ShowPrompt(hit, $"[E]) {interactableFixture.promptText}", interactableFixture.promptLocation);
                 return;
             }
 
             IEquippable itemOnGround = hit.collider.GetComponent<IEquippable>();
             if (itemOnGround != null)
             {
-                ShowPrompt(hit, $"[E]) {itemOnGround.itemName}");
+                ShowPrompt(hit, $"[E]) {itemOnGround.itemName}", null);
                 return; 
             }
         }
@@ -88,10 +88,16 @@ public class PlayerInventory : MonoBehaviour
         interactPromptText.gameObject.SetActive(false);
     }
 
-    private void ShowPrompt(RaycastHit hit, string textToShow)
+    private void ShowPrompt(RaycastHit hit, string textToShow, Transform customLocation)
     {
         interactPromptText.text = textToShow;
-        interactPromptText.transform.position = hit.collider.transform.position + (Vector3.up * promptHeightOffset);
+
+        Vector3 basePosition = customLocation != null 
+            ? customLocation.position 
+            : hit.collider.transform.position + (Vector3.up * promptHeightOffset);
+
+        Vector3 directionToCamera = (playerCamera.transform.position - basePosition).normalized;
+        interactPromptText.transform.position = basePosition + (directionToCamera * 0.15f);
         interactPromptText.transform.rotation = Quaternion.LookRotation(interactPromptText.transform.position - playerCamera.transform.position);
         interactPromptText.gameObject.SetActive(true);
     }
