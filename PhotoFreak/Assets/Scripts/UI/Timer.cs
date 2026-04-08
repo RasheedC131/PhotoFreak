@@ -31,7 +31,7 @@ public class Timer : MonoBehaviour
     public void restart()
     {
         currentTime = timeRemaining;
-        isTimerFinished = true;
+        isTimerFinished = false;
     }
 
     public float getTime()
