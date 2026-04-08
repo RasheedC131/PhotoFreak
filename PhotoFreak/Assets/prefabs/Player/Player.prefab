@@ -4084,14 +4084,14 @@ MonoBehaviour:
   focusStatusIndicator: {fileID: 7205178855341462927}
   baseFocusSpeed: 0.2
   focusOffset: 0.2
-  aperture: 5.6
+  aperture: 2
   blurRandomness: 5
   focusTolerance: 0.25
   minFocusDist: 0.1
   maxFocusDist: 100
   focusLayerMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 4294967295
   scoreCurveFlatness: 4
 --- !u!114 &3182318573186504152
 MonoBehaviour:
