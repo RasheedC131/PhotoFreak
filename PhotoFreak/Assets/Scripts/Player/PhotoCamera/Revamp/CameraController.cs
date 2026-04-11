@@ -24,6 +24,7 @@ public class CameraController : MonoBehaviour
 
     //Other Scripts
     private InputManager inputManager;
+    private CaptureSystem captureSystem;
 
     void Awake()
     {
@@ -34,6 +35,8 @@ public class CameraController : MonoBehaviour
             inputManager.OnAim += UpdateCaptureState;
             inputManager.OnShoot += AttemptCapture;
         }
+
+        captureSystem = GetComponent<CaptureSystem>();
     }
 
     void Start()
@@ -77,8 +80,8 @@ public class CameraController : MonoBehaviour
     {
         if (currentState == CaptureState.Capturing)
         {
-            //Method from another script to handle actual capture and scoring
-            hasPendingPhoto = true;
+            hasPendingPhoto = captureSystem.CaptureSubject(); //Returns bool based on sucess
+            TransitionToState(CaptureState.Idle);
         }
     }
 

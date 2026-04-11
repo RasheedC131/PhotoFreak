@@ -1508,6 +1508,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8876429642262372305}
   - component: {fileID: 3760710978009408208}
+  - component: {fileID: 1039213533765447114}
   m_Layer: 0
   m_Name: PhotoSystem
   m_TagString: Untagged
@@ -1543,6 +1544,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CameraController
   currentCamera: {fileID: 11400000, guid: 169a43864ed7c5245ab69fe04ef40936, type: 2}
+--- !u!114 &1039213533765447114
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2330362995910274858}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 129b8b5173ed2544f97a7607c60d00ba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CaptureSystem
+  cameraTransform: {fileID: 6362894696699967186}
+  radius: 0.5
+  maxDistance: 20
+  layer:
+    serializedVersion: 2
+    m_Bits: 768
 --- !u!1 &2759175760869938172
 GameObject:
   m_ObjectHideFlags: 0
@@ -1691,7 +1710,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &7719427905784322343
 Transform:
   m_ObjectHideFlags: 0
