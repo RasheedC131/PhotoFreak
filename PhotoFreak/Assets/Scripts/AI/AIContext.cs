@@ -1,6 +1,14 @@
 using UnityEngine;
 using UnityEngine.AI; 
 
+public enum NPCActionState
+{
+    IDLE = 0, 
+    WALK = 1, 
+    DRINK = 2, 
+
+}
+
 public class AIContext : MonoBehaviour
 {
     [Header("References")]
@@ -15,6 +23,7 @@ public class AIContext : MonoBehaviour
     public Transform targetNode; 
     public Vector3 currentDestination; 
     public bool forceNewPath = false; 
+    public NPCActionState currentActionState = NPCActionState.IDLE;
 
     [Header("Social State")]
     public bool isOccupied = false; 

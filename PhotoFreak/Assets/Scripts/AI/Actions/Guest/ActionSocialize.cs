@@ -74,6 +74,7 @@ public class ActionSocialize : UtilityAction
                 
                 agent.enabled = false;
                 if (obstacle != null) obstacle.enabled = true;
+                // ctx.currentActionState = NPCActionState.SOCIALIZE;
             } 
         }
     }
@@ -125,16 +126,17 @@ public class ActionSocialize : UtilityAction
 
     private void ResetSocialState()
     {
-        if (ctx.targetHub != null && !hasJoinedGroup)
-        {
-            ctx.targetHub.IncomingAttendees = Mathf.Max(0, ctx.targetHub.IncomingAttendees - 1);
-        }
+        if (ctx.targetHub != null && !hasJoinedGroup) ctx.targetHub.IncomingAttendees = Mathf.Max(0, ctx.targetHub.IncomingAttendees - 1);
+        
+
 
         ctx.isOccupied = false;
         ctx.targetHub = null;
         hasJoinedGroup = false;
         ctx.targetNode = null;
         ctx.forceNewPath = true;
+
+        ctx.currentActionState = NPCActionState.WALK; 
 
         if (obstacle != null) obstacle.enabled = false;
         if (agent != null) agent.enabled = true; 

@@ -23,8 +23,11 @@ public class ActionWanderNodes : UtilityAction
     public override void ExecuteAction()
     {
         if (ctx == null || agent == null) return; 
-
-        if (IsWaiting())
+        if (ctx.currentActionState != NPCActionState.IDLE && ctx.currentActionState != NPCActionState.WALK)
+        {
+            ctx.currentActionState = NPCActionState.IDLE;
+        }
+                if (IsWaiting())
         {
             if (agent.enabled) 
             {

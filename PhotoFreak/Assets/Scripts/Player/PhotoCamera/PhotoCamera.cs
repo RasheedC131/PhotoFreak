@@ -113,14 +113,16 @@ public class PhotoCamera : MonoBehaviour, IEquippable
         UpdateCaptureState(false);
         if (photoReviewUI != null) photoReviewUI.SetActive(false);
         isReview = false;
-
-        if (Time.timeScale == 0f) Time.timeScale = 1f;
         
+        if (GlobalGameState.Instance != null && GlobalGameState.Instance.currentState == GlobalGameState.GameState.PLAYING) Time.timeScale = 1f;
+        
+
         gameObject.SetActive(false);
     }
 
     public void OnUse()
     {
+        if (GlobalGameState.Instance != null && GlobalGameState.Instance.currentState != GlobalGameState.GameState.PLAYING) return;
         if (currentState == CaptureState.Capturing && !isReview) AttemptTakePhoto(); 
         else if (currentState == CaptureState.Idle) Debug.Log("Can't take photo with camera being aimed"); 
     }
@@ -227,19 +229,21 @@ public class PhotoCamera : MonoBehaviour, IEquippable
         yield return StartCoroutine(AnimateShutters(0f, shutterOpenHeight, shutterSpeed)); 
         yield return new WaitForSecondsRealtime(photoReviewTime); 
 
-        // cleanup the states 
-        if (freakMeter == null || !freakMeter.IsGameOver()) Time.timeScale = 1f; 
+        if (GlobalGameState.Instance != null && GlobalGameState.Instance.currentState == GlobalGameState.GameState.PLAYING) Time.timeScale = 1f; 
         
-
         if (photoReviewUI != null) photoReviewUI.SetActive(false); 
-        if (viewFinderUI != null && currentState == CaptureState.Capturing) viewFinderUI.SetActive(true); 
+        // if (viewFinderUI != null && currentState == CaptureState.Capturing) viewFinderUI.SetActive(true); 
         isReview = false;
         
-        if(freakMeter != null && freakMeter.IsGameOver())
+        // ui is draw based on game state 
+        if (GlobalGameState.Instance != null && GlobalGameState.Instance.currentState == GlobalGameState.GameState.GAMEOVER)
         {
-            Debug.Log("Game loop done.");
-            freakMeter.TriggerGameOver(); 
+            Debug.Log("Game Over hit during photo review.");
             if (viewFinderUI != null) viewFinderUI.SetActive(false); 
+        }
+        else if (viewFinderUI != null && currentState == CaptureState.Capturing) 
+        {
+            viewFinderUI.SetActive(true); 
         }
     }
 

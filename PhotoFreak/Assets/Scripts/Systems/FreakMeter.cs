@@ -29,7 +29,6 @@ public class FreakMeter : MonoBehaviour
     private int count;
     private List<Transform> visibleNPCs = new List<Transform>();
     
-    private bool isGameOver = false; 
     private float prevVal = 0;
     private int currentStrikes = 0;
     void Start()
@@ -39,14 +38,14 @@ public class FreakMeter : MonoBehaviour
         UpdateUI(); 
         currentFreak = 0f; 
 
-        if (UI == null) Debug.LogError("[]FreakMeter]: UI reference is missing in the Inspector!");
-        if (CameraScript == null) Debug.LogError("[]FreakMeter]: CameraScript reference is missing!");
+        if (UI == null) Debug.LogError("[FreakMeter]: UI reference is missing in the Inspector!");
+        if (CameraScript == null) Debug.LogError("[FreakMeter]: CameraScript reference is missing!");
         UI.UpdateStrikes(currentStrikes);
     }
 
     void Update()
-    {
-        if (isGameOver) return; 
+    {   
+        if (GlobalGameState.Instance != null && GlobalGameState.Instance.currentState != GlobalGameState.GameState.PLAYING) return; 
 
         if (count > maxNPC) count = maxNPC;
 
@@ -61,7 +60,7 @@ public class FreakMeter : MonoBehaviour
         
         if (currentStrikes >= maxStrikes)
         {
-            TriggerGameOver(); 
+            if (GlobalGameState.Instance != null) GlobalGameState.Instance.TriggerGameOver(); 
             return; 
         }
 
@@ -159,10 +158,9 @@ public class FreakMeter : MonoBehaviour
 
     public void AddFreakScore(float amount)
     {
-        if (isGameOver) return; 
+        if (GlobalGameState.Instance != null && GlobalGameState.Instance.currentState != GlobalGameState.GameState.PLAYING) return;
 
         currentFreak += amount; 
-
         if (currentFreak > maxFreak) currentFreak = maxFreak; 
         UpdateUI(); 
     }
@@ -172,28 +170,5 @@ public class FreakMeter : MonoBehaviour
         UI.UpdateMeter(currentFreak);
         if(timer != null) timer.restart();
         isMeterDecaying = true;
-    }
-
-    public void TriggerGameOver()
-    {
-        if (isGameOver) return; 
-        isGameOver = true;
-
-        Debug.Log("GAME OVER: Too much freakiness!"); 
-        
-        Time.timeScale = 1f; 
-
-        StartCoroutine(RestartGameRoutine());
-    }
-
-    private IEnumerator RestartGameRoutine()
-    {
-        yield return new WaitForSecondsRealtime(3.0f);
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-    }
-
-    public bool IsGameOver()
-    {
-        return isGameOver;
     }
 }

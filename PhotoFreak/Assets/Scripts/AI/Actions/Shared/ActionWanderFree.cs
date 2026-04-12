@@ -22,6 +22,11 @@ public class ActionWanderFree : UtilityAction
     {
         if (ctx == null || agent == null) return;
 
+        if (ctx.currentActionState != NPCActionState.IDLE && ctx.currentActionState != NPCActionState.WALK)
+        {
+            ctx.currentActionState = NPCActionState.IDLE;
+        }
+
         if (!agent.enabled)
         {
             if (obstacle != null) obstacle.enabled = false;
