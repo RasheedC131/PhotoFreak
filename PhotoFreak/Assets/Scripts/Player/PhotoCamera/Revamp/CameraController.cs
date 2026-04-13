@@ -51,11 +51,9 @@ public class CameraController : MonoBehaviour
             if (hasPendingPhoto)
             {
                 TransitionToState(CaptureState.Developing);
-                Debug.Log("Developing");
             } else
             {
                 TransitionToState(CaptureState.Capturing);
-                Debug.Log("Capturing");
             }
 
         } else if (!isActive)
@@ -63,7 +61,6 @@ public class CameraController : MonoBehaviour
             if (currentState == CaptureState.Capturing || currentState == CaptureState.Developing)
             {
                 TransitionToState(CaptureState.Idle);
-                Debug.Log("Stopped");
             }
         }
     }
@@ -71,6 +68,7 @@ public class CameraController : MonoBehaviour
     private void TransitionToState(CaptureState nextState)
     {
         currentState = nextState;
+        Debug.Log(currentState);
 
         //Method from UI to update state
         //Method from Player interaction to update state
@@ -78,10 +76,13 @@ public class CameraController : MonoBehaviour
 
     private void AttemptCapture()
     {
-        if (currentState == CaptureState.Capturing)
+        if (currentState == CaptureState.Capturing) //Returns bool based on success of capture
         {
-            hasPendingPhoto = captureSystem.CaptureSubject(); //Returns bool based on sucess
-            TransitionToState(CaptureState.Idle);
+            if (captureSystem.CaptureSubject())
+            {
+                hasPendingPhoto = true;
+                TransitionToState(CaptureState.Idle);
+            }
         }
     }
 

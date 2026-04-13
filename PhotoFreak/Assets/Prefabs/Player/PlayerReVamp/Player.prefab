@@ -1556,12 +1556,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 129b8b5173ed2544f97a7607c60d00ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CaptureSystem
-  cameraTransform: {fileID: 6362894696699967186}
-  radius: 0.5
+  camera: {fileID: 4061806477637331288}
   maxDistance: 20
-  layer:
+  overlayRadius: 7
+  subjectLayer:
     serializedVersion: 2
-    m_Bits: 768
+    m_Bits: 256
+  obstructionLayer:
+    serializedVersion: 2
+    m_Bits: 512
 --- !u!1 &2759175760869938172
 GameObject:
   m_ObjectHideFlags: 0
@@ -3533,7 +3536,7 @@ Camera:
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 119
+    m_Bits: 887
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
