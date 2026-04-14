@@ -55,7 +55,7 @@ public class FreakMeter : MonoBehaviour
             freakTimer.restartTime();
             currentStrikes += 1;
             currentFreak = 0;
-            if (UI != null) UI.UpdateMeter(currentFreak);
+            if (UI != null) UI.UpdateMeter(currentFreak, maxFreak);
             UI.UpdateStrikes(currentStrikes);
         }
         
@@ -67,10 +67,10 @@ public class FreakMeter : MonoBehaviour
 
         bool isMeterRising = false; 
 
-        if (player.getSprint() && count > 0)
+        if (player.getSprint() && count > -1)
         {
             timer.restart();
-            currentFreak += sprintFunction(count, freakTimer.getTime()) * 1f;
+            currentFreak += sprintFunction(1, freakTimer.getTime()) * 1f; // tmp values
             isMeterRising = true; 
         }
 
@@ -96,7 +96,7 @@ public class FreakMeter : MonoBehaviour
                     isMeterDecaying = false;
                 }
                 freakTimer.restartTime();
-                UI.UpdateMeter(currentFreak);
+                UI.UpdateMeter(currentFreak, maxFreak);
             }
         }
         if (timer.getTime() <= 0)
@@ -169,7 +169,7 @@ public class FreakMeter : MonoBehaviour
 
     private void UpdateUI()
     {
-        UI.UpdateMeter(currentFreak);
+        UI.UpdateMeter(currentFreak, maxFreak);
         if(timer != null) timer.restart();
         isMeterDecaying = true;
     }
