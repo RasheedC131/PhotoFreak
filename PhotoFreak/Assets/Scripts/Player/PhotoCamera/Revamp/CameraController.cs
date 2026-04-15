@@ -83,6 +83,10 @@ public class CameraController : MonoBehaviour
                 hasPendingPhoto = true;
                 TransitionToState(CaptureState.Idle);
             }
+        } else if (currentState == CaptureState.Developing) //Destroys photo (for debugging)
+        {
+            hasPendingPhoto = false;
+            TransitionToState(CaptureState.Idle);
         }
     }
 

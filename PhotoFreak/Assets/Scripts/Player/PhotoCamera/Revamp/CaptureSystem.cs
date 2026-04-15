@@ -20,9 +20,14 @@ public class CaptureSystem : MonoBehaviour
     public LayerMask subjectLayer;
     public LayerMask obstructionLayer;
 
+    //OtherScript
+    private PhotoScoring eval;
+
     void Awake()
     {
         cameraTransform = camera.transform;
+
+        eval = GetComponent<PhotoScoring>();
     }
 
     //Shoots a raycast straight forward, looking for a subject or bumping into a wall
@@ -33,27 +38,29 @@ public class CaptureSystem : MonoBehaviour
 
         if(Physics.Raycast(origin,dir,out subject,maxDistance, subjectLayer | obstructionLayer))
         {
-            Debug.Log("Hit");
-        
             //Checks for photo tag
             if (subject.collider.GetComponent<PhotoTag>())
             {
                 Debug.Log("Hit Subject");
 
-                int extras; //subjects in the background
-                extras = CaptureExtras(subject);
+                CaptureData data = new CaptureData();
 
-                Debug.Log(extras);
+                data.playerPos = origin;
+                data.subjectPos = subject.point;
+                data.subjectForward = subject.collider.transform.forward;
 
-                //Call for photo calculation would include cameraTransform and subject as parameters
+                data.extras = CaptureExtras(subject);
+
+                
+                eval.EvaluateCaptureData(data);
 
                 return true;
             }
 
-        } else
-        {
-            Debug.Log("Missed");
-        }
+        } 
+        
+        Debug.Log("Missed");
+        
 
         return false;
     }
@@ -82,6 +89,7 @@ public class CaptureSystem : MonoBehaviour
             if(inPlayerView && !Blocked) extrasCount += 1;
         }
         
+        Debug.Log("Extras: " + extrasCount);
         return extrasCount;
     }
 
