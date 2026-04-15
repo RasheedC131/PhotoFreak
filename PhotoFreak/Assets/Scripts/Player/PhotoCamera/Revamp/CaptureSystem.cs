@@ -49,6 +49,8 @@ public class CaptureSystem : MonoBehaviour
                 data.subjectPos = subject.point;
                 data.subjectForward = subject.collider.transform.forward;
 
+                data.fov = camera.fieldOfView;
+
                 data.extras = CaptureExtras(subject);
 
                 

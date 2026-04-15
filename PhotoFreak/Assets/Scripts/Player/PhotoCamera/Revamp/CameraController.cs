@@ -26,9 +26,12 @@ public class CameraController : MonoBehaviour
     private InputManager inputManager;
     private CaptureSystem captureSystem;
 
+    //Camera Features
+    private CameraZoom cameraZoom;
+
     void Awake()
     {
-        if (inputManager == null) inputManager = GetComponentInParent<InputManager>();
+        inputManager = GetComponentInParent<InputManager>();
 
         if (inputManager != null)
         {
@@ -37,6 +40,8 @@ public class CameraController : MonoBehaviour
         }
 
         captureSystem = GetComponent<CaptureSystem>();
+        cameraZoom = GetComponentInChildren<CameraZoom>();
+        
     }
 
     void Start()
@@ -70,6 +75,7 @@ public class CameraController : MonoBehaviour
         currentState = nextState;
         Debug.Log(currentState);
 
+        ApplyFeatureState(currentState);
         //Method from UI to update state
         //Method from Player interaction to update state
     }
@@ -88,6 +94,13 @@ public class CameraController : MonoBehaviour
             hasPendingPhoto = false;
             TransitionToState(CaptureState.Idle);
         }
+    }
+
+    private void ApplyFeatureState(CaptureState state)
+    {
+        bool capturing = (state == CaptureState.Capturing);
+
+        cameraZoom.SetActive(capturing);
     }
 
 

@@ -10,7 +10,7 @@ public class PhotoScoring : MonoBehaviour
     {
         public float distance; //How far is the subject
         public float facing; //Is the subject facing the camera
-        //public int framing; //Does the subject fit in the camera
+        public float size; //Does the subject fit in the camera
 
         //public int pose; //Taken from Photo Tag
         //public int focus; //Taken from CameraFocus
@@ -29,8 +29,12 @@ public class PhotoScoring : MonoBehaviour
 
         float angle = CalculateFacing(data);
         score.facing = ScoreFacing(angle);
-        Debug.Log("Angle : " + angle);
-        Debug.Log("Facing Score: " + score.facing);
+        //Debug.Log("Angle : " + angle);
+        //Debug.Log("Facing Score: " + score.facing);
+
+        float size = 1f/(dist * data.fov);
+        //score.size = ScoreSize(size);
+        Debug.Log("Size : " + size);
     }
 
     private float ScoreDistance(float dist)

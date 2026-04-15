@@ -3,7 +3,7 @@ using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal; 
 using TMPro; 
 
-public class CameraZoom : MonoBehaviour
+public class LegacyCameraZoom : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private InputManager inputManager; 
