@@ -10,6 +10,13 @@ public class MonsterSettings : ScriptableObject
         {
             if (_instance == null) _instance = Resources.Load<MonsterSettings>("AI/MonsterSettings");
 
+            if (_instance == null)
+                {
+                    Debug.LogError("CRITICAL: Could not find the MonsterSettings asset in 'Resources/AI/'");
+                    
+                    // _instance = ScriptableObject.CreateInstance<MonsterSettings>();
+                }
+
             return _instance;
         }
     }
