@@ -8,18 +8,23 @@ public class ActionTriggerTell : UtilityAction
     private MonsterSettings ms; 
     private NPCIdentity identity; 
 
-    private bool isPreformingTell = false;
+    private bool _isPerformingTell = false; 
+    private ConsiderationTellCooldown tellTimer; 
+    public bool isPerformingTell => _isPerformingTell; 
 
     void Awake()
     {
         ctx = GetComponentInParent<AIContext>();
         ms = MonsterSettings.Instance; 
         identity = GetComponentInParent<NPCIdentity>();
+        tellTimer = GetComponent<ConsiderationTellCooldown>(); 
+        if (tellTimer == null) Debug.LogError("ConsiderationTellCooldown not found on " + gameObject.name);
+
     }
 
     public override void ExecuteAction()
     {
-        if (!isPreformingTell)
+        if (!isPerformingTell)
         {
             StartCoroutine(PreformTellRoutine()); 
         }
@@ -28,15 +33,23 @@ public class ActionTriggerTell : UtilityAction
     // TODO: Implement actual tells 
     private IEnumerator PreformTellRoutine()
     {
-        isPreformingTell = true; 
+        _isPerformingTell = true; 
         ctx.agent.isStopped = true; 
+        tellTimer.ResetTimer(); 
 
-        Debug.Log($"{ctx.gameObject.name} is performing a monster tell");
+        Debug.Log($"{ctx.gameObject.name} is Performing a monster tell");
 
         yield return new WaitForSeconds(ms.tellDuration); 
         
-        ctx.currentStalkTimer = 0f; 
         ctx.agent.isStopped = false; 
-        isPreformingTell = false; 
+        _isPerformingTell = false; 
+    }
+
+    // if action switches during coroutine
+    public override void OnExit()
+    {
+        StopAllCoroutines();
+        _isPerformingTell = false;
+        ctx.agent.isStopped = false;
     }
 }
