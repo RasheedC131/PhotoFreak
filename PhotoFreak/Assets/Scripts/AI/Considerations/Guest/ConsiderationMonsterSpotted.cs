@@ -4,7 +4,6 @@ public class ConsiderationMonsterSpotted : Consideration
 {
     private AIContext ctx; 
     private GuestWeights gw; 
-    [SerializeField] private float panicRadius = 10f; 
 
     void Awake()
     {
@@ -16,15 +15,20 @@ public class ConsiderationMonsterSpotted : Consideration
     {
         if (ctx.isMonster) return 0f;
 
-        Collider[] hits = Physics.OverlapSphere(transform.position, panicRadius);
+        Collider[] hits = Physics.OverlapSphere(transform.position, gw.guestPanicDistance);
+        float highestPanic = 0f; 
+
         foreach (Collider hit in hits)
         {
-            AIContext nearbyActor = hit.GetComponent<AIContext>();
-            
-            if (nearbyActor != null && nearbyActor.isMonster)
+            AIContext nearbyNPC = hit.GetComponent<AIContext>(); 
+
+            if (nearbyNPC != null && nearbyNPC.isMonster)
             {
-                ctx.currentVictim = nearbyActor; 
-                return gw.monsterSpottedWeight; 
+                ctx.currentVictim = nearbyNPC; 
+                float dist = Vector3.Distance(transform.position, nearbyNPC.transform.position);
+                float panicIntensity = 1.0f - (dist / gw.monsterSpottedWeight);                
+                float score = panicIntensity * gw.monsterSpottedWeight;
+                if (score > highestPanic) highestPanic = score;            
             }
         }
 

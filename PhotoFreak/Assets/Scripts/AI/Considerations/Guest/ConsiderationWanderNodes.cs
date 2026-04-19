@@ -4,33 +4,33 @@ public class ConsiderationWanderNodes : Consideration
 {
     private AIContext ctx;
     private GuestWeights gw; 
-    private ActionWanderNodes wanderAction;
+    private float personalityOffset;
 
     void Awake()
     {
         ctx = GetComponentInParent<AIContext>();
         gw = GuestWeights.Instance; 
-        wanderAction = GetComponent<ActionWanderNodes>();
+        if (gw != null) personalityOffset = Random.Range(-gw.maxPersonalityOffset, gw.maxPersonalityOffset);
     }
 
     protected override float EvaluateRawValue() 
     {
-        if (ctx == null) return 0f;
+        if (ctx == null || (ctx.isMonster && ctx.currentVictim != null) || ctx.isOccupied) return 0f;
 
-        if (ctx.isMonster && ctx.currentVictim != null) return 0f;
-        
-        if (ctx.isOccupied) return 0f;   
-
-        if (wanderAction != null && wanderAction.IsWaiting()) return 1.0f;
-        
-        if (ctx.targetNode == null)
+        if (ctx.targetNode != null || ctx.forceNewPath)
         {
-            if (wanderAction != null && !wanderAction.HasOpenNodes())
+            if (ctx.targetNode != null)
             {
-                return 0f; 
+                ZoneNode node = ctx.targetNode.GetComponent<ZoneNode>();
+                if (node != null && node.currentCrowd.Contains(ctx)) return 0f; 
             }
+            
+            return gw.wanderNodesCommittedWeight; 
         }
 
-        return gw.wanderNodesWeight; 
+        ActionWanderNodes wanderAction = GetComponent<ActionWanderNodes>();
+        if (wanderAction != null && !wanderAction.HasOpenNodes()) return 0f; 
+
+        return Mathf.Clamp01(gw.wanderNodesWeight + personalityOffset);
     }
 }

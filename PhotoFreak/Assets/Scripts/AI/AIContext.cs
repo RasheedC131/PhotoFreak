@@ -6,9 +6,9 @@ public enum NPCActionState
     IDLE = 0, 
     WALK = 1, 
     DRINK = 2, 
-
+    SOCIALIZE = 3
 }
-
+[SelectionBase]
 public class AIContext : MonoBehaviour
 {
     [Header("References")]

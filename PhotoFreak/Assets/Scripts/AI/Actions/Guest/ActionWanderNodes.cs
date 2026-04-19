@@ -1,122 +1,103 @@
 using UnityEngine;
 using UnityEngine.AI;
-using System.Collections.Generic; 
+using System.Collections.Generic;
 
 public class ActionWanderNodes : UtilityAction
 {
     private NavMeshAgent agent; 
-    private NavMeshObstacle obstacle;
     private AIContext ctx; 
     private GuestSettings gs; 
+    
+    public bool hasReservedSpot = false; 
+    private float attemptTimer = 0f; 
 
-    private float movementTime = 0f; 
-
-    void Start()
+    void Awake()
     {
         agent = GetComponentInParent<NavMeshAgent>(); 
-        obstacle = GetComponentInParent<NavMeshObstacle>(); 
         ctx = GetComponentInParent<AIContext>(); 
         gs = GuestSettings.Instance; 
-        if (obstacle != null) obstacle.enabled = false;
     }
 
     public override void ExecuteAction()
     {
         if (ctx == null || agent == null) return; 
-        if (ctx.currentActionState != NPCActionState.IDLE && ctx.currentActionState != NPCActionState.WALK)
-        {
-            ctx.currentActionState = NPCActionState.IDLE;
-        }
-                if (IsWaiting())
-        {
-            if (agent.enabled) 
-            {
-                agent.enabled = false;
-                if (obstacle != null) obstacle.enabled = true;      
-            }
 
-            if (ctx.targetNode != null)
-            {
-                Vector3 lookPos = ctx.targetNode.position;
-                lookPos.y = transform.position.y; 
-                Quaternion targetRotation = Quaternion.LookRotation(lookPos - transform.position);
-                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 3f); 
-            }
-            return; 
-        }
-        
-        if (!agent.enabled)
-        {
-            if (obstacle != null) obstacle.enabled = false;
-            agent.enabled = true;
-        }
-
-        if (agent.isOnNavMesh && agent.isStopped) agent.isStopped = false;
-
-        if (ctx.targetNode != null)
-        {
-            ZoneNode nodeScript = ctx.targetNode.GetComponent<ZoneNode>();
-            if (nodeScript != null && nodeScript.GetCurrentCrowd() >= gs.wanderNodeMaxCapacity)
-            {
-                AbandonNode();
-                return; 
-            }
-        }
-
-        bool hasArrived = !agent.pathPending && agent.hasPath && (agent.remainingDistance <= gs.wanderMaxDistToDest);
-        if (hasArrived && ctx.targetNode != null)
-        {
-            float waitDuration = Random.Range(gs.wanderMinWaitAtNode, gs.wanderMaxWaitAtNode);
-            movementTime = Time.time + waitDuration;
-
-            if (agent.isOnNavMesh) agent.ResetPath(); 
-            return; 
-        }
-
-        if ((!agent.hasPath && !agent.pathPending) || ctx.forceNewPath)
+        if (ctx.targetNode == null || ctx.forceNewPath)
         {
             ctx.forceNewPath = false; 
-
-            if (ctx.targetNode == null) PickNextRandomNode();
-
-            if (ctx.targetNode == null)
+            PickNextRandomNode(); 
+            if (ctx.targetNode == null) 
             {
                 AbandonNode();
                 return;
             }
+        }
 
-            Vector3 randomOffset = Random.insideUnitSphere * gs.wanderNodeSpreadRadius; 
-            randomOffset.y = 0;
-            Vector3 desiredDestination = ctx.targetNode.position + randomOffset;
+        ZoneNode nodeScript = ctx.targetNode.GetComponent<ZoneNode>();
+        if (nodeScript == null)
+        {
+            AbandonNode();
+            return;
+        }
+
+        if (nodeScript.currentCrowd.Contains(ctx))
+        {
+            ctx.currentActionState = NPCActionState.IDLE;
+            if (agent.isOnNavMesh && !agent.isStopped) agent.isStopped = true;
+            return;
+        }
+
+        attemptTimer += Time.deltaTime; 
+
+        bool hasArrived = false;
+        if (agent.enabled && agent.isOnNavMesh && !agent.pathPending && agent.hasPath && agent.remainingDistance <= gs.wanderMaxDistToDest) hasArrived = true;
+        if (Vector3.Distance(ctx.transform.position, ctx.currentDestination) <= gs.wanderMaxDistToDest) hasArrived = true; 
+        if (!hasArrived && attemptTimer > 2.0f && Vector3.Distance(ctx.transform.position, ctx.targetNode.position) <= gs.wanderNodeSpreadRadius + 2.0f) hasArrived = true;
+        if (!hasArrived && attemptTimer > 15.0f) { AbandonNode(); return; }
+
+        if (hasArrived)
+        {
+            if (nodeScript.incomingCrowd.Contains(ctx)) nodeScript.incomingCrowd.Remove(ctx);
+            if (!nodeScript.currentCrowd.Contains(ctx)) nodeScript.currentCrowd.Add(ctx);
             
-            NavMeshHit hit;
-            if (NavMesh.SamplePosition(desiredDestination, out hit, gs.wanderNodeSpreadRadius, NavMesh.AllAreas))
-            {
-                ctx.currentDestination = hit.position;
-            }
-            else
-            {
-                ctx.currentDestination = ctx.targetNode.position; 
-            }
+            hasReservedSpot = false; 
 
-            if (agent.isOnNavMesh) agent.SetDestination(ctx.currentDestination);        
+            if (agent.enabled && agent.isOnNavMesh) 
+            {
+                agent.ResetPath(); 
+                agent.isStopped = true;
+            }
+            ctx.currentActionState = NPCActionState.IDLE;
+        }
+        else
+        {
+            if (agent.enabled && agent.isOnNavMesh && !agent.pathPending)
+            {
+                if (agent.isStopped) agent.isStopped = false;
+                agent.SetDestination(ctx.currentDestination);
+                ctx.currentActionState = NPCActionState.WALK;
+            }
         }
     }
 
     public void AbandonNode()
     {
-        ctx.targetNode = null;
-        ctx.forceNewPath = true;
-        
-        movementTime = 0f; 
-        
-        if (!agent.enabled)
+        if (ctx.targetNode != null)
         {
-            if (obstacle != null) obstacle.enabled = false;
-            agent.enabled = true;
+            ZoneNode nodeScript = ctx.targetNode.GetComponent<ZoneNode>();
+            if (nodeScript != null)
+            {
+                if (nodeScript.incomingCrowd.Contains(ctx)) nodeScript.incomingCrowd.Remove(ctx);   
+            }
         }
         
-        if (agent.isOnNavMesh) agent.ResetPath();
+        hasReservedSpot = false;
+        ctx.targetNode = null;
+        ctx.forceNewPath = false; 
+        
+        attemptTimer = 0f; 
+        ctx.currentActionState = NPCActionState.WALK;
+        if (agent != null && agent.isOnNavMesh) agent.isStopped = false;
     }
 
     private void PickNextRandomNode()
@@ -127,42 +108,52 @@ public class ActionWanderNodes : UtilityAction
         foreach (ZoneNode node in allNodes)
         {
             if (ctx.targetNode != null && node.transform == ctx.targetNode) continue;
-
-            if (node.GetCurrentCrowd() < gs.wanderNodeMaxCapacity)
-            {
-                validNodes.Add(node);
-            }
+            if (node.HasOpenSlots()) validNodes.Add(node);
         }
 
         if (validNodes.Count > 0)
         {
-            int randomIdx = Random.Range(0, validNodes.Count);
-            ctx.targetNode = validNodes[randomIdx].transform;
-        }
-        else
-        {
-            ctx.targetNode = null; 
-        }
-    }
+            ZoneNode chosenNode = validNodes[Random.Range(0, validNodes.Count)];
+            ctx.targetNode = chosenNode.transform;
 
-    public bool IsWaiting()
-    {
-        return Time.time < movementTime && ctx.targetNode != null;
+            if (!chosenNode.incomingCrowd.Contains(ctx)) chosenNode.incomingCrowd.Add(ctx);
+            hasReservedSpot = true;
+            attemptTimer = 0f; 
+
+            Vector3 randomOffset = Random.insideUnitSphere * gs.wanderNodeSpreadRadius; 
+            randomOffset.y = 0;
+            Vector3 desiredDestination = ctx.targetNode.position + randomOffset;
+            
+            NavMeshHit hit;
+            if (NavMesh.SamplePosition(desiredDestination, out hit, gs.wanderNodeSpreadRadius, NavMesh.AllAreas))
+                ctx.currentDestination = hit.position;
+            else
+                ctx.currentDestination = ctx.targetNode.position; 
+        }
+        else ctx.targetNode = null; 
     }
 
     public bool HasOpenNodes()
     {
         if (gs == null) return false;
-        ZoneNode[] allNodes = FindObjectsOfType<ZoneNode>();
-        foreach (ZoneNode node in allNodes)
+        foreach (ZoneNode node in FindObjectsOfType<ZoneNode>())
         {
-            if (node.GetCurrentCrowd() < gs.wanderNodeMaxCapacity) return true;
+            if (node.HasOpenSlots()) return true;
         }
         return false;
     }
 
     public override void OnExit()
     {
-        AbandonNode(); 
+        if (hasReservedSpot && ctx.targetNode != null)
+        {
+            ZoneNode nodeScript = ctx.targetNode.GetComponent<ZoneNode>();
+            if (nodeScript != null && nodeScript.incomingCrowd.Contains(ctx)) nodeScript.incomingCrowd.Remove(ctx);
+            
+            
+            hasReservedSpot = false;
+            ctx.targetNode = null;
+            ctx.forceNewPath = false; 
+        }
     }
 }

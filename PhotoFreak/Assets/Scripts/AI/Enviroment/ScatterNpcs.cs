@@ -1,68 +1,84 @@
 using UnityEngine;
-using System.Collections;
+using UnityEngine.AI;
 using System.Collections.Generic; 
 
 public class ScatterNpcs : MonoBehaviour
 {
     private GuestSettings gs; 
 
-    private IEnumerator Start()
+    void Start()
     {
         gs = GuestSettings.Instance; 
         
-        yield return new WaitForEndOfFrame(); 
-
         ZoneNode[] allNodes = FindObjectsOfType<ZoneNode>();
-        if (allNodes.Length == 0) yield break; 
+        if (allNodes.Length == 0) return; 
 
         AIContext[] allAgents = FindObjectsOfType<AIContext>();
+        ShuffleArray(allAgents);
+
+        int nodeIndex = 0;
 
         foreach (AIContext agent in allAgents)
         {
             if (agent != null && !agent.isMonster)
             {
-                Transform placementNode = allNodes[Random.Range(0, allNodes.Length)].transform;
-                Transform assignedNode = GetRandomOpenNode(allNodes);
+                ZoneNode placementNode = allNodes[nodeIndex % allNodes.Length];
+                nodeIndex++;
 
-                agent.targetNode = assignedNode; 
-                agent.forceNewPath = true; 
-
-                UnityEngine.AI.NavMeshAgent navAgent = agent.GetComponent<UnityEngine.AI.NavMeshAgent>();
+                NavMeshAgent navAgent = agent.GetComponent<NavMeshAgent>();
                 
                 if (navAgent != null)
                 {
                     Vector3 offsetVec = new Vector3(Random.Range(-4.0f, 4.0f), 0, Random.Range(-4.0f, 4.0f));
-                    Vector3 targetPos = placementNode.position + offsetVec;
-                    navAgent.enabled = false;
-                    agent.transform.position = targetPos;
-                    navAgent.enabled = true;
+                    Vector3 desiredPos = placementNode.transform.position + offsetVec;
+                    
+                    NavMeshHit hit;
+                    if (NavMesh.SamplePosition(desiredPos, out hit, 10f, NavMesh.AllAreas))
+                    {
+                        navAgent.enabled = false;
+                        agent.transform.position = hit.position;
+                        navAgent.enabled = true;
+                    }
+                    else
+                    {
+                        navAgent.enabled = false;
+                        agent.transform.position = placementNode.transform.position;
+                        navAgent.enabled = true;
+                    }
 
-                    float baseSpeed = gs.wanderBaseSpeed * 0.5f; 
+                    agent.currentDestination = placementNode.transform.position;
+
+                    if (placementNode.HasOpenSlots())
+                    {
+                        placementNode.incomingCrowd.Add(agent);
+                        agent.targetNode = placementNode.transform;
+                        
+                        ActionWanderNodes wanderScript = agent.GetComponent<ActionWanderNodes>();
+                        if (wanderScript != null) wanderScript.hasReservedSpot = true;
+                    }
+                    else
+                    {
+                        agent.targetNode = null; 
+                    }
+
+                    agent.forceNewPath = false; 
+
                     navAgent.speed = Random.Range(gs.wanderBaseSpeed * 0.8f, gs.wanderBaseSpeed * 1.2f);
                     navAgent.acceleration = Random.Range(gs.wanderMinAcceleration, gs.wanderMaxAcceleration);
                     navAgent.avoidancePriority = Random.Range(30, 70);
                 }
             }
         }
-        
-        Debug.Log($"Scattered {allAgents.Length} agents across {allNodes.Length} nodes.");
     }
 
-    private Transform GetRandomOpenNode(ZoneNode[] nodes)
+    private void ShuffleArray(AIContext[] array)
     {
-        List<ZoneNode> shuffledNodes = new List<ZoneNode>(nodes);
-        for (int i = 0; i < shuffledNodes.Count; i++)
+        for (int i = 0; i < array.Length; i++)
         {
-            ZoneNode temp = shuffledNodes[i];
-            int randomIndex = Random.Range(i, shuffledNodes.Count);
-            shuffledNodes[i] = shuffledNodes[randomIndex];
-            shuffledNodes[randomIndex] = temp;
+            AIContext temp = array[i];
+            int randomIndex = Random.Range(i, array.Length);
+            array[i] = array[randomIndex];
+            array[randomIndex] = temp;
         }
-
-        foreach (ZoneNode node in shuffledNodes)
-        {
-            if (node.GetCurrentCrowd() < node.activeCapacity) return node.transform;
-        }
-        return null;
     }
 }

@@ -14,10 +14,8 @@ public class ConsiderationPlayerSpotted : Consideration
         gs = GuestSettings.Instance; 
 
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
-        if (playerObj != null)
-        {
-            playerTransform = playerObj.transform;
-        }
+        if (playerObj != null) playerTransform = playerObj.transform;
+        
     }
 
     protected override float EvaluateRawValue()
@@ -31,13 +29,12 @@ public class ConsiderationPlayerSpotted : Consideration
         if (dist <= gs.fleePlayerSightRadius)
         {
             ctx.currentThreat = playerTransform;
-            return gw.playerSpottedWeight;
+            float intensity = 1.0f - (dist / gs.fleePlayerSightRadius); 
+            return intensity * gw.playerSpottedWeight;
         }
 
-        if (ctx.currentThreat == playerTransform) 
-        {
-            ctx.currentThreat = null;
-        }
+        if (ctx.currentThreat == playerTransform) ctx.currentThreat = null;
+        
         
         return 0f;
     }
