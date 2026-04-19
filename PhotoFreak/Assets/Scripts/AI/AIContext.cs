@@ -24,6 +24,8 @@ public class AIContext : MonoBehaviour
     public Vector3 currentDestination; 
     public bool forceNewPath = false; 
     public NPCActionState currentActionState = NPCActionState.IDLE;
+    public float walkingStartTime = -1f;
+
 
     [Header("Social State")]
     public bool isOccupied = false; 
@@ -78,4 +80,10 @@ public class AIContext : MonoBehaviour
             zoneGroups[i] = nodesContainer.GetChild(i); 
         }
     }
+
+    public float GetWalkingFatigue(float maxFatigueTime)
+{
+    if (walkingStartTime < 0f) return 0f;
+    return Mathf.Clamp01((Time.time - walkingStartTime) / maxFatigueTime);
+}
 }

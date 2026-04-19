@@ -30,6 +30,9 @@ public class GuestSettings : ScriptableObject
     [SerializeField] private float _socialTurnSpeed = 5f; 
     [SerializeField] private float _socialJoinHubRange = 15f; 
     [SerializeField] private float _socialConvRadius = 0.85f; 
+    // considerations 
+    [SerializeField] private float _socialMinTime = 20f;
+    [SerializeField] private float _socialTimeDecay = 30f; 
 
     [Header("Action Isolate")]
     [SerializeField] private float _isolateTurnAngle = 30f;
@@ -57,6 +60,8 @@ public class GuestSettings : ScriptableObject
     public float socialTurnSpeed => _socialTurnSpeed; 
     public float socialJoinHubRange => _socialJoinHubRange; 
     public float socialConvRadius => _socialConvRadius; 
+    public float socialTimeDecay => _socialTimeDecay; 
+    public float socialMinTime => _socialMinTime;
     public float isolateTurnAngle => _isolateTurnAngle; 
     public float isolateKillNodeArrivalDist => _isolateKillNodeArrivalDist; 
     public float fleeDistance => _fleeDistance; 
