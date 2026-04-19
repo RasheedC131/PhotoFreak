@@ -21,20 +21,20 @@ public class GuestWeights : ScriptableObject
     [SerializeField] private float _groupSocialSightDist = 20.0f; 
 
     [Header("Consideration Wander Nodes")]
-    [SerializeField] [Range(0, 1)] private float _wanderNodesWeight = 0.6f; 
-    [SerializeField] [Range(0, 1)] private float _wanderNodesCeilingWeight = 0.85f; 
-    [SerializeField] [Range(0, 1)] private float _wanderNodesCommittedWeight = 0.95f; 
+    [SerializeField] [Range(0, 1)] private float _wanderNodesWeight = 0.75f; 
+    [SerializeField] [Range(0, 1)] private float _wanderNodesCeilingWeight = 0.8f; 
+    [SerializeField] [Range(0, 1)] private float _wanderNodesCommittedWeight = 0.85f; 
 
     [Header("Consideration Social Weight")]
-    [SerializeField] [Range(0, 1)] private float _socialWeight = 0.95f;
+    [SerializeField] [Range(0, 1)] private float _socialWeight = 0.88f;
   
     [Header("Consideration Is Solo")]
     [SerializeField] [Range(0, 1)] private float _soloWeight = 0.5f;
-    [SerializeField] [Range(0, 1)] private float _soloCommittedActionWeight = 0.7f; 
-    [SerializeField] [Range(0, 1)] private float _soloCommittedWeight = 0.9f; 
+    [SerializeField] [Range(0, 1)] private float _soloCommittedActionWeight = 0.65f; 
+    [SerializeField] [Range(0, 1)] private float _soloCommittedWeight = 0.7f; 
 
     [Header("Consideration Is Stalked")] 
-    [SerializeField] [Range(0, 1)] private float _isStalkedWeight = 0.8f; 
+    [SerializeField] [Range(0, 1)] private float _isStalkedWeight = 0.9f; 
 
     [Header("Consideration Threats")][Tooltip("Used for fleeing from monster")]
     [SerializeField] [Range(0, 1)] private float _monsterSpottedWeight = 1.0f; 
@@ -42,7 +42,7 @@ public class GuestWeights : ScriptableObject
     [SerializeField] [Range(0, 1)] private float _playerSpottedWeight = 0.95f;  
 
     [Header("Consideration Idle")]
-    [SerializeField] [Range(0, 1)] private float _idleWeight = 0.9f; 
+    [SerializeField] [Range(0, 1)] private float _idleWeight = 0.4f; 
 
     public float maxPersonalityOffset => _maxPersonalityOffset; 
     public float groupAvailWeight => _groupAvailWeight; 

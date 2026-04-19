@@ -23,11 +23,13 @@ public class ActionAttack : UtilityAction
         agent.isStopped = false;
         if (myIdentity != null) myIdentity.ShowMonsterModel(); 
 
-        if (MatchManager.Instance != null)
+if (MatchManager.Instance != null)
         {
             ctx.currentVictim.isBeingStalked = false; 
+            ctx.currentVictim.currentStalker = null; 
             MatchManager.Instance.HandleInfection(ctx.currentVictim, ctx);
         }
+
         else
         {
             Debug.LogError("MatchManager Instance not found!");

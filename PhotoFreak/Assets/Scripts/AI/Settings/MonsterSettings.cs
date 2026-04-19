@@ -14,7 +14,6 @@ public class MonsterSettings : ScriptableObject
                 {
                     Debug.LogError("CRITICAL: Could not find the MonsterSettings asset in 'Resources/AI/'");
                     
-                    // _instance = ScriptableObject.CreateInstance<MonsterSettings>();
                 }
 
             return _instance;
@@ -26,11 +25,13 @@ public class MonsterSettings : ScriptableObject
 
     [Header("Action Attack")]
     [SerializeField] private float _attackRange = 2.0f;
+    [SerializeField] private float _witnessRadius = 20f; 
 
     [Header("Action Stalk")]
-    [SerializeField] private float _stalkDistance = 4.0f; 
+    [SerializeField] private float _stalkDistance = 10.0f; 
     [SerializeField] private float _stalkSpeed = 2.5f; 
-
+    [SerializeField] private float _stalkDuration = 60f; 
+    
     [Header("Action Idle")]
     [SerializeField] private float _idleMaxFatigue = 8.0f; 
 
@@ -47,8 +48,10 @@ public class MonsterSettings : ScriptableObject
 
     public float walkSpeed => _walkSpeed; 
     public float attackRange => _attackRange; 
+    public float witnessRadius => _witnessRadius; 
     public float stalkDistance => _stalkDistance; 
     public float stalkSpeed => _stalkSpeed; 
+    public float stalkDuration => _stalkDuration; 
     public float stalkSenseRadius => _stalkSenseRadius; 
     public float stalkIsolationCheckRadius => _stalkIsolationCheckRadius; 
     public float tellDuration => _tellDuration; 

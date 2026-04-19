@@ -24,20 +24,15 @@ public class ConsiderationTellCooldown : Consideration
     {
         if (ms == null || ctx == null || !ctx.isMonster) return 0f;
 
-        // Optional: Do not trigger a tell if we are actively charging the prey for a kill
-        if (ctx.currentVictim != null && ctx.currentStalkTimer >= ctx.stalkDuration) return 0f;
+        if (ctx.currentVictim != null && ctx.currentStalkTimer >= ms.stalkDuration) return 0f;
 
-        // 1. THE LOCK-IN: Protect the coroutine while it runs with a massive score
         if (tellAction != null && tellAction.isPerformingTell) return 5.0f;
 
-        // 2. THE TIMER: Run the countdown
         if (timerStartTime < 0f) timerStartTime = Time.time;
         float elapsed = Time.time - timerStartTime;
 
-        // 3. THE SPIKE: Force the AI Brain to switch
         if (elapsed >= currentTellTime)
         {
-            // If you see this log, but the tell animation doesn't play, check your Inspector Action Weight!
             Debug.Log($"[{gameObject.name}] Tell Timer Finished! Requesting Tell Action...");
             return 5.0f; 
         }

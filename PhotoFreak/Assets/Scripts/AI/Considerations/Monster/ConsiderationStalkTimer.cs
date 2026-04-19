@@ -4,11 +4,13 @@ public class ConsiderationStalkTimer : Consideration
 {
     private AIContext ctx; 
     private MonsterWeights mw; 
+    private MonsterSettings ms; 
 
     void Awake()
     {
         ctx = GetComponentInParent<AIContext>(); 
         mw = MonsterWeights.Instance; 
+        ms = MonsterSettings.Instance; 
     }
 
     protected override float EvaluateRawValue()
@@ -17,18 +19,29 @@ public class ConsiderationStalkTimer : Consideration
 
         if (ctx.currentVictim is null) return 1.0f;    
 
-        float timeRatio = ctx.currentStalkTimer / ctx.stalkDuration;
+        float timeRatio = ctx.currentStalkTimer / ms.stalkDuration;
 
-        if (timeRatio >= 3.0f)
+        bool isVictimIsolating = false;
+        
+        if (ctx.currentVictim.GetComponent<AIBrain>() != null)
+        {
+            AIBrain victimBrain = ctx.currentVictim.GetComponent<AIBrain>();
+            if (victimBrain.currentAction is ActionIsolate) isVictimIsolating = true;
+            
+        }
+
+        if (timeRatio >= 3.0f && !isVictimIsolating)
         {
             Debug.Log("Monster got bored and gave up chasing");
             ctx.currentVictim.isBeingStalked = false; 
+            ctx.currentVictim.currentStalker = null; 
             ctx.currentVictim = null;
             ctx.currentStalkTimer = 0f;
             return 0f; 
         }
 
-        // Keeps the score strong enough to maintain the stalk/charge state
-        return Mathf.Lerp(1.0f, mw.stalkMinWeight, timeRatio / 3.0f);
+        float clampedRatio = Mathf.Clamp01(timeRatio / 3.0f);
+        // Return a score that keeps the monster stalking (usually between 1.0 and stalkMinWeight)
+        return Mathf.Lerp(1.0f, mw.stalkMinWeight, clampedRatio);
     }
 }

@@ -3,14 +3,13 @@ using UnityEngine.AI;
 
 public class ActionStalk : UtilityAction
 {
+    public AIContext currentStalker;
     private NavMeshAgent agent;
     private AIContext ctx;
     private MonsterSettings ms; 
     private AIBrain brain; 
     private NPCIdentity identity; 
 
-    // THE DEAD ZONE BUFFER
-    // How much wiggle room the monster has before deciding to move again
     private float stalkBuffer = 1.5f; 
     
     void Awake() 
@@ -31,20 +30,24 @@ public class ActionStalk : UtilityAction
         }
 
         ctx.currentVictim.isBeingStalked = true; 
+        ctx.currentVictim.currentStalker = ctx;
 
-        // PHASE 2: THE STRIKE (Timer has finished)
-        if (ctx.currentStalkTimer >= ctx.stalkDuration)
+        bool isReadyToStrike = ctx.currentStalkTimer >= ms.stalkDuration && IsAreaIsolated();
+
+        // strike phase 
+        if (isReadyToStrike)
         {
-            // if (identity != null) identity.ShowMonsterModel(); 
+            if (identity != null) identity.ShowMonsterModel(); 
             
             agent.isStopped = false;
-            // Strike Mode: Zero out the stopping distance to get into attack range
             agent.stoppingDistance = 0.5f; 
             agent.SetDestination(ctx.currentVictim.transform.position); 
         }
 
+        // stalk phase
         else
         {
+            // Stay disguised and patiently follow them to the Kill Room
             if (identity != null) identity.ShowGuestModel(); 
             
             float currentDist = Vector3.Distance(ctx.transform.position, ctx.currentVictim.transform.position);
@@ -52,7 +55,6 @@ public class ActionStalk : UtilityAction
             float tooCloseDist = ms.stalkDistance - 1.0f;
             float sweetSpotMax = ms.stalkDistance + stalkBuffer;
 
-            // target moves too close move away 
             if (currentDist < tooCloseDist)
             {
                 agent.isStopped = false;
@@ -61,13 +63,8 @@ public class ActionStalk : UtilityAction
                 Vector3 retreatPos = ctx.transform.position + (dirAwayFromPrey * 2.0f);
                 
                 NavMeshHit hit;
-                if (NavMesh.SamplePosition(retreatPos, out hit, 2.0f, NavMesh.AllAreas))
-                {
-                    agent.SetDestination(hit.position);
-                }
+                if (NavMesh.SamplePosition(retreatPos, out hit, 2.0f, NavMesh.AllAreas)) agent.SetDestination(hit.position);
             }
-
-            // stand still and observe if we are close enough
             else if (currentDist >= tooCloseDist && currentDist <= sweetSpotMax)
             {
                 if (agent.isOnNavMesh)
@@ -85,7 +82,6 @@ public class ActionStalk : UtilityAction
                     ctx.transform.rotation = Quaternion.Slerp(ctx.transform.rotation, Quaternion.LookRotation(lookDir), Time.deltaTime * 5f);
                 }
             }
-            // approach prey if we are too far away 
             else
             {
                 agent.isStopped = false;
@@ -97,12 +93,28 @@ public class ActionStalk : UtilityAction
         if (brain != null) ctx.currentStalkTimer += brain.decisionInterval; 
     }
 
+    private bool IsAreaIsolated()
+    {
+        Collider[] hits = Physics.OverlapSphere(ctx.transform.position, ms.witnessRadius);
+        foreach (Collider hit in hits)
+        {
+            if (hit.CompareTag("Player")) return false; 
+
+            AIContext otherNPC = hit.GetComponentInParent<AIContext>();
+            if (otherNPC != null && otherNPC != ctx && otherNPC != ctx.currentVictim)
+            {
+                return false; 
+            }
+        }
+        return true;
+    }
+
     public override void OnExit()
     {
         if (agent != null) 
         {
             agent.stoppingDistance = 0f; 
-            agent.isStopped = false; // Ensure they aren't frozen when switching actions
+            if (agent.isOnNavMesh) agent.isStopped = false; 
         }
     }
 }

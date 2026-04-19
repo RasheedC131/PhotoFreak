@@ -38,9 +38,8 @@ public class AIContext : MonoBehaviour
     [Header("Monster State")]
     public bool isMonster = false; 
     public AIContext currentVictim; 
+    public AIContext currentStalker;
     public float currentStalkTimer; 
-    public float stalkDuration = 60.0f; 
-    public float stalkDistance = 10.0f; 
 
     private float MIN_WARP_OFFSET = -2.0f; 
     private float MAX_WARP_OFFSET = 2.0f; 
