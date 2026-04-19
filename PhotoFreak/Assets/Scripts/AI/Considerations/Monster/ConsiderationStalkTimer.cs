@@ -19,17 +19,16 @@ public class ConsiderationStalkTimer : Consideration
 
         float timeRatio = ctx.currentStalkTimer / ctx.stalkDuration;
 
-         if (timeRatio >= 1.0f)
+        if (timeRatio >= 3.0f)
         {
-            Debug.Log("Monster got bored and gave up stalking");
+            Debug.Log("Monster got bored and gave up chasing");
+            ctx.currentVictim.isBeingStalked = false; 
             ctx.currentVictim = null;
             ctx.currentStalkTimer = 0f;
             return 0f; 
         }
 
-        // score scales with time that the monster is hunting the target (e.g. if it is hunting for a while then it starts to lose interest if it can't land a kill)
-        float score = Mathf.Lerp(1.0f, mw.stalkMinWeight, timeRatio);
-
-        return score;
+        // Keeps the score strong enough to maintain the stalk/charge state
+        return Mathf.Lerp(1.0f, mw.stalkMinWeight, timeRatio / 3.0f);
     }
 }

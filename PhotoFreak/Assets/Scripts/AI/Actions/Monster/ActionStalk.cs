@@ -20,32 +20,56 @@ public class Action_Stalk : UtilityAction
 
     public override void ExecuteAction()
     {
-        if (ctx.currentVictim is null || ctx.currentVictim.isMonster)
+        if (ctx.currentVictim == null || ctx.currentVictim.isMonster)
         {
             ctx.currentVictim = null;
             return;
         }
 
         ctx.currentVictim.isBeingStalked = true; 
-
-        if (identity is not null) identity.ShowGuestModel(); 
-
         agent.isStopped = false;
 
-        NavMeshAgent preyAgent = ctx.currentVictim.GetComponent<NavMeshAgent>();
-        Vector3 targetDestination;
-
-        if (preyAgent != null && preyAgent.velocity.sqrMagnitude < 0.1f) targetDestination = ctx.currentVictim.transform.position;
-        
-        else
+        // attack phase
+        if (ctx.currentStalkTimer >= ctx.stalkDuration)
         {
-            targetDestination = ctx.currentVictim.transform.position - (ctx.currentVictim.transform.forward * ms.stalkDistance);
+            if (identity != null) identity.ShowMonsterModel(); 
+            
+            // Strike Mode: Zero out the stopping distance to get into attack range
+            agent.stoppingDistance = 0.5f; 
+            agent.SetDestination(ctx.currentVictim.transform.position); 
         }
         
-        NavMeshHit hit;
-        if (NavMesh.SamplePosition(targetDestination, out hit, 2.0f, NavMesh.AllAreas)) agent.SetDestination(hit.position);
-        
+        // stalk phase
+        else
+        {
+            if (identity != null) identity.ShowGuestModel(); 
+            
+            float currentDist = Vector3.Distance(ctx.transform.position, ctx.currentVictim.transform.position);
 
-        if (brain is not null) ctx.currentStalkTimer += brain.decisionInterval; 
+            if (currentDist < ms.stalkDistance - 1.0f)
+            {
+                agent.stoppingDistance = 0f;
+                Vector3 dirAwayFromPrey = (ctx.transform.position - ctx.currentVictim.transform.position).normalized;
+                Vector3 retreatPos = ctx.transform.position + (dirAwayFromPrey * 2.0f);
+                
+                NavMeshHit hit;
+                if (NavMesh.SamplePosition(retreatPos, out hit, 2.0f, NavMesh.AllAreas))
+                {
+                    agent.SetDestination(hit.position);
+                }
+            }
+            else
+            {
+                agent.stoppingDistance = ms.stalkDistance;
+                agent.SetDestination(ctx.currentVictim.transform.position);
+            }
+        }
+        
+        if (brain != null) ctx.currentStalkTimer += brain.decisionInterval; 
+    }
+
+    public override void OnExit()
+    {
+        if (agent != null) agent.stoppingDistance = 0f; 
     }
 }

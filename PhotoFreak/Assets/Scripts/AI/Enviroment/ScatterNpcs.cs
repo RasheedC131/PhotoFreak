@@ -20,7 +20,7 @@ public class ScatterNpcs : MonoBehaviour
 
         foreach (AIContext agent in allAgents)
         {
-            if (agent != null && !agent.isMonster)
+            if (agent != null)
             {
                 ZoneNode placementNode = allNodes[nodeIndex % allNodes.Length];
                 nodeIndex++;

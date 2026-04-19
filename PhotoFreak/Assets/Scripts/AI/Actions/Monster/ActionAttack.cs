@@ -36,5 +36,7 @@ public class ActionAttack : UtilityAction
         Debug.Log($"Monster: [{ctx.gameObject.name}] infected: [{ctx.currentVictim.gameObject.name}]"); 
         
         ctx.currentVictim = null; 
+        
+        ctx.currentStalkTimer = 0f; 
     }
 }

@@ -15,6 +15,8 @@ public class ConsiderationInAttackRange : Consideration
     {
         if (ctx is null || !ctx.isMonster || ctx.currentVictim is null) return 0f; 
 
+        if (ctx.currentStalkTimer < ctx.stalkDuration) return 0f;
+
         float dist = Vector3.Distance(ctx.transform.position, ctx.currentVictim.transform.position); 
 
         if (dist <= ms.attackRange) return 2.0f; 
