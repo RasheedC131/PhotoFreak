@@ -64,6 +64,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 5652796025280803824}
   - {fileID: 4034145300267251437}
   m_Father: {fileID: 9167960056996865199}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -267,6 +268,32 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  committedDecayMinTime: 5
+  committedDecayDuration: 10
+  committedDecayCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &3202647582284940643
 GameObject:
   m_ObjectHideFlags: 0
@@ -432,6 +459,32 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  committedDecayMinTime: 5
+  committedDecayDuration: 10
+  committedDecayCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &3668919346134593238
 GameObject:
   m_ObjectHideFlags: 0
@@ -558,6 +611,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8b9efdaf0bdf41a4a82d7f7043d6207, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ActionSocialize
+  currentPartner: {fileID: 0}
+  isHost: 0
 --- !u!114 &8295578053198929911
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -594,7 +649,6 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  maxSocializeTime: 20
 --- !u!1 &6472733924531326477
 GameObject:
   m_ObjectHideFlags: 0
@@ -640,6 +694,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 92bfd2b202d2a40a38246f84caa0d62b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ActionWanderNodes
+  hasReservedSpot: 0
 --- !u!114 &3774570205379424817
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -943,7 +998,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 9167960056996865199}
+    m_TransformParent: {fileID: 4603389289951196705}
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: c3eb47c241f8d4eaebf944c82b51fc74, type: 3}
       propertyPath: m_LocalScale.x
@@ -975,15 +1030,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: c3eb47c241f8d4eaebf944c82b51fc74, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: c3eb47c241f8d4eaebf944c82b51fc74, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: c3eb47c241f8d4eaebf944c82b51fc74, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: c3eb47c241f8d4eaebf944c82b51fc74, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -1131,9 +1186,6 @@ PrefabInstance:
       addedObject: {fileID: 6728079866259702214}
     - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: d5a23b76a7551493a8e3cad8c73d2d88, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 5652796025280803824}
-    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: d5a23b76a7551493a8e3cad8c73d2d88, type: 3}
-      insertIndex: -1
       addedObject: {fileID: 4603389289951196705}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: d5a23b76a7551493a8e3cad8c73d2d88, type: 3}
@@ -1206,6 +1258,8 @@ MonoBehaviour:
   targetNode: {fileID: 0}
   currentDestination: {x: 0, y: 0, z: 0}
   forceNewPath: 0
+  currentActionState: 0
+  walkingStartTime: -1
   isOccupied: 0
   targetHub: {fileID: 0}
   customLeader: {fileID: 0}
