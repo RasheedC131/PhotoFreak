@@ -1167,7 +1167,6 @@ GameObject:
   - component: {fileID: 2555132764132827132}
   - component: {fileID: 1544095912236018681}
   - component: {fileID: 1527766073637076163}
-  - component: {fileID: 209242629486176167}
   - component: {fileID: 7336599285751389772}
   - component: {fileID: 6327150031944974703}
   - component: {fileID: 949225059836024382}
@@ -1258,22 +1257,6 @@ MonoBehaviour:
   crouchTransitionSpeed: 10
   crouchCenter: {x: 0, y: 0.5, z: 0}
   standingCenter: {x: 0, y: 0, z: 0}
---- !u!114 &209242629486176167
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2037803872167456665}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 43389c33028c27a409e9a189ce43b740, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Timer
-  UI: {fileID: 949225059836024382}
-  player: {fileID: 2037803872167456665}
-  MainTimer: 1
-  timeRemaining: 600
 --- !u!135 &7336599285751389772
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -1318,7 +1301,7 @@ MonoBehaviour:
   CameraScript: {fileID: 3172967152751098486}
   player: {fileID: 1527766073637076163}
   UI: {fileID: 949225059836024382}
-  timer: {fileID: 209242629486176167}
+  timer: {fileID: 0}
   freakTimer: {fileID: 6387361361939780898}
 --- !u!114 &949225059836024382
 MonoBehaviour:
