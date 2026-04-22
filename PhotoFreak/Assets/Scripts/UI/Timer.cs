@@ -22,7 +22,7 @@ public class Timer : MonoBehaviour
 
         currentTime -= Time.deltaTime; 
 
-        if (UI != null) UI.UpdateTime(Mathf.Max(0, currentTime)); 
+        if (UI != null) UI.UpdateTime(Mathf.Max(0, currentTime), timeRemaining); 
 
         if (currentTime <= 0) HandleTimeOut(); 
 

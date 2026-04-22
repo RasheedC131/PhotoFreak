@@ -69,17 +69,23 @@ public class FreakMeter : MonoBehaviour
 
         if (player.getSprint() && count > -1)
         {
+            freakTimer.unpause();
             timer.restart();
             currentFreak += sprintFunction(1, freakTimer.getTime()) * 1f; // tmp values
             isMeterRising = true; 
         }
-
-        if (CameraScript.getCameraState())
+        else if (CameraScript.getCameraState())
         {
+            freakTimer.unpause();
             timer.restart();
             currentFreak += cameraFunction(count, freakTimer.getTime()) * 1f;
             isMeterRising = true; 
         }
+        else
+        {
+            freakTimer.pause();
+        }
+        
         
         if (isMeterRising)
         {
@@ -87,6 +93,7 @@ public class FreakMeter : MonoBehaviour
         }
         else if (isMeterDecaying)
         {
+            freakTimer.pause();
             if (currentFreak > 0)
             {
                 currentFreak -= .01f * decayRate;
@@ -112,7 +119,6 @@ public class FreakMeter : MonoBehaviour
     float sprintFunction(int count, float time)
     {
         float val = k2 * Mathf.Pow(x2, time);
-        Debug.Log(time);
         prevVal = val  * count - prevVal;
         if (prevVal < 0)
         {
