@@ -2920,6 +2920,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3128995060739772344}
   - component: {fileID: 7168536939268272340}
+  - component: {fileID: 5909887552604473874}
   m_Layer: 0
   m_Name: CameraFeatures
   m_TagString: Untagged
@@ -2959,6 +2960,20 @@ MonoBehaviour:
   maxZoom: 3
   minZoom: 1
   currZoomLevel: 1
+--- !u!114 &5909887552604473874
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6933407920833358908}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df7a11ee423d5394cbdc4ce812fa3471, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CameraAutoFocus
+  moveCost: 0.4
+  stabilizeRate: 0.6
 --- !u!1 &7082863440451782398
 GameObject:
   m_ObjectHideFlags: 0

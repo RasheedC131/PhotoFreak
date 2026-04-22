@@ -52,7 +52,7 @@ public class CameraZoom : MonoBehaviour
         currZoomLevel = 1f;
         ApplyZoom();
     }
-
+    
     public void SetActive(bool active)
     {
         isActive = active;

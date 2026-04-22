@@ -5,6 +5,7 @@ public class CameraScriptable : ScriptableObject
 {
     
     public string cameraType;
+    public bool manualFocus;
 
     
 }

@@ -28,6 +28,7 @@ public class CameraController : MonoBehaviour
 
     //Camera Features
     private CameraZoom cameraZoom;
+    private CameraAutoFocus autoFocus;
 
     void Awake()
     {
@@ -40,7 +41,10 @@ public class CameraController : MonoBehaviour
         }
 
         captureSystem = GetComponent<CaptureSystem>();
+
         cameraZoom = GetComponentInChildren<CameraZoom>();
+        autoFocus = GetComponentInChildren<CameraAutoFocus>();
+
         
     }
 
@@ -101,6 +105,7 @@ public class CameraController : MonoBehaviour
         bool capturing = (state == CaptureState.Capturing);
 
         cameraZoom.SetActive(capturing);
+        autoFocus.SetActive(capturing && !currentCamera.manualFocus);
     }
 
 
