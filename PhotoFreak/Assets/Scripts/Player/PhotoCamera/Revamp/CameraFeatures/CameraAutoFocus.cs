@@ -40,7 +40,7 @@ public class CameraAutoFocus : MonoBehaviour
         }
         
         focus = Mathf.Clamp(focus, minFocus, maxFocus);
-        Debug.Log(focus);
+        //Debug.Log(focus);
     }
 
     private void OnMoveInput(Vector2 input)
@@ -63,6 +63,11 @@ public class CameraAutoFocus : MonoBehaviour
         {
             ResetFocus();
         }
+    }
+
+    public float GetFocus()
+    {
+        return focus;
     }
 
     void OnDestroy()

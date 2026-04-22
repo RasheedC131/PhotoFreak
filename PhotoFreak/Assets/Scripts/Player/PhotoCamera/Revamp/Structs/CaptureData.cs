@@ -8,6 +8,7 @@ public struct CaptureData
     public Vector3 subjectForward;
 
     public float fov;
+    public float focus;
 
     public int extras; //subjects in the background
 };

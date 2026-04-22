@@ -7,8 +7,7 @@ using UnityEngine;
 public class CameraController : MonoBehaviour
 {
     //Camera Type
-    [SerializeField] private CameraScriptable currentCamera;
-
+    public CameraScriptable currentCamera;
 
     //States
     enum CaptureState
@@ -45,7 +44,6 @@ public class CameraController : MonoBehaviour
         cameraZoom = GetComponentInChildren<CameraZoom>();
         autoFocus = GetComponentInChildren<CameraAutoFocus>();
 
-        
     }
 
     void Start()

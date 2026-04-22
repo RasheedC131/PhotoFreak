@@ -13,7 +13,7 @@ public class PhotoScoring : MonoBehaviour
         public float size; //Does the subject fit in the camera
 
         //public int pose; //Taken from Photo Tag
-        //public int focus; //Taken from CameraFocus
+        public float focus; //Taken from either Manual or Auto Focus
 
         //public const int numParameters = 5; //To easily update amount of parameters
     };
@@ -35,6 +35,9 @@ public class PhotoScoring : MonoBehaviour
         float size = 1f/(dist * data.fov);
         //score.size = ScoreSize(size);
         Debug.Log("Size : " + size);
+
+        score.focus = data.focus;
+        Debug.Log("Focus : " + size);
     }
 
     private float ScoreDistance(float dist)
