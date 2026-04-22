@@ -9,6 +9,7 @@ public struct CaptureData
 
     public float fov;
     public float focus;
+    public bool manualFocus;
 
     public int extras; //subjects in the background
 };

@@ -36,8 +36,15 @@ public class PhotoScoring : MonoBehaviour
         //score.size = ScoreSize(size);
         Debug.Log("Size : " + size);
 
-        score.focus = data.focus;
-        Debug.Log("Focus : " + size);
+        if (data.manualFocus)
+        {
+            //score.focus = ScoreManualFocus(data.focus);
+        } 
+        else
+        {
+           //score.focus = ScoreAutoFocus(data.focus); 
+        }
+        Debug.Log("Focus : " + data.focus);
     }
 
     private float ScoreDistance(float dist)
@@ -49,6 +56,7 @@ public class PhotoScoring : MonoBehaviour
     {
         return facingCurve.Evaluate(angle);
     }
+    
 
     //Need to implement
     //private float TotalScore();

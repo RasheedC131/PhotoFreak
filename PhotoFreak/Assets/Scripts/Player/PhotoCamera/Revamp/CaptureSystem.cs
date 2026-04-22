@@ -24,6 +24,8 @@ public class CaptureSystem : MonoBehaviour
     private PhotoScoring eval;
     private CameraController controller;
     private CameraAutoFocus autoFocus;
+    private CameraManualFocus manualFocus;
+
 
     void Awake()
     {
@@ -32,6 +34,7 @@ public class CaptureSystem : MonoBehaviour
         eval = GetComponent<PhotoScoring>();
         controller = GetComponent<CameraController>();
         autoFocus = GetComponentInChildren<CameraAutoFocus>();
+        manualFocus = GetComponentInChildren<CameraManualFocus>();
     }
 
     //Shoots a raycast straight forward, looking for a subject or bumping into a wall
@@ -54,8 +57,8 @@ public class CaptureSystem : MonoBehaviour
                 data.subjectForward = subject.collider.transform.forward;
 
                 data.fov = camera.fieldOfView;
-                data.focus = controller.currentCamera.manualFocus ? 0f : autoFocus.GetFocus(); //is a place holder for the manualFocus
-                data.extras = CaptureExtras(subject);
+                data.focus = controller.currentCamera.manualFocus ? manualFocus.GetFocusError() : autoFocus.GetFocus();
+                data.manualFocus = controller.currentCamera.manualFocus;
 
                 
                 eval.EvaluateCaptureData(data);
