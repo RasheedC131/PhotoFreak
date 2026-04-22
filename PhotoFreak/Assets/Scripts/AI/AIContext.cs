@@ -44,6 +44,15 @@ public class AIContext : MonoBehaviour
     private float MIN_WARP_OFFSET = -2.0f; 
     private float MAX_WARP_OFFSET = 2.0f; 
 
+    [Header("Appearance")]
+    public NPCAppearance appearance;
+
+
+
+    public void OnEnterSocialize()  => appearance?.SetExpression(FacialExpression.Smile);
+    public void OnExitSocialize()   => appearance?.SetExpression(FacialExpression.Neutral);
+
+
     // used for monster ai pathfinding aswell 
     protected virtual void Start()
     {
@@ -58,6 +67,7 @@ public class AIContext : MonoBehaviour
         SetupNavigation(); 
         agent.avoidancePriority = Random.Range(30, 70);         // prevents npcs from colliding into eachother by giving each npc a priority number
 
+        if (appearance == null) appearance = GetComponent<NPCAppearance>();
     }
 
     public void SetupNavigation(bool isMutating = false)

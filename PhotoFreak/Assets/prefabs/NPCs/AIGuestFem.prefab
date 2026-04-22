@@ -264,6 +264,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  realizationThreshold: 0.7
 --- !u!1 &3834346947809195801
 GameObject:
   m_ObjectHideFlags: 0
@@ -453,6 +454,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26ffe2c5ebc4c4593957148447561d60, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ActionTriggerTell
+  headSnapConstraint: {fileID: 0}
+  headSnapTarget: {fileID: 0}
+  legIKConstraint: {fileID: 0}
+  legIKHint: {fileID: 0}
+  proceduralLimpConstraint: {fileID: 0}
+  proceduralSlouchConstraint: {fileID: 0}
 --- !u!114 &4613606955124605650
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -506,6 +513,7 @@ GameObject:
   - component: {fileID: 886117175631539531}
   - component: {fileID: 4168878722833580215}
   - component: {fileID: 3961388715744793645}
+  - component: {fileID: 8330840134967365986}
   m_Layer: 0
   m_Name: AIGuestFem
   m_TagString: Untagged
@@ -562,9 +570,9 @@ MonoBehaviour:
   isBeingStalked: 0
   isMonster: 0
   currentVictim: {fileID: 0}
+  currentStalker: {fileID: 0}
   currentStalkTimer: 0
-  stalkDuration: 60
-  stalkDistance: 10
+  appearance: {fileID: 0}
 --- !u!114 &4719527875415277960
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -701,6 +709,27 @@ MonoBehaviour:
   - HardHeadNod
   minSocialAnimTime: 3
   maxSocialAnimTime: 7
+--- !u!114 &8330840134967365986
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6616486110427068599}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb1fd68c56e5e4f8fb980ebb88dc7aa0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NPCAppearance
+  targetRenderer: {fileID: 8679054652808512503}
+  expressionLibrary: {fileID: 11400000, guid: b8bfa8215482e449ca751bd29317e208, type: 2}
+  libraryPool:
+  - {fileID: 0}
+  - {fileID: 0}
+  texturePropertyName: _BaseMap
+  colorPropertyName: _BaseColor
+  initialExpression: 0
+  initialTint: {r: 1, g: 1, b: 1, a: 1}
 --- !u!1 &6653963265284278247
 GameObject:
   m_ObjectHideFlags: 0
@@ -1021,6 +1050,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aeb530dcc214f4ae1991b37124a2a4f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Action_Stalk
+  currentStalker: {fileID: 0}
 --- !u!114 &3294575014869856796
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1246,6 +1276,11 @@ PrefabInstance:
 --- !u!4 &1241379158096810515 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: dca9af14c69ca4bb491889a13c89927a, type: 3}
+  m_PrefabInstance: {fileID: 1635082337669772792}
+  m_PrefabAsset: {fileID: 0}
+--- !u!137 &8679054652808512503 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -1242210095026653681, guid: dca9af14c69ca4bb491889a13c89927a, type: 3}
   m_PrefabInstance: {fileID: 1635082337669772792}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &7684925391387607448
