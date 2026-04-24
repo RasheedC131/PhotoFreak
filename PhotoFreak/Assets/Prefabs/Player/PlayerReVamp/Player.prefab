@@ -1510,6 +1510,7 @@ GameObject:
   - component: {fileID: 3760710978009408208}
   - component: {fileID: 1039213533765447114}
   - component: {fileID: 2537560133389686805}
+  - component: {fileID: 6002582151149855261}
   m_Layer: 0
   m_Name: PhotoSystem
   m_TagString: Untagged
@@ -1627,6 +1628,18 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &6002582151149855261
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2330362995910274858}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50fda12bcdb5e26428df04c1c35bf123, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Development
 --- !u!1 &2759175760869938172
 GameObject:
   m_ObjectHideFlags: 0

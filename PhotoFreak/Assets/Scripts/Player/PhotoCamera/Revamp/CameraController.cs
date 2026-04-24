@@ -24,6 +24,7 @@ public class CameraController : MonoBehaviour
     //Other Scripts
     private InputManager inputManager;
     private CaptureSystem captureSystem;
+    private Development development;
 
     //Camera Features
     private CameraZoom cameraZoom;
@@ -37,10 +38,11 @@ public class CameraController : MonoBehaviour
         if (inputManager != null)
         {
             inputManager.OnAim += UpdateCaptureState;
-            inputManager.OnShoot += AttemptCapture;
+            inputManager.OnShoot += HandleCaptureAction;
         }
 
         captureSystem = GetComponent<CaptureSystem>();
+        development = GetComponent<Development>();
 
         cameraZoom = GetComponentInChildren<CameraZoom>();
         autoFocus = GetComponentInChildren<CameraAutoFocus>();
@@ -52,6 +54,18 @@ public class CameraController : MonoBehaviour
     void Start()
     {
         currentState = CaptureState.Idle;
+    }
+
+    void Update()
+    {
+        //Check if done Developing
+        if(currentState == CaptureState.Developing && development.DevelopComplete())
+        {
+            hasPendingPhoto = false;
+            development.ResetDevelopment();
+            TransitionToState(CaptureState.Idle);
+            Debug.Log("Ho");
+        }
     }
 
     private void UpdateCaptureState(bool isActive)
@@ -81,13 +95,19 @@ public class CameraController : MonoBehaviour
         Debug.Log(currentState);
 
         ApplyFeatureState(currentState);
+
+        if (currentState == CaptureState.Developing) development.ToggleDevelopment(true);
+        if (currentState == CaptureState.Idle) development.ToggleDevelopment(false);
+
+
         //Method from UI to update state
         //Method from Player interaction to update state
     }
 
-    private void AttemptCapture()
+    private void HandleCaptureAction()
     {
-        if (currentState == CaptureState.Capturing) //Returns bool based on success of capture
+        
+        if (currentState == CaptureState.Capturing) //Attempts to Capture Photo
         {
             if (captureSystem.CaptureSubject())
             {
@@ -96,10 +116,13 @@ public class CameraController : MonoBehaviour
             }
         } else if (currentState == CaptureState.Developing) //Destroys photo (for debugging)
         {
+            development.ResetDevelopment();
             hasPendingPhoto = false;
             TransitionToState(CaptureState.Idle);
+            Debug.Log("Photo Trashed");
         }
     }
+
 
     private void ApplyFeatureState(CaptureState state)
     {
@@ -111,12 +134,18 @@ public class CameraController : MonoBehaviour
     }
 
 
+    public bool HasPendingPhoto()
+    {
+        return hasPendingPhoto;
+    }
+
+
     void OnDestroy()
     {
         if (inputManager != null)
         {
             inputManager.OnAim -= UpdateCaptureState;
-            inputManager.OnShoot -= AttemptCapture;
+            inputManager.OnShoot -= HandleCaptureAction;
         }
     }
 }
