@@ -24,7 +24,8 @@ public class Development : MonoBehaviour
         if (isDeveloping)
         {
             currDevelop += growthRate * Time.deltaTime;
-            Debug.Log("Development " + currDevelop + "s");
+            currDevelop = Mathf.Min(currDevelop, maxDevelop);
+
         }
         else
         {
@@ -34,7 +35,6 @@ public class Development : MonoBehaviour
                 currDevelop = Mathf.Max(currDevelop, minDevelop);
             }
         }
-        Debug.Log("Development: " + currDevelop + "s");
     }
 
     public void ToggleDevelopment(bool toggle)
@@ -42,7 +42,7 @@ public class Development : MonoBehaviour
         isDeveloping = toggle;
     }
 
-    public bool DevelopComplete()
+    public bool IsDevelopComplete()
     {
         return currDevelop >= maxDevelop;
     }
@@ -50,5 +50,10 @@ public class Development : MonoBehaviour
     public void ResetDevelopment()
     {
         currDevelop = minDevelop;
+    }
+
+    public float GetDevelopPercent()
+    {
+        return currDevelop/maxDevelop;
     }
 }

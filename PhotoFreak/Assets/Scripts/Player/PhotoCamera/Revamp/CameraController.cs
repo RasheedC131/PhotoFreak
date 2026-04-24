@@ -18,6 +18,10 @@ public class CameraController : MonoBehaviour
         Reviewing,
     };
 
+    [Header("Settings")]
+    [SerializeField] private int currFilm;
+    [SerializeField] private int maxFilm = 10;
+
     private CaptureState currentState;
     private bool hasPendingPhoto;
 
@@ -25,6 +29,7 @@ public class CameraController : MonoBehaviour
     private InputManager inputManager;
     private CaptureSystem captureSystem;
     private Development development;
+    private PhotoScoring eval;
 
     //Camera Features
     private CameraZoom cameraZoom;
@@ -43,6 +48,7 @@ public class CameraController : MonoBehaviour
 
         captureSystem = GetComponent<CaptureSystem>();
         development = GetComponent<Development>();
+        eval = GetComponent<PhotoScoring>();
 
         cameraZoom = GetComponentInChildren<CameraZoom>();
         autoFocus = GetComponentInChildren<CameraAutoFocus>();
@@ -54,17 +60,15 @@ public class CameraController : MonoBehaviour
     void Start()
     {
         currentState = CaptureState.Idle;
+        currFilm = maxFilm;
     }
 
     void Update()
     {
         //Check if done Developing
-        if(currentState == CaptureState.Developing && development.DevelopComplete())
+        if(currentState == CaptureState.Developing && development.IsDevelopComplete())
         {
-            hasPendingPhoto = false;
-            development.ResetDevelopment();
-            TransitionToState(CaptureState.Idle);
-            Debug.Log("Ho");
+            EndDevelopment(development.GetDevelopPercent());
         }
     }
 
@@ -94,10 +98,10 @@ public class CameraController : MonoBehaviour
         currentState = nextState;
         Debug.Log(currentState);
 
-        ApplyFeatureState(currentState);
+        if (currentState == CaptureState.Developing)development.ToggleDevelopment(true);
+        else development.ToggleDevelopment(false);
 
-        if (currentState == CaptureState.Developing) development.ToggleDevelopment(true);
-        if (currentState == CaptureState.Idle) development.ToggleDevelopment(false);
+        ApplyFeatureState(currentState);
 
 
         //Method from UI to update state
@@ -109,17 +113,22 @@ public class CameraController : MonoBehaviour
         
         if (currentState == CaptureState.Capturing) //Attempts to Capture Photo
         {
+            if (currFilm <= 0)
+            {
+                Debug.Log("No more Film");
+                return; 
+            }
+
             if (captureSystem.CaptureSubject())
             {
                 hasPendingPhoto = true;
+                currFilm -= 1;
+                Debug.Log(currFilm + " Shoots Left");
                 TransitionToState(CaptureState.Idle);
             }
-        } else if (currentState == CaptureState.Developing) //Destroys photo (for debugging)
+        } else if (currentState == CaptureState.Developing) //Ends Development prematurely
         {
-            development.ResetDevelopment();
-            hasPendingPhoto = false;
-            TransitionToState(CaptureState.Idle);
-            Debug.Log("Photo Trashed");
+            EndDevelopment(development.GetDevelopPercent());
         }
     }
 
@@ -133,6 +142,13 @@ public class CameraController : MonoBehaviour
         manualFocus.SetActive(capturing && currentCamera.manualFocus);
     }
 
+    private void EndDevelopment(float developPercent)
+    {
+        development.ResetDevelopment();
+        hasPendingPhoto = false;
+        eval.ScoreDevelopment(developPercent);
+        TransitionToState(CaptureState.Idle);
+    }
 
     public bool HasPendingPhoto()
     {

@@ -11,9 +11,9 @@ public class PhotoScoring : MonoBehaviour
         public float distance; //How far is the subject
         public float facing; //Is the subject facing the camera
         public float size; //Does the subject fit in the camera
-
         //public int pose; //Taken from Photo Tag
         public float focus; //Taken from either Manual or Auto Focus
+        public float development; //Percent developed
 
         //public const int numParameters = 5; //To easily update amount of parameters
     };
@@ -45,6 +45,12 @@ public class PhotoScoring : MonoBehaviour
            //score.focus = ScoreAutoFocus(data.focus); 
         }
         Debug.Log("Focus : " + data.focus);
+    }
+
+    public void ScoreDevelopment(float developPercent)
+    {
+        //score.development = developmentCurve.Evaluate(developPercent);
+        Debug.Log("Development Score : " + developPercent);
     }
 
     private float ScoreDistance(float dist)
