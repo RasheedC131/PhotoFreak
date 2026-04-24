@@ -6,6 +6,8 @@ using System.Collections;
 
 public class FreakMeter : MonoBehaviour
 {
+    public static event System.Action<int> OnStrikeEarned;
+
     [Header("FreakMeter settings")]
     [SerializeField] private int maxNPC;
     [SerializeField] private float maxFreak;
@@ -24,20 +26,21 @@ public class FreakMeter : MonoBehaviour
     [SerializeField] private Timer timer;
     [SerializeField] private FreakMeterTimer freakTimer;
 
-    private float currentFreak;
+    [SerializeField] private float currentFreak = 0f;
     private bool isMeterDecaying;
-    private int count;
+   
+    [SerializeField] private int count = 0;
     private List<Transform> visibleNPCs = new List<Transform>();
-    
+
     private float prevVal = 0;
     private int currentStrikes = 0;
+    private bool _dramaticEndingStarted = false;
+
+    // normalized freak meter to tweak the AI behaivor and react to it. 
+    public float FreakRatio => maxFreak > 0f ? Mathf.Clamp01(currentFreak / maxFreak) : 0f;
     void Start()
     {
-        count = 0;
-
         UpdateUI(); 
-        currentFreak = 0f; 
-
         if (UI == null) Debug.LogError("[FreakMeter]: UI reference is missing in the Inspector!");
         if (CameraScript == null) Debug.LogError("[FreakMeter]: CameraScript reference is missing!");
         UI.UpdateStrikes(currentStrikes);
@@ -56,12 +59,20 @@ public class FreakMeter : MonoBehaviour
             currentFreak = 0;
             if (UI != null) UI.UpdateMeter(currentFreak);
             UI.UpdateStrikes(currentStrikes);
+
+            OnStrikeEarned?.Invoke(currentStrikes);
         }
-        
+
         if (currentStrikes >= maxStrikes)
         {
-            if (GlobalGameState.Instance != null) GlobalGameState.Instance.TriggerGameOver(); 
-            return; 
+
+            if (!_dramaticEndingStarted)
+            {
+                _dramaticEndingStarted = true;
+                if (CrowdStateManager.Instance != null) CrowdStateManager.Instance.TriggerFinalPanic();
+                // else if (GlobalGameState.Instance != null) GlobalGameState.Instance.TriggerGameOver();
+            }
+            return;
         }
 
         bool isMeterRising = false; 
@@ -132,15 +143,13 @@ public class FreakMeter : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Guest") || other.CompareTag("Monster")) 
+       
+        if (!visibleNPCs.Contains(other.transform))
         {
-            if (!visibleNPCs.Contains(other.transform))
-            {
-                visibleNPCs.Add(other.transform);
-                count = visibleNPCs.Count;
-                Debug.Log("NPC Entered Range, Count: " + count);
-            }
+            visibleNPCs.Add(other.transform); 
+            count = visibleNPCs.Count / 2;                      // each npc will have a monster and a guest model with one of them being disabled  
         }
+        
     }
 
     void OnTriggerExit(Collider other)
@@ -150,7 +159,7 @@ public class FreakMeter : MonoBehaviour
             if (visibleNPCs.Contains(other.transform))
             {
                 visibleNPCs.Remove(other.transform);
-                count = visibleNPCs.Count;
+                count = visibleNPCs.Count / 2;                  // each npc will have a monster and a guest model with one of them being disabled 
                 Debug.Log("NPC Left Range, Count: " + count);
             }
         }

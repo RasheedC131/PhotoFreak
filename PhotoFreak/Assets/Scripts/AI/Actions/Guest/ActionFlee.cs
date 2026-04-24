@@ -5,14 +5,13 @@ public class Action_Flee : UtilityAction
 {
     private NavMeshAgent agent;
     private AIContext ctx;
-    private GuestSettings gs; 
-    
+    private GuestSettings gs;
 
     void Awake()
     {
         agent = GetComponentInParent<NavMeshAgent>();
-        ctx = GetComponentInParent<AIContext>();
-        gs = GuestSettings.Instance; 
+        ctx   = GetComponentInParent<AIContext>();
+        gs    = GuestSettings.Instance;
     }
 
     public override void ExecuteAction()
@@ -26,10 +25,10 @@ public class Action_Flee : UtilityAction
             agent.enabled = true;
         }
 
-        if (!agent.isOnNavMesh) return; 
+        if (!agent.isOnNavMesh) return;
 
         agent.isStopped = false;
-        agent.speed = gs.fleePanicSpeed; 
+        agent.speed = gs.fleePanicSpeed;
 
         if (!agent.pathPending && (!agent.hasPath || agent.remainingDistance < 1.0f))
         {
@@ -42,6 +41,17 @@ public class Action_Flee : UtilityAction
                 ctx.currentDestination = hit.position;
                 agent.SetDestination(ctx.currentDestination);
             }
+        }
+
+        // infect panic to other guests 
+        if (ctx.panicBoost > 0f && CrowdStateManager.Instance != null)
+        {
+            CrowdStateManager.Instance.SpreadPanic(
+                ctx.transform.position,
+                gs.contagionRadius,
+                gs.contagionPanicAmount,
+                gs.contagionVigilanceGain
+            );
         }
     }
 }

@@ -30,18 +30,20 @@ public class ConsiderationStalkTimer : Consideration
             
         }
 
-        if (timeRatio >= 3.0f && !isVictimIsolating)
+        // when strikes reach 3 then we don't get bored and pursue our target 
+        bool isFinalPanic = CrowdStateManager.Instance != null && CrowdStateManager.Instance.IsFinalPanic;
+
+        if (timeRatio >= 3.0f && !isVictimIsolating && !isFinalPanic)
         {
             Debug.Log("Monster got bored and gave up chasing");
-            ctx.currentVictim.isBeingStalked = false; 
-            ctx.currentVictim.currentStalker = null; 
+            ctx.currentVictim.isBeingStalked = false;
+            ctx.currentVictim.currentStalker = null;
             ctx.currentVictim = null;
             ctx.currentStalkTimer = 0f;
-            return 0f; 
+            return 0f;
         }
 
         float clampedRatio = Mathf.Clamp01(timeRatio / 3.0f);
-        // Return a score that keeps the monster stalking (usually between 1.0 and stalkMinWeight)
         return Mathf.Lerp(1.0f, mw.stalkMinWeight, clampedRatio);
     }
 }

@@ -23,7 +23,7 @@ public class ActionAttack : UtilityAction
         agent.isStopped = false;
         if (myIdentity != null) myIdentity.ShowMonsterModel(); 
 
-if (MatchManager.Instance != null)
+        if (MatchManager.Instance != null)
         {
             ctx.currentVictim.isBeingStalked = false; 
             ctx.currentVictim.currentStalker = null; 

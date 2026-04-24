@@ -28,12 +28,18 @@ public class AIContext : MonoBehaviour
 
 
     [Header("Social State")]
-    public bool isOccupied = false; 
-    public SocialHub targetHub; 
-    public AIContext customLeader; 
-    public int groupIdx = 0; 
-    public int groupTotalSize = 1; 
-    public bool isBeingStalked = false; 
+    public bool isOccupied = false;
+    public SocialHub targetHub;
+    public AIContext customLeader;
+    public int groupIdx = 0;
+    public int groupTotalSize = 1;
+    public bool isBeingStalked = false;
+
+    [Header("Crowd State")]
+    public float vigilance = 0f;
+    public float panicBoost = 0f;
+    public bool hasArrivedAtKillNode = false;
+    public float forcedIdleEndTime = 0f;
 
     [Header("Monster State")]
     public bool isMonster = false; 
@@ -51,6 +57,15 @@ public class AIContext : MonoBehaviour
 
     public void OnEnterSocialize()  => appearance?.SetExpression(FacialExpression.Smile);
     public void OnExitSocialize()   => appearance?.SetExpression(FacialExpression.Neutral);
+
+    void Update()
+    {
+        if (panicBoost > 0f)
+        {
+            float rate = GuestSettings.Instance != null ? GuestSettings.Instance.panicDecayRate : 0.3f;
+            panicBoost = Mathf.Max(0f, panicBoost - rate * Time.deltaTime);
+        }
+    }
 
 
     // used for monster ai pathfinding aswell 

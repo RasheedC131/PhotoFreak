@@ -18,7 +18,7 @@ public class ActionWanderNodes : UtilityAction
         gs = GuestSettings.Instance; 
     }
 
-    public override void ExecuteAction()
+public override void ExecuteAction()
     {
         if (ctx == null || agent == null) return; 
 
@@ -40,12 +40,7 @@ public class ActionWanderNodes : UtilityAction
             return;
         }
 
-        if (nodeScript.currentCrowd.Contains(ctx))
-        {
-            ctx.currentActionState = NPCActionState.IDLE;
-            if (agent.isOnNavMesh && !agent.isStopped) agent.isStopped = true;
-            return;
-        }
+
 
         attemptTimer += Time.deltaTime; 
 
@@ -58,17 +53,15 @@ public class ActionWanderNodes : UtilityAction
         if (hasArrived)
         {
             if (nodeScript.incomingCrowd.Contains(ctx)) nodeScript.incomingCrowd.Remove(ctx);
-            if (!nodeScript.currentCrowd.Contains(ctx)) nodeScript.currentCrowd.Add(ctx);
             
             hasReservedSpot = false; 
-
-            if (agent.enabled && agent.isOnNavMesh) 
-            {
-                agent.ResetPath(); 
-                agent.isStopped = true;
-            }
+            ctx.forcedIdleEndTime = Time.time + Random.Range(2.0f, 5.0f);
+            ctx.targetNode = null;
+            ctx.forceNewPath = true;
+            attemptTimer = 0f;
             ctx.currentActionState = NPCActionState.IDLE;
         }
+
         else
         {
             if (agent.enabled && agent.isOnNavMesh && !agent.pathPending)
@@ -78,7 +71,7 @@ public class ActionWanderNodes : UtilityAction
                 ctx.currentActionState = NPCActionState.WALK;
             }
         }
-    }
+    }    
 
     public void AbandonNode()
     {
@@ -103,34 +96,55 @@ public class ActionWanderNodes : UtilityAction
     private void PickNextRandomNode()
     {
         ZoneNode[] allNodes = FindObjectsOfType<ZoneNode>();
-        List<ZoneNode> validNodes = new List<ZoneNode>();
+
+        List<ZoneNode> preferredNodes = new List<ZoneNode>();  // away from kill nodes (prioritze these)
+        List<ZoneNode> fallbackNodes  = new List<ZoneNode>();  // near kill room nodes
 
         foreach (ZoneNode node in allNodes)
         {
             if (ctx.targetNode != null && node.transform == ctx.targetNode) continue;
-            if (node.HasOpenSlots()) validNodes.Add(node);
+            if (!node.HasOpenSlots()) continue;
+
+            if (IsNearKillRoom(node.transform.position))
+                fallbackNodes.Add(node);
+            else
+                preferredNodes.Add(node);
         }
 
-        if (validNodes.Count > 0)
+        List<ZoneNode> pool = preferredNodes.Count > 0 ? preferredNodes : fallbackNodes;
+
+        if (pool.Count > 0)
         {
-            ZoneNode chosenNode = validNodes[Random.Range(0, validNodes.Count)];
+            ZoneNode chosenNode = pool[Random.Range(0, pool.Count)];
             ctx.targetNode = chosenNode.transform;
 
             if (!chosenNode.incomingCrowd.Contains(ctx)) chosenNode.incomingCrowd.Add(ctx);
             hasReservedSpot = true;
-            attemptTimer = 0f; 
+            attemptTimer = 0f;
 
-            Vector3 randomOffset = Random.insideUnitSphere * gs.wanderNodeSpreadRadius; 
+            Vector3 randomOffset = Random.insideUnitSphere * gs.wanderNodeSpreadRadius;
             randomOffset.y = 0;
             Vector3 desiredDestination = ctx.targetNode.position + randomOffset;
-            
+
             NavMeshHit hit;
             if (NavMesh.SamplePosition(desiredDestination, out hit, gs.wanderNodeSpreadRadius, NavMesh.AllAreas))
                 ctx.currentDestination = hit.position;
             else
-                ctx.currentDestination = ctx.targetNode.position; 
+                ctx.currentDestination = ctx.targetNode.position;
         }
-        else ctx.targetNode = null; 
+        else ctx.targetNode = null;
+    }
+
+    private bool IsNearKillRoom(Vector3 pos)
+    {
+        if (gs == null) return false;
+        foreach (Transform killNode in ActionIsolate.AllKillNodes)
+        {
+            if (killNode != null
+                && Vector3.Distance(pos, killNode.position) < gs.killRoomAvoidRadius)
+                return true;
+        }
+        return false;
     }
 
     public bool HasOpenNodes()

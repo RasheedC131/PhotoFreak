@@ -59,7 +59,7 @@ public class GlobalGameState : MonoBehaviour
     public void TriggerGameOver()
     {
         currentState = GameState.GAMEOVER; 
-        Time.timeScale = 1f; 
+        Time.timeScale = 0f; 
         onGameOver?.Invoke();
         Debug.Log("Game Over"); 
     }

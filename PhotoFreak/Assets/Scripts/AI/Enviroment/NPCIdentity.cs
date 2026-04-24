@@ -19,20 +19,21 @@ public class NPCIdentity : MonoBehaviour
         ShowGuestModel(); 
     }
 
-    // TODO: Setup an animation/particle system for model swapping to monster 
     public void Mutate(bool isSmartMonster)
     {
-        Debug.Log($"Mutate called on {gameObject.name} | isSmartMonster = {isSmartMonster} | standardActionsObj assigned? {standardActionsObj != null} | monsterModel assigned? {monsterModel != null}");
-
+        // change name of infected guest 
+        string prefix = isSmartMonster ? "[Monster] " : "[Infected] ";
+        gameObject.name = prefix + gameObject.name;
+        
         ctx.isMonster = true;
-        ctx.isOccupied = false; 
+        ctx.isOccupied = false;
         ctx.currentVictim = null;
 
         UnityEngine.AI.NavMeshAgent agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
-        if (agent != null && agent.isActiveAndEnabled) agent.ResetPath(); 
+        if (agent != null && agent.isActiveAndEnabled) agent.ResetPath();
 
-        // scoring logic 
-        gameObject.tag = "Monster"; 
+        // scoring logic
+        gameObject.tag = "Monster";
         PhotoTag tag = GetComponent<PhotoTag>();
         if (tag is null) tag = gameObject.AddComponent<PhotoTag>();
         tag.type = PhotoTag.SubjectType.Monster;
@@ -47,7 +48,7 @@ public class NPCIdentity : MonoBehaviour
         else
         {
             if (standardActionsObj != null) standardActionsObj.SetActive(false);
-            tag.poseScore = 1; 
+            tag.poseScore = 1;
             Debug.Log($"{gameObject.name} became a standard infected.");
         }
 

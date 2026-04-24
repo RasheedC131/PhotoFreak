@@ -250,6 +250,87 @@ Transform:
   - {fileID: 2554121075497137863}
   m_Father: {fileID: 3190395934615653629}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2220389923707490222
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5872870021737463499}
+  - component: {fileID: 6645255532186028260}
+  - component: {fileID: 1869179129264933008}
+  m_Layer: 0
+  m_Name: ActionHuntPlayer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5872870021737463499
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2220389923707490222}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 46.270294, y: 7.23193, z: -56.76187}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 347114435592930451}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6645255532186028260
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2220389923707490222}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad2ab1bed07234280922440e7966a8b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ActionHuntPlayer
+--- !u!114 &1869179129264933008
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2220389923707490222}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1aad6fb0a826d4f17bf50a36b6c7cbd3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ConsiderationHuntPlayer
+  responseCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 1
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 1
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &2469924016816552306
 GameObject:
   m_ObjectHideFlags: 0
@@ -281,6 +362,7 @@ Transform:
   m_Children:
   - {fileID: 192471121549713005}
   - {fileID: 253435451435678139}
+  - {fileID: 5872870021737463499}
   - {fileID: 7767131796614055743}
   - {fileID: 7604625955999619952}
   m_Father: {fileID: 6087063230768825231}
@@ -339,7 +421,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f34dcb896ebd4e65b98a7ddec019d05, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AIContext
-  agent: {fileID: 0}
+  agent: {fileID: 9006459465713320188}
   myRenderer: {fileID: 0}
   nodesContainer: {fileID: 0}
   currentThreat: {fileID: 0}
@@ -356,6 +438,8 @@ MonoBehaviour:
   groupIdx: 0
   groupTotalSize: 1
   isBeingStalked: 0
+  vigilance: 0
+  panicBoost: 0
   isMonster: 0
   currentVictim: {fileID: 0}
   currentStalker: {fileID: 0}
@@ -389,10 +473,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 19530e53ae18246fdbd74452eedc0c66, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NPCIdentity
-  guestModel: {fileID: 0}
-  monsterModel: {fileID: 0}
-  standardActionsObj: {fileID: 0}
-  monsterActionsObj: {fileID: 0}
+  guestModel: {fileID: 2898593272721583229}
+  monsterModel: {fileID: 3913754719218647027}
+  standardActionsObj: {fileID: 6430038693645323013}
+  monsterActionsObj: {fileID: 2469924016816552306}
 --- !u!114 &4265638773709690037
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -942,6 +1026,8 @@ GameObject:
   - component: {fileID: 513890856115533048}
   - component: {fileID: 8502055408777188170}
   - component: {fileID: 4528784451250383841}
+  - component: {fileID: 4007936647630010308}
+  - component: {fileID: 7721591330660286316}
   m_Layer: 0
   m_Name: ActionSocialize
   m_TagString: Untagged
@@ -990,6 +1076,78 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8d066c70eb234d1a95a6115032d34ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Consideration_GroupAvailable
+  responseCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 1
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 1
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!114 &4007936647630010308
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6799575355633712473}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51b8cfa06c14842f1875be3c28d0e578, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ConsiderationTimeAnxiety
+  responseCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 1
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 1
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!114 &7721591330660286316
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6799575355633712473}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9764c3ba037394981accaa5464232ae3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ConsiderationAlertSuppressor
   responseCurve:
     serializedVersion: 2
     m_Curve:
@@ -1256,6 +1414,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 175cb7170e96e4693b9b574d5a613844, type: 3}
   m_PrefabInstance: {fileID: 2664080289367920940}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &2898593272721583229 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 175cb7170e96e4693b9b574d5a613844, type: 3}
+  m_PrefabInstance: {fileID: 2664080289367920940}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &4220184010573480610
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1329,6 +1492,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c3eb47c241f8d4eaebf944c82b51fc74, type: 3}
+--- !u!1 &3913754719218647027 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: c3eb47c241f8d4eaebf944c82b51fc74, type: 3}
+  m_PrefabInstance: {fileID: 4220184010573480610}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &4403292843649099081 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: c3eb47c241f8d4eaebf944c82b51fc74, type: 3}
