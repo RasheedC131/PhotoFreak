@@ -5,7 +5,7 @@ using TMPro;
 
 public class PlayerInventory : MonoBehaviour
 {
-    public event Action<int> OnSlotChanged; 
+    public event Action<Sprite> OnSlotChanged; 
     public event Action<int, Sprite> OnSlotUpdated;
 
     [Header("Inventory Settings")]
@@ -53,8 +53,7 @@ public class PlayerInventory : MonoBehaviour
     private IEnumerator InitializeCameraUI(Sprite camIcon)
     {
         yield return new WaitForEndOfFrame();
-        OnSlotUpdated?.Invoke(0, camIcon);
-        OnSlotChanged?.Invoke(0);
+        OnSlotChanged?.Invoke(camIcon);
     }
 
     void Update()
@@ -177,7 +176,7 @@ private void CheckForInteractable()
         inventorySlots[targetSlot] = newItem;
         newItem.OnPickup(handHoldPos);
         newItem.OnEquip();
-        OnSlotUpdated?.Invoke(targetSlot, newItem.itemIcon);
+        OnSlotChanged?.Invoke(newItem.itemIcon);
     }
 
     public void RemoveCurrentItem()
@@ -185,7 +184,7 @@ private void CheckForInteractable()
         if (inventorySlots[currentSlotIndex] == null) return;
         inventorySlots[currentSlotIndex].OnUnequip(); 
         inventorySlots[currentSlotIndex] = null;
-        OnSlotUpdated?.Invoke(currentSlotIndex, null);
+        OnSlotChanged?.Invoke(null);
         SwitchToSlot(0); 
     }
 
@@ -200,7 +199,7 @@ private void CheckForInteractable()
             itemToDrop.OnUnequip();
             itemToDrop.OnDrop();
             inventorySlots[currentSlotIndex] = null;
-            OnSlotUpdated?.Invoke(currentSlotIndex, null);
+            OnSlotChanged?.Invoke(null);
             SwitchToSlot(0); 
         }
     }
@@ -213,7 +212,14 @@ private void CheckForInteractable()
         currentSlotIndex = newSlot;
         if (inventorySlots[currentSlotIndex] != null) inventorySlots[currentSlotIndex].OnEquip();
 
-        OnSlotChanged?.Invoke(currentSlotIndex);
+        if (inventorySlots[currentSlotIndex] != null)
+        {
+            OnSlotChanged?.Invoke(inventorySlots[currentSlotIndex].itemIcon);
+        }
+        else
+        {
+            OnSlotChanged?.Invoke(null);
+        }
     }
 
     void OnDestroy()
