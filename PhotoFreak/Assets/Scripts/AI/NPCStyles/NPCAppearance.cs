@@ -1,6 +1,5 @@
 using UnityEngine;
 
-// takes in the pallete and apply colors based on the texture map for the NPCs 
 [DisallowMultipleComponent]
 public class NPCAppearance : MonoBehaviour
 {
@@ -17,33 +16,34 @@ public class NPCAppearance : MonoBehaviour
     [Header("Shader Property Names")]
     [SerializeField] private string baseTexturePropertyName  = "_BaseMap";
     [SerializeField] private string maskTexturePropertyName  = "_MaskMap";
-    [SerializeField] private string primaryColorPropertyName   = "_PrimaryColor";
-    [SerializeField] private string stripeColorPropertyName    = "_StripeColor";
-    [SerializeField] private string skinColorPropertyName      = "_SkinColor";
-    [SerializeField] private string hairColorPropertyName      = "_HairColor";
-    [SerializeField] private string shoeColorPropertyName      = "_ShoeColor";
-    [SerializeField] private string eyeColorPropertyName       = "_EyeColor";
-    [SerializeField] private string lipColorPropertyName       = "_LipColor";
+    [SerializeField] private string primaryColorPropertyName = "_PrimaryColor";
+    [SerializeField] private string stripeColorPropertyName  = "_StripeColor";
+    [SerializeField] private string skinColorPropertyName    = "_SkinColor";
+    [SerializeField] private string hairColorPropertyName    = "_HairColor";
+    [SerializeField] private string shoeColorPropertyName    = "_ShoeColor";
+    [SerializeField] private string eyeColorPropertyName     = "_EyeColor";
+    [SerializeField] private string lipColorPropertyName     = "_LipColor";
 
     [Header("Initial State")]
     [SerializeField] private FacialExpression initialExpression = FacialExpression.Neutral;
     [SerializeField] private RegionColorPalette initialPalette; 
 
-    // Cached MPB and property IDs
-    private MaterialPropertyBlock mpb;
-    private int baseTexId, maskTexId, maskTex2Id;
+    private Material mat;
+    private int baseTexId, maskTexId;
     private int primaryId, stripeId, skinId, hairId;
     private int shoeId, eyeId, lipId;
 
     private FacialExpression currentExpression;
     private Color currentPrimary, currentStripe, currentSkin, currentHair;
-    private Color currentShoe, currentAccessory, currentEye, currentLip;
+    private Color currentShoe, currentEye, currentLip;
 
     public FacialExpression CurrentExpression => currentExpression;
 
-    private void Awake()
+    private void Start()
     {
         if (targetRenderer == null) targetRenderer = GetComponent<Renderer>();
+
+        mat = targetRenderer.material;
 
         baseTexId   = Shader.PropertyToID(baseTexturePropertyName);
         maskTexId   = Shader.PropertyToID(maskTexturePropertyName);
@@ -55,41 +55,36 @@ public class NPCAppearance : MonoBehaviour
         eyeId       = Shader.PropertyToID(eyeColorPropertyName);
         lipId       = Shader.PropertyToID(lipColorPropertyName);
 
-        mpb = new MaterialPropertyBlock();
-
-        if (libraryPool != null && libraryPool.Length > 0) expressionLibrary = libraryPool[Random.Range(0, libraryPool.Length)];
+        if (libraryPool != null && libraryPool.Length > 0) 
+            expressionLibrary = libraryPool[Random.Range(0, libraryPool.Length)];
 
         RegionColorPalette paletteToUse = initialPalette;
 
-        if (palettePool != null && palettePool.Length > 0) paletteToUse = palettePool[Random.Range(0, palettePool.Length)];
+        if (palettePool != null && palettePool.Length > 0) 
+            paletteToUse = palettePool[Random.Range(0, palettePool.Length)];
 
         ApplyInitial(paletteToUse);
     }
 
     private void ApplyInitial(RegionColorPalette p)
     {
-        targetRenderer.GetPropertyBlock(mpb);
-
         if (expressionLibrary != null && expressionLibrary.TryGet(initialExpression, out var entry))
         {
-            if (entry.texture != null)      mpb.SetTexture(baseTexId,  entry.texture);
-            if (entry.maskTexture != null)  mpb.SetTexture(maskTexId,  entry.maskTexture);
+            if (entry.texture != null)      mat.SetTexture(baseTexId,  entry.texture);
+            if (entry.maskTexture != null)  mat.SetTexture(maskTexId,  entry.maskTexture);
         }
 
-        mpb.SetColor(primaryId,   p.primaryColor);
-        mpb.SetColor(stripeId,    p.stripeColor);
-        mpb.SetColor(skinId,      p.skinColor);
-        mpb.SetColor(hairId,      p.hairColor);
-        mpb.SetColor(shoeId,      p.shoeColor);
-        mpb.SetColor(eyeId,       p.eyeColor);
-        mpb.SetColor(lipId,       p.lipColor);
-
-
-        targetRenderer.SetPropertyBlock(mpb);
+        mat.SetColor(primaryId,   p.primaryColor);
+        mat.SetColor(stripeId,    p.secondaryColor);
+        mat.SetColor(skinId,      p.skinColor);
+        mat.SetColor(hairId,      p.hairColor);
+        mat.SetColor(shoeId,      p.shoeColor);
+        mat.SetColor(eyeId,       p.eyeColor);
+        mat.SetColor(lipId,       p.lipColor);
 
         currentExpression = initialExpression;
         currentPrimary    = p.primaryColor;
-        currentStripe     = p.stripeColor;
+        currentStripe     = p.secondaryColor;
         currentSkin       = p.skinColor;
         currentHair       = p.hairColor;
         currentShoe       = p.shoeColor;
@@ -103,10 +98,8 @@ public class NPCAppearance : MonoBehaviour
         if (expressionLibrary == null) return;
         if (!expressionLibrary.TryGet(expression, out var entry)) return;
 
-        targetRenderer.GetPropertyBlock(mpb);
-        if (entry.texture != null)      mpb.SetTexture(baseTexId,  entry.texture);
-        if (entry.maskTexture != null)  mpb.SetTexture(maskTexId,  entry.maskTexture);
-        targetRenderer.SetPropertyBlock(mpb);
+        if (entry.texture != null)      mat.SetTexture(baseTexId,  entry.texture);
+        if (entry.maskTexture != null)  mat.SetTexture(maskTexId,  entry.maskTexture);
 
         currentExpression = expression;
     }
@@ -122,33 +115,29 @@ public class NPCAppearance : MonoBehaviour
     private void SetSingleColor(int propId, Color c, ref Color cache)
     {
         if (c == cache) return;
-        targetRenderer.GetPropertyBlock(mpb);
-        mpb.SetColor(propId, c);
-        targetRenderer.SetPropertyBlock(mpb);
+        mat.SetColor(propId, c);
         cache = c;
     }
 
-    public void ApplyPalette(RegionColorPalette palette)
+    public void ApplyPalette(RegionColorPalette p)
     {
-        if (palette == null) return;
+        if (p == null) return;
 
-        targetRenderer.GetPropertyBlock(mpb);
-        mpb.SetColor(primaryId,   palette.primaryColor);
-        mpb.SetColor(stripeId,    palette.stripeColor);
-        mpb.SetColor(skinId,      palette.skinColor);
-        mpb.SetColor(hairId,      palette.hairColor);
-        mpb.SetColor(shoeId,      palette.shoeColor);
-        mpb.SetColor(eyeId,       palette.eyeColor);
-        mpb.SetColor(lipId,       palette.lipColor);
-        targetRenderer.SetPropertyBlock(mpb);
+        mat.SetColor(primaryId,   p.primaryColor);
+        mat.SetColor(stripeId,    p.secondaryColor);
+        mat.SetColor(skinId,      p.skinColor);
+        mat.SetColor(hairId,      p.hairColor);
+        mat.SetColor(shoeId,      p.shoeColor);
+        mat.SetColor(eyeId,       p.eyeColor);
+        mat.SetColor(lipId,       p.lipColor);
 
-        currentPrimary   = palette.primaryColor;
-        currentStripe    = palette.stripeColor;
-        currentSkin      = palette.skinColor;
-        currentHair      = palette.hairColor;
-        currentShoe      = palette.shoeColor;
-        currentEye       = palette.eyeColor;
-        currentLip       = palette.lipColor;
+        currentPrimary   = p.primaryColor;
+        currentStripe    = p.secondaryColor;
+        currentSkin      = p.skinColor;
+        currentHair      = p.hairColor;
+        currentShoe      = p.shoeColor;
+        currentEye       = p.eyeColor;
+        currentLip       = p.lipColor;
     }
 
     public void SetLibrary(FacialExpressionLibrary library, FacialExpression? overrideExpression = null)
@@ -163,11 +152,14 @@ public class NPCAppearance : MonoBehaviour
             target = initialExpression;
         }
 
-        targetRenderer.GetPropertyBlock(mpb);
-        if (entry.texture != null)      mpb.SetTexture(baseTexId,  entry.texture);
-        if (entry.maskTexture != null)  mpb.SetTexture(maskTexId,  entry.maskTexture);
-        targetRenderer.SetPropertyBlock(mpb);
+        if (entry.texture != null)      mat.SetTexture(baseTexId,  entry.texture);
+        if (entry.maskTexture != null)  mat.SetTexture(maskTexId,  entry.maskTexture);
 
         currentExpression = target;
+    }
+
+    private void OnDestroy()
+    {
+        if (mat != null) Destroy(mat);
     }
 }

@@ -653,6 +653,8 @@ MonoBehaviour:
   isBeingStalked: 0
   vigilance: 0
   panicBoost: 0
+  hasArrivedAtKillNode: 0
+  forcedIdleEndTime: 0
   isMonster: 0
   currentVictim: {fileID: 0}
   currentStalker: {fileID: 0}
@@ -811,7 +813,11 @@ MonoBehaviour:
   libraryPool:
   - {fileID: 0}
   - {fileID: 0}
-  palettePool: []
+  - {fileID: 0}
+  palettePool:
+  - {fileID: 11400000, guid: c464f812edc9f46d494dc55f0f6aa9cd, type: 2}
+  - {fileID: 11400000, guid: 6bc171c6bcb964583bbe4baa57118663, type: 2}
+  - {fileID: 11400000, guid: 26da58c6df3aa44d9af89c6350fdb303, type: 2}
   baseTexturePropertyName: _BaseMap
   maskTexturePropertyName: _MaskMap
   primaryColorPropertyName: _PrimaryColor
@@ -822,7 +828,7 @@ MonoBehaviour:
   eyeColorPropertyName: _EyeColor
   lipColorPropertyName: _LipColor
   initialExpression: 0
-  initialPalette: {fileID: 11400000, guid: c464f812edc9f46d494dc55f0f6aa9cd, type: 2}
+  initialPalette: {fileID: 0}
 --- !u!114 &4555500793493565102
 MonoBehaviour:
   m_ObjectHideFlags: 0

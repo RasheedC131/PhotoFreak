@@ -20,7 +20,7 @@
 // Recoloring uses luminance, so the original hue is fully replaced while
 // painted shading, highlights, and detail are preserved as brightness.
 
-Shader "NPC/RegionRecolor"
+Shader "NPC/RegionRecolorv1"
 {
     Properties
     {
