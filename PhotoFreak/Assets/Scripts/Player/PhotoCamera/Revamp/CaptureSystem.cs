@@ -55,8 +55,10 @@ public class CaptureSystem : MonoBehaviour
                 data.playerPos = origin;
                 data.subjectPos = subject.point;
                 data.subjectForward = subject.collider.transform.forward;
+                
+                data.camera = camera;
+                data.subject = subject;
 
-                data.fov = camera.fieldOfView;
                 data.focus = controller.currentCamera.manualFocus ? manualFocus.GetFocusError() : autoFocus.GetFocus();
                 data.manualFocus = controller.currentCamera.manualFocus;
 

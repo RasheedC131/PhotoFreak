@@ -7,7 +7,9 @@ public struct CaptureData
     public Vector3 subjectPos;
     public Vector3 subjectForward;
 
-    public float fov;
+    public Camera camera;
+    public RaycastHit subject;
+
     public float focus;
     public bool manualFocus;
 

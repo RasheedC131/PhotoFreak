@@ -146,7 +146,7 @@ public class CameraController : MonoBehaviour
     {
         development.ResetDevelopment();
         hasPendingPhoto = false;
-        eval.ScoreDevelopment(developPercent);
+        eval.EvaluatePostData(developPercent);
         TransitionToState(CaptureState.Idle);
     }
 

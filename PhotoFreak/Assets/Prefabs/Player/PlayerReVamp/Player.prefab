@@ -1547,6 +1547,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CameraController
   currentCamera: {fileID: 11400000, guid: 169a43864ed7c5245ab69fe04ef40936, type: 2}
+  currFilm: 0
+  maxFilm: 10
 --- !u!114 &1039213533765447114
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1580,54 +1582,137 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef43eb5c980d79747bef421ff77b02a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PhotoScoring
-  distanceCurve:
+  distCurve:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
       time: 5
       value: 5
-      inSlope: -0.28403953
-      outSlope: -0.28403953
-      tangentMode: 0
+      inSlope: -0.26666668
+      outSlope: -0.26666668
+      tangentMode: 34
       weightedMode: 0
       inWeight: 0
-      outWeight: 0.17360704
-    - serializedVersion: 3
-      time: 10
-      value: 4
-      inSlope: -0.1687182
-      outSlope: -0.1687182
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 15
-      value: 2
-      inSlope: -0.17547955
-      outSlope: -0.17547955
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
       outWeight: 0.33333334
     - serializedVersion: 3
       time: 20
       value: 1
-      inSlope: 0.05728435
-      outSlope: 0.05728435
-      tangentMode: 0
+      inSlope: -0.26666668
+      outSlope: -0.26666668
+      tangentMode: 34
       weightedMode: 0
-      inWeight: 0.5081682
+      inWeight: 0.33333334
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  facingCurve:
+  faceCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: -1
+      value: 1
+      inSlope: 1
+      outSlope: 1
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0
+      value: 2
+      inSlope: 1.5
+      outSlope: 1.5
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.5
+      value: 3
+      inSlope: 3
+      outSlope: 3
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 5
+      inSlope: 4
+      outSlope: 4
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  sizeCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 233.45697
+      outSlope: 233.45697
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.02866098
+    - serializedVersion: 3
+      time: 0.004812611
+      value: 3.329858
+      inSlope: 47.630726
+      outSlope: 47.630726
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.08162945
+    - serializedVersion: 3
+      time: 0.07803039
+      value: 5
+      inSlope: 0.26914486
+      outSlope: 0.26914486
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 1
+      outWeight: 0.013633931
+    - serializedVersion: 3
+      time: 1.0016885
+      value: 0.9939153
+      inSlope: -4.3371944
+      outSlope: -4.3371944
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  autoFocusCurve:
     serializedVersion: 2
     m_Curve: []
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  manualFocusCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  developCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  distWeight: 0.15
+  faceWeight: 0.2
+  sizeWeight: 0.25
+  focusWeight: 0.2
+  developWeight: 0.2
 --- !u!114 &6002582151149855261
 MonoBehaviour:
   m_ObjectHideFlags: 0

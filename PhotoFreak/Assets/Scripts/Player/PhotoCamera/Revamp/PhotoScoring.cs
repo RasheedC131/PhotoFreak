@@ -3,69 +3,101 @@ using UnityEngine;
 public class PhotoScoring : MonoBehaviour
 {
     [Header("Scoring Curves")]
-    public AnimationCurve distanceCurve;
-    public AnimationCurve facingCurve;
+    [SerializeField] private AnimationCurve distCurve;
+    [SerializeField] private AnimationCurve faceCurve;
+    [SerializeField] private AnimationCurve sizeCurve;
+    [SerializeField] private AnimationCurve autoFocusCurve;
+    [SerializeField] private AnimationCurve manualFocusCurve;
+    [SerializeField] private AnimationCurve developCurve;
+    
+    [Header("Score Weights")]
+    [SerializeField] private float distWeight = .15f;
+    [SerializeField] private float faceWeight = .20f;
+    [SerializeField] private float sizeWeight = .25f;
+    [SerializeField] private float focusWeight = .20f;
+    [SerializeField] private float developWeight = .20f;
 
-    struct ScoreParameters
-    {
-        public float distance; //How far is the subject
-        public float facing; //Is the subject facing the camera
-        public float size; //Does the subject fit in the camera
-        //public int pose; //Taken from Photo Tag
-        public float focus; //Taken from either Manual or Auto Focus
-        public float development; //Percent developed
+    private ScoreParameters currScore;
 
-        //public const int numParameters = 5; //To easily update amount of parameters
-    };
 
     public void EvaluateCaptureData(CaptureData data)
     {
-        ScoreParameters score = new ScoreParameters();
+        currScore = new ScoreParameters();
 
         float dist = Vector3.Distance(data.subjectPos, data.playerPos);
-        score.distance = ScoreDistance(dist);
-        //Debug.Log("Distance : " + dist);
-        //Debug.Log("Distance Score: " + score.distance);
-
+        currScore.distance = ScoreDistance(dist);
+        Debug.Log("Distance: " + dist + " | Score: " + currScore.distance);
+        
         float angle = CalculateFacing(data);
-        score.facing = ScoreFacing(angle);
-        //Debug.Log("Angle : " + angle);
-        //Debug.Log("Facing Score: " + score.facing);
+        currScore.facing = ScoreFacing(angle);
 
-        float size = 1f/(dist * data.fov);
-        //score.size = ScoreSize(size);
-        Debug.Log("Size : " + size);
-
+        float size = CalclateScreenSize(data);
+        currScore.size = ScoreSize(size);
+        Debug.Log("Size: " + size + " | Score: " + currScore.size);
+        
         if (data.manualFocus)
         {
-            //score.focus = ScoreManualFocus(data.focus);
+            currScore.focus = ScoreManualFocus(data.focus);
         } 
         else
         {
-           //score.focus = ScoreAutoFocus(data.focus); 
+           currScore.focus = ScoreAutoFocus(data.focus); 
         }
-        Debug.Log("Focus : " + data.focus);
+
+        currScore.extras = data.extras;
+        
     }
 
-    public void ScoreDevelopment(float developPercent)
+    public void EvaluatePostData(float developPercent)
     {
-        //score.development = developmentCurve.Evaluate(developPercent);
-        Debug.Log("Development Score : " + developPercent);
+        currScore.development = developCurve.Evaluate(developPercent);
     }
 
+    public ScoreParameters CalculatePhotoScore()
+    {
+        float weightedDistance = currScore.distance * distWeight;
+        float weightedFacing   = currScore.facing * faceWeight;
+        float weightedSize     = currScore.size * sizeWeight;
+        float weightedFocus    = currScore.focus * focusWeight;
+        float weightedDevelop  = currScore.development * developWeight;
+        
+        float baseScore = weightedDistance + weightedFacing + weightedSize + weightedFocus + weightedDevelop;
+
+        float extrasMultiplier = 1f + (currScore.extras * 0.1f);
+
+        currScore.result = baseScore * extrasMultiplier;
+        
+
+        return currScore;
+    }
+
+    /*
+        Helper Functions
+    */
     private float ScoreDistance(float dist)
     {
-        return distanceCurve.Evaluate(dist);
+        return distCurve.Evaluate(dist);
     }
 
     private float ScoreFacing(float angle)
     {
-        return facingCurve.Evaluate(angle);
+        return faceCurve.Evaluate(angle);
     }
-    
 
-    //Need to implement
-    //private float TotalScore();
+    private float ScoreSize(float size)
+    {
+        return sizeCurve.Evaluate(size);
+    }
+
+    private float ScoreAutoFocus(float focus)
+    {
+        return autoFocusCurve.Evaluate(focus);
+    }
+
+    private float ScoreManualFocus(float focus)
+    {
+        return manualFocusCurve.Evaluate(focus);
+    }
 
     private float CalculateFacing(CaptureData data)
     {
@@ -84,5 +116,38 @@ public class PhotoScoring : MonoBehaviour
         float angle = Vector3.Dot(fromSubject,toPlayer);
 
         return angle;
+    }
+
+    private float CalclateScreenSize(CaptureData data)
+    {
+        Camera cam = data.camera;
+        Collider col = data.subject.collider;
+
+        Vector3 min = col.bounds.min;
+        Vector3 max = col.bounds.max;
+
+        Vector3 screenMin = cam.WorldToScreenPoint(min);
+        Vector3 screenMax = cam.WorldToScreenPoint(max);
+
+        float xMin = Mathf.Min(screenMin.x, screenMax.x);
+        float yMin = Mathf.Min(screenMin.y, screenMax.y);
+
+        float xMax = Mathf.Max(screenMin.x, screenMax.x);
+        float yMax = Mathf.Max(screenMin.y, screenMax.y);
+
+    
+        xMin = Mathf.Clamp(xMin, 0, Screen.width);
+        yMin = Mathf.Clamp(yMin, 0, Screen.height);
+        xMax = Mathf.Clamp(xMax, 0, Screen.width);
+        yMax = Mathf.Clamp(yMax, 0, Screen.height);
+
+
+        float screenWidth = Mathf.Max(0, xMax - xMin);
+        float screenHeight = Mathf.Max(0, yMax - yMin);
+
+        float area = screenWidth * screenHeight;
+        float normalizedArea = area / (Screen.width * Screen.height);
+
+        return normalizedArea;
     }
 }
