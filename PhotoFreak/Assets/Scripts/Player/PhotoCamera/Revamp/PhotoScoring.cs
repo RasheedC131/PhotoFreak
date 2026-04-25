@@ -26,14 +26,12 @@ public class PhotoScoring : MonoBehaviour
 
         float dist = Vector3.Distance(data.subjectPos, data.playerPos);
         currScore.distance = ScoreDistance(dist);
-        Debug.Log("Distance: " + dist + " | Score: " + currScore.distance);
         
         float angle = CalculateFacing(data);
         currScore.facing = ScoreFacing(angle);
 
         float size = CalclateScreenSize(data);
         currScore.size = ScoreSize(size);
-        Debug.Log("Size: " + size + " | Score: " + currScore.size);
         
         if (data.manualFocus)
         {
@@ -41,7 +39,7 @@ public class PhotoScoring : MonoBehaviour
         } 
         else
         {
-           currScore.focus = ScoreAutoFocus(data.focus); 
+           currScore.focus = ScoreAutoFocus(data.focus);
         }
 
         currScore.extras = data.extras;
@@ -51,6 +49,7 @@ public class PhotoScoring : MonoBehaviour
     public void EvaluatePostData(float developPercent)
     {
         currScore.development = developCurve.Evaluate(developPercent);
+        Debug.Log("develop: " + developPercent + " | Score: " + currScore.development);
     }
 
     public ScoreParameters CalculatePhotoScore()
