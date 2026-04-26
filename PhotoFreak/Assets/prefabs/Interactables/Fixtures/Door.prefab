@@ -135,6 +135,8 @@ MonoBehaviour:
   openAngle: 90
   swingSpeed: 5
   handleLocation: {fileID: 1730411977834844831}
+  closeDelay: 1.5
+  linkedDoor: {fileID: 0}
 --- !u!1 &5249218630222162283
 GameObject:
   m_ObjectHideFlags: 0

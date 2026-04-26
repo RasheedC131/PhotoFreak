@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 // handles logic in-between guest to monster 
@@ -11,12 +12,14 @@ public class NPCIdentity : MonoBehaviour
     [SerializeField] private GameObject standardActionsObj;
     [SerializeField] private GameObject monsterActionsObj;
 
-    private AIContext ctx; 
+    private AIContext ctx;
+    private MutationEffect mutationEffect;
 
     void Awake()
     {
         ctx = GetComponent<AIContext>();
-        ShowGuestModel(); 
+        mutationEffect = GetComponentInChildren<MutationEffect>();
+        ShowGuestModel();
     }
 
     public void Mutate(bool isSmartMonster)
@@ -63,9 +66,21 @@ public class NPCIdentity : MonoBehaviour
 
     public void ShowMonsterModel()
     {
-        if (guestModel is not null) guestModel.SetActive(false); 
-        if (monsterModel is not null) monsterModel.SetActive(true);
+        StartCoroutine(MutationSequence());
+    }
 
-        // TODO: Insert some particle or animation effect 
+    private IEnumerator MutationSequence()
+    {
+        // Play the circles first so they're visible around the guest model.
+        if (mutationEffect != null) mutationEffect.Play();
+
+        // Wait until the effect is roughly halfway done, then swap the model
+        // so the reveal happens while the circles are still clearly visible.
+        float switchDelay = mutationEffect != null ? mutationEffect.Duration * 0.4f : 0f;
+        yield return new WaitForSeconds(switchDelay);
+
+        if (guestModel is not null) guestModel.SetActive(false);
+        if (monsterModel is not null) monsterModel.SetActive(true);
+        // Circles continue and fade out naturally over the remaining duration.
     }
 }

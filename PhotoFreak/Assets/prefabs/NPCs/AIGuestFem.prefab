@@ -597,6 +597,7 @@ GameObject:
   - component: {fileID: 3961388715744793645}
   - component: {fileID: 8330840134967365986}
   - component: {fileID: 4555500793493565102}
+  - component: {fileID: 6426933882425033256}
   m_Layer: 0
   m_Name: AIGuestFem
   m_TagString: Untagged
@@ -688,10 +689,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 19530e53ae18246fdbd74452eedc0c66, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NPCIdentity
-  guestModel: {fileID: 0}
-  monsterModel: {fileID: 0}
-  standardActionsObj: {fileID: 0}
-  monsterActionsObj: {fileID: 0}
+  guestModel: {fileID: 1905466196524746921}
+  monsterModel: {fileID: 7378936044269665481}
+  standardActionsObj: {fileID: 1069689247277638716}
+  monsterActionsObj: {fileID: 3834346947809195801}
 --- !u!114 &6471456444416803625
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -780,6 +781,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NPCAnimationController
   crossFadeDuration: 0.2
+  moveSpeedThreshold: 0.15
+  idleSettleDelay: 0.25
+  rotationSmoothSpeed: 8
   socialStateNames:
   - AnnoyedHeadNod
   - acknowledge
@@ -845,6 +849,33 @@ MonoBehaviour:
   monsterModel: {fileID: 7378936044269665481}
   standardActionsObj: {fileID: 3834346947809195801}
   monsterActionsObj: {fileID: 1069689247277638716}
+--- !u!54 &6426933882425033256
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6616486110427068599}
+  serializedVersion: 5
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 112
+  m_CollisionDetection: 0
 --- !u!1 &6653963265284278247
 GameObject:
   m_ObjectHideFlags: 0
@@ -1465,6 +1496,11 @@ PrefabInstance:
 --- !u!4 &1241379158096810515 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: dca9af14c69ca4bb491889a13c89927a, type: 3}
+  m_PrefabInstance: {fileID: 1635082337669772792}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1905466196524746921 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: dca9af14c69ca4bb491889a13c89927a, type: 3}
   m_PrefabInstance: {fileID: 1635082337669772792}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &7948139632234178103 stripped
