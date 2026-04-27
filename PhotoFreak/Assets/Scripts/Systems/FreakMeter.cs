@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEditor;
-using System.Collections.Generic; 
+using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 using System.Collections;
 
@@ -32,63 +32,74 @@ public class FreakMeter : MonoBehaviour
 
     [SerializeField] private float currentFreak = 0f;
     private bool isMeterDecaying;
-   
+
     [SerializeField] private int count = 0;
     private List<Transform> visibleNPCs = new List<Transform>();
 
     private float prevVal = 0;
     private int currentStrikes = 0;
     private bool isFinalPanic = false;
+    private bool striked = false;
 
-    // normalized freak meter to tweak the AI behaivor and react to it. 
     public float FreakRatio => maxFreak > 0f ? Mathf.Clamp01(currentFreak / maxFreak) : 0f;
+
     void Start()
     {
-        UpdateUI(); 
+        UpdateUI();
         if (UI == null) Debug.LogError("[FreakMeter]: UI reference is missing in the Inspector!");
         if (CameraScript == null) Debug.LogError("[FreakMeter]: CameraScript reference is missing!");
         UI.UpdateStrikes(currentStrikes);
     }
 
     void Update()
-    {   
-        if (GlobalGameState.Instance != null && GlobalGameState.Instance.currentState != GlobalGameState.GameState.PLAYING) return; 
+    {
+        if (GlobalGameState.Instance != null && GlobalGameState.Instance.currentState != GlobalGameState.GameState.PLAYING) return;
 
         if (count > maxNPC) count = maxNPC;
 
         if (currentFreak >= maxFreak)
         {
+            if (!striked)
+                striked = true;
             freakTimer.restartTime();
             currentStrikes += 1;
-            currentFreak = 0;
+            if (currentStrikes >= maxStrikes)
+            {
+                if (!isFinalPanic)
+                {
+                    isFinalPanic = true;
+                    if (CrowdStateManager.Instance != null) CrowdStateManager.Instance.TriggerFinalPanic();
+                }
+                return;
+            }
+            currentFreak = maxFreak - 2;
             if (UI != null) UI.UpdateMeter(currentFreak, maxFreak);
             UI.UpdateStrikes(currentStrikes);
 
             OnStrikeEarned?.Invoke(currentStrikes);
         }
 
-        if (currentStrikes >= maxStrikes)
+        if (striked)
         {
-
-            if (!isFinalPanic)
+            currentFreak -= .01f * 10;
+            UI.UpdateMeter(currentFreak, maxFreak);
+            if (currentFreak <= 0)
             {
-                isFinalPanic = true;
-                if (CrowdStateManager.Instance != null) CrowdStateManager.Instance.TriggerFinalPanic();
-                // else if (GlobalGameState.Instance != null) GlobalGameState.Instance.TriggerGameOver();
+                currentFreak = 0;
+                striked = false;
             }
-            return;
         }
 
-        bool isMeterRising = false; 
+        bool isMeterRising = false;
 
-        if (player.getSprint() && count > -1)
+        if (player.getSprint() && count > -1 && !striked)
         {
             freakTimer.unpause();
             timer.restart();
-            currentFreak += sprintFunction(1, freakTimer.getTime()) * 1f; // tmp values
-            isMeterRising = true; 
+            currentFreak += sprintFunction(1, freakTimer.getTime()) * 1f;
+            isMeterRising = true;
         }
-        else if (CameraScript.getCameraState())
+        else if (CameraScript.getCameraState() && !striked)
         {
             int viewCount = CountNPCsInCameraView();
             if (viewCount > 0)
@@ -103,8 +114,7 @@ public class FreakMeter : MonoBehaviour
         {
             freakTimer.pause();
         }
-        
-        
+
         if (isMeterRising)
         {
             UpdateUI();
@@ -148,17 +158,15 @@ public class FreakMeter : MonoBehaviour
         Vector3 sphereOrigin = player.transform.position;
 
         Collider[] hits = Physics.OverlapSphere(sphereOrigin, cameraDetectRange);
-        // Deduplicate by root transform so we count NPCs, not individual colliders
         System.Collections.Generic.HashSet<Transform> counted = new System.Collections.Generic.HashSet<Transform>();
         int viewCount = 0;
         foreach (Collider col in hits)
         {
-            // Use PhotoTag (same as PhotoScore) to identify valid NPC subjects
             PhotoTag tag = col.GetComponentInParent<PhotoTag>();
             if (tag == null) continue;
 
             Transform root = col.transform.root;
-            if (!counted.Add(root)) continue; // already counted this NPC
+            if (!counted.Add(root)) continue;
 
             Vector3 dirToNPC = (col.transform.position - sphereOrigin).normalized;
             if (Vector3.Angle(aimTransform.forward, dirToNPC) <= cameraDetectAngle)
@@ -177,11 +185,12 @@ public class FreakMeter : MonoBehaviour
         }
         return prevVal;
     }
+
     float cameraFunction(int count, float time)
     {
         float val = k1 * Mathf.Pow(x1, time);
         prevVal = val * count - prevVal;
-         if (prevVal < 0)
+        if (prevVal < 0)
         {
             prevVal = 0;
         }
@@ -190,13 +199,11 @@ public class FreakMeter : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-       
         if (!visibleNPCs.Contains(other.transform))
         {
-            visibleNPCs.Add(other.transform); 
-            count = visibleNPCs.Count / 2;                      // each npc will have a monster and a guest model with one of them being disabled  
+            visibleNPCs.Add(other.transform);
+            count = visibleNPCs.Count / 2;
         }
-        
     }
 
     void OnTriggerExit(Collider other)
@@ -206,7 +213,7 @@ public class FreakMeter : MonoBehaviour
             if (visibleNPCs.Contains(other.transform))
             {
                 visibleNPCs.Remove(other.transform);
-                count = visibleNPCs.Count / 2;                  // each npc will have a monster and a guest model with one of them being disabled 
+                count = visibleNPCs.Count / 2;
                 Debug.Log("NPC Left Range, Count: " + count);
             }
         }
@@ -216,9 +223,9 @@ public class FreakMeter : MonoBehaviour
     {
         if (GlobalGameState.Instance != null && GlobalGameState.Instance.currentState != GlobalGameState.GameState.PLAYING) return;
 
-        currentFreak += amount; 
-        if (currentFreak > maxFreak) currentFreak = maxFreak; 
-        UpdateUI(); 
+        currentFreak += amount;
+        if (currentFreak > maxFreak) currentFreak = maxFreak;
+        UpdateUI();
     }
 
     private void UpdateUI()

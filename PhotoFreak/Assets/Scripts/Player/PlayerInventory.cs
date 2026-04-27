@@ -5,7 +5,7 @@ using TMPro;
 
 public class PlayerInventory : MonoBehaviour
 {
-    public event Action<Sprite> OnSlotChanged; 
+    public event Action<Sprite, string> OnSlotChanged; 
     public event Action<int, Sprite> OnSlotUpdated;
 
     [Header("Inventory Settings")]
@@ -38,7 +38,7 @@ public class PlayerInventory : MonoBehaviour
             inventorySlots[0] = camTool;
             camTool.OnEquip(); 
             
-            StartCoroutine(InitializeCameraUI(camTool.itemIcon));
+            StartCoroutine(InitializeCameraUI(camTool.itemIcon, camTool.itemName));
         }
         else
         {
@@ -50,10 +50,10 @@ public class PlayerInventory : MonoBehaviour
         inputManager.OnInteract += HandleInteraction; 
     }
 
-    private IEnumerator InitializeCameraUI(Sprite camIcon)
+    private IEnumerator InitializeCameraUI(Sprite camIcon, string name)
     {
         yield return new WaitForEndOfFrame();
-        OnSlotChanged?.Invoke(camIcon);
+        OnSlotChanged?.Invoke(camIcon, name);
     }
 
     void Update()
@@ -176,7 +176,7 @@ private void CheckForInteractable()
         inventorySlots[targetSlot] = newItem;
         newItem.OnPickup(handHoldPos);
         newItem.OnEquip();
-        OnSlotChanged?.Invoke(newItem.itemIcon);
+        OnSlotChanged?.Invoke(newItem.itemIcon, newItem.itemName);
     }
 
     public void RemoveCurrentItem()
@@ -184,7 +184,7 @@ private void CheckForInteractable()
         if (inventorySlots[currentSlotIndex] == null) return;
         inventorySlots[currentSlotIndex].OnUnequip(); 
         inventorySlots[currentSlotIndex] = null;
-        OnSlotChanged?.Invoke(null);
+        OnSlotChanged?.Invoke(null, "");
         SwitchToSlot(0); 
     }
 
@@ -199,7 +199,7 @@ private void CheckForInteractable()
             itemToDrop.OnUnequip();
             itemToDrop.OnDrop();
             inventorySlots[currentSlotIndex] = null;
-            OnSlotChanged?.Invoke(null);
+            OnSlotChanged?.Invoke(null, "");
             SwitchToSlot(0); 
         }
     }
@@ -214,11 +214,11 @@ private void CheckForInteractable()
 
         if (inventorySlots[currentSlotIndex] != null)
         {
-            OnSlotChanged?.Invoke(inventorySlots[currentSlotIndex].itemIcon);
+            OnSlotChanged?.Invoke(inventorySlots[currentSlotIndex].itemIcon, inventorySlots[currentSlotIndex].itemName);
         }
         else
         {
-            OnSlotChanged?.Invoke(null);
+            OnSlotChanged?.Invoke(null, "");
         }
     }
 
