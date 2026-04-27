@@ -13,5 +13,7 @@ public struct CaptureData
     public float focus;
     public bool manualFocus;
 
+    public Texture2D currentPhoto;
+
     public int extras; //subjects in the background
 };

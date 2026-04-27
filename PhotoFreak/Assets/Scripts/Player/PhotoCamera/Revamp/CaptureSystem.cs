@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class CaptureSystem : MonoBehaviour
@@ -50,21 +51,8 @@ public class CaptureSystem : MonoBehaviour
             {
                 Debug.Log("Hit Subject");
 
-                CaptureData data = new CaptureData();
-
-                data.playerPos = origin;
-                data.subjectPos = subject.point;
-                data.subjectForward = subject.collider.transform.forward;
+                StartCoroutine(SendCaptureData(origin, subject));
                 
-                data.camera = camera;
-                data.subject = subject;
-
-                data.focus = controller.currentCamera.manualFocus ? manualFocus.GetFocusError() : autoFocus.GetFocus();
-                data.manualFocus = controller.currentCamera.manualFocus;
-
-                data.extras = CaptureExtras(subject);
-                
-                eval.EvaluateCaptureData(data);
 
                 return true;
             }
@@ -103,6 +91,29 @@ public class CaptureSystem : MonoBehaviour
         
         //Debug.Log("Extras: " + extrasCount);
         return extrasCount;
+    }
+
+    private IEnumerator SendCaptureData(Vector3 origin, RaycastHit subject)
+    {
+        CaptureData data = new CaptureData();
+
+        data.playerPos = origin;
+        data.subjectPos = subject.point;
+        data.subjectForward = subject.collider.transform.forward;
+                
+        data.camera = camera;
+        data.subject = subject;
+
+        data.focus = controller.currentCamera.manualFocus ? manualFocus.GetFocusError() : autoFocus.GetFocus();
+        data.manualFocus = controller.currentCamera.manualFocus;
+
+        data.extras = CaptureExtras(subject);
+
+        yield return new WaitForEndOfFrame(); 
+        data.currentPhoto = ScreenCapture.CaptureScreenshotAsTexture();
+
+        eval.EvaluateCaptureData(data);
+        
     }
 
 

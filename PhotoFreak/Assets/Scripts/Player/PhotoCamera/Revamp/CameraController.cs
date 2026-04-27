@@ -171,6 +171,10 @@ public class CameraController : MonoBehaviour
         Debug.Log("devlop: " + newResult.development);
         Debug.Log("extras: " + newResult.extras);
 
+        ui.DisplayResults(newResult);
+
+        //Destroy(newResult.currentPhoto);
+
     }
 
     public bool HasPendingPhoto()

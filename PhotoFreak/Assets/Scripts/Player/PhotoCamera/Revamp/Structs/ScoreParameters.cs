@@ -12,4 +12,6 @@ public struct ScoreParameters
     public float extras; //Amount of subjects in the bg of a photo
 
     public float result; //The final Photo Score
+
+    public Texture2D currentPhoto;
 };

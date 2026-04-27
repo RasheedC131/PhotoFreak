@@ -43,6 +43,7 @@ public class PhotoScoring : MonoBehaviour
         }
 
         currScore.extras = data.extras;
+        currScore.currentPhoto = data.currentPhoto;
         
     }
 

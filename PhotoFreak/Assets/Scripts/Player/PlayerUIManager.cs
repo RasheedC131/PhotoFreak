@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerUIManager : MonoBehaviour
 {
@@ -13,6 +14,17 @@ public class PlayerUIManager : MonoBehaviour
     {
         gameUICanvas.SetActive(!raised);
         photoCanvas.SetActive(raised);
+    }
+
+    public void DisplayResults(ScoreParameters data)
+    {
+        RawImage capturedPhoto = photoReviewCanvas.GetComponentInChildren<RawImage>();
+        capturedPhoto.texture = data.currentPhoto;
+
+        gameUICanvas.SetActive(false);
+        photoCanvas.SetActive(false);
+
+        photoReviewCanvas.SetActive(true);
     }
 
     // Update is called once per frame
