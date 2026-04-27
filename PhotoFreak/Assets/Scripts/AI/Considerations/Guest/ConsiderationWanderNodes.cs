@@ -13,9 +13,12 @@ public class ConsiderationWanderNodes : Consideration
         if (gw != null) personalityOffset = Random.Range(-gw.maxPersonalityOffset, gw.maxPersonalityOffset);
     }
 
-    protected override float EvaluateRawValue() 
+    protected override float EvaluateRawValue()
     {
         if (ctx == null || (ctx.isMonster && ctx.currentVictim != null) || ctx.isOccupied) return 0f;
+
+        // Once the NPC has realized it's being stalked, let ActionIsolate take over.
+        if (ctx.isAwareOfStalker) return 0f;
 
         if (ctx.targetNode != null || ctx.forceNewPath)
         {

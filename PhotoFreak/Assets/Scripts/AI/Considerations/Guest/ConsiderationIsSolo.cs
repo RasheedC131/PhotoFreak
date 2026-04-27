@@ -9,7 +9,7 @@ public class ConsiderationIsSolo : Consideration
     private ActionWanderNodes wanderNodesAction;
 
     [SerializeField] private float committedDecayMinTime = 5f;
-    [SerializeField] private float committedDecayDuration = 10f; // 
+    [SerializeField] private float committedDecayDuration = 10f;  
     [SerializeField] private AnimationCurve committedDecayCurve = AnimationCurve.EaseInOut(0f, 1f, 1f, 0f);
 
     private float committedStartTime = -1f;
@@ -27,6 +27,9 @@ public class ConsiderationIsSolo : Consideration
     protected override float EvaluateRawValue()
     {
         if (ctx == null || ctx.isOccupied || ctx.isMonster || gw == null) return 0f;
+
+        // Once the NPC has realized it's being stalked, step aside so ActionIsolate can win.
+        if (ctx.isAwareOfStalker) return 0f;
 
         if (ctx.targetNode == null && ctx.targetHub == null && agent != null && agent.hasPath)
         {

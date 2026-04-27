@@ -55,8 +55,7 @@ public class ActionTriggerTell : UtilityAction
         _isPerformingTell = true; 
         tellTimer.ResetTimer(); 
 
-        // int tellChoice =  Random.Range(0, 4);
-        int tellChoice = 3; 
+        int tellChoice =  Random.Range(0, 4);
 
         switch (tellChoice)
         {

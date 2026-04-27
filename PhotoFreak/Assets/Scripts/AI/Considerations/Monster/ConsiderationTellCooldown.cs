@@ -7,12 +7,14 @@ public class ConsiderationTellCooldown : Consideration
     private float currentTellTime = 0f;
     private MonsterSettings ms;
     private ActionTriggerTell tellAction;
+    private NPCIdentity identity;
 
     void Awake()
     {
-        ctx = GetComponentInParent<AIContext>();
-        ms = MonsterSettings.Instance;
+        ctx      = GetComponentInParent<AIContext>();
+        ms       = MonsterSettings.Instance;
         tellAction = GetComponent<ActionTriggerTell>();
+        identity = GetComponentInParent<NPCIdentity>();
 
         if (ms == null) Debug.LogError("MonsterSettings missing on " + gameObject.name);
         if (tellAction == null) Debug.LogError("ActionTriggerTell missing on " + gameObject.name);
@@ -23,6 +25,9 @@ public class ConsiderationTellCooldown : Consideration
     protected override float EvaluateRawValue()
     {
         if (ms == null || ctx == null || !ctx.isMonster) return 0f;
+
+        // Tells only make sense while wearing the guest disguise.
+        if (identity != null && !identity.isDisguised) return 0f;
 
         if (ctx.currentVictim != null && ctx.currentStalkTimer >= ms.stalkDuration) return 0f;
 

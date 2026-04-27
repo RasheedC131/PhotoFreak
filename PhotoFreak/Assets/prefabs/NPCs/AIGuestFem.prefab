@@ -81,6 +81,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 441e80a065dd24a48be8114bf845557b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ActionIdle
+  isMonsterAction: 0
 --- !u!1 &1060553102074818680
 GameObject:
   m_ObjectHideFlags: 0
@@ -126,6 +127,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad2ab1bed07234280922440e7966a8b4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ActionHuntPlayer
+  isMonsterAction: 1
 --- !u!114 &7016774627294851406
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -223,7 +225,7 @@ Transform:
   m_GameObject: {fileID: 2065143845190458872}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0.453, y: 2.112, z: -0.127}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -451,6 +453,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1782e8fdc97d74999a3442d59d5f0273, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ActionIsolate
+  isMonsterAction: 0
   killRoomNodesContainer: {fileID: 0}
 --- !u!114 &7950672979804279728
 MonoBehaviour:
@@ -773,6 +776,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae3fdad0d1bc54864893d77f4bc01bf8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ActionWanderFree
+  isMonsterAction: 1
   hasReservedSpot: 0
 --- !u!114 &702094534803053660
 MonoBehaviour:
@@ -881,13 +885,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26ffe2c5ebc4c4593957148447561d60, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ActionTriggerTell
-  headSnapConstraint: {fileID: 0}
-  headSnapTarget: {fileID: 0}
-  legIKConstraint: {fileID: 0}
-  legIKHint: {fileID: 0}
-  proceduralLimpConstraint: {fileID: 0}
-  proceduralSlouchConstraint: {fileID: 0}
-  forceLimpTest: 0
+  isMonsterAction: 1
+  headSnapConstraint: {fileID: 7864815940915443869}
+  headSnapTarget: {fileID: 5942561598918814443}
+  legIKConstraint: {fileID: 8489225035406491421}
+  legIKHint: {fileID: 7975962212472762372}
+  proceduralLimpConstraint: {fileID: 8692267888767126782}
+  proceduralSlouchConstraint: {fileID: 1041330750948407708}
 --- !u!114 &4613606955124605650
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1035,8 +1039,8 @@ MonoBehaviour:
   panicBoost: 0
   hasArrivedAtKillNode: 0
   forcedIdleEndTime: 0
-  isMonster: 1
-  isSpawnAsSmartMonster: 1
+  isMonster: 0
+  isSpawnAsSmartMonster: 0
   isHuntingPlayer: 0
   currentVictim: {fileID: 0}
   currentStalker: {fileID: 0}
@@ -1286,6 +1290,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 92bfd2b202d2a40a38246f84caa0d62b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ActionWanderNodes
+  isMonsterAction: 0
   hasReservedSpot: 0
 --- !u!114 &3381352698457410597
 MonoBehaviour:
@@ -1370,6 +1375,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8b9efdaf0bdf41a4a82d7f7043d6207, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ActionSocialize
+  isMonsterAction: 0
   currentPartner: {fileID: 0}
   isHost: 0
 --- !u!114 &8493270017113204666
@@ -1525,6 +1531,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae3fdad0d1bc54864893d77f4bc01bf8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ActionWanderFree
+  isMonsterAction: 0
   hasReservedSpot: 0
 --- !u!114 &6940637132248418745
 MonoBehaviour:
@@ -1634,6 +1641,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aeb530dcc214f4ae1991b37124a2a4f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Action_Stalk
+  isMonsterAction: 1
   currentStalker: {fileID: 0}
 --- !u!114 &3294575014869856796
 MonoBehaviour:
@@ -1783,6 +1791,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0722707b6e9b147cbabc8731fe5f9a97, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ActionAttack
+  isMonsterAction: 1
 --- !u!114 &2120703187895594196
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2117,19 +2126,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: c3eb47c241f8d4eaebf944c82b51fc74, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: 0.16983944
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: c3eb47c241f8d4eaebf944c82b51fc74, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0.42012325
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: c3eb47c241f8d4eaebf944c82b51fc74, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: 0.71880853
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: c3eb47c241f8d4eaebf944c82b51fc74, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: 0.5272242
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: c3eb47c241f8d4eaebf944c82b51fc74, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x

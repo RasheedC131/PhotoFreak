@@ -30,9 +30,12 @@ public class ConsiderationIdle : Consideration
 
         if (ctx.isMonster && ctx.currentVictim != null)
         {
-            walkingStartTime = -1f; 
-            return 0f; 
+            walkingStartTime = -1f;
+            return 0f;
         }
+
+        // Once the guest NPC has realized it's being stalked, ActionIsolate needs to win uncontested.
+        if (!ctx.isMonster && ctx.isAwareOfStalker) return 0f;
 
         float maxFatigueTime = ctx.isMonster ? ms.idleMaxFatigue : gs.idleMaxFatigue;
 

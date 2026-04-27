@@ -157,15 +157,28 @@ public override void ExecuteAction()
 
     public override void OnExit()
     {
-        if (hasReservedSpot && ctx.targetNode != null)
+        if (ctx.targetNode != null)
         {
             ZoneNode nodeScript = ctx.targetNode.GetComponent<ZoneNode>();
-            if (nodeScript != null && nodeScript.incomingCrowd.Contains(ctx)) nodeScript.incomingCrowd.Remove(ctx);
-            
-            
-            hasReservedSpot = false;
-            ctx.targetNode = null;
-            ctx.forceNewPath = false; 
+            if (nodeScript != null)
+            {
+                // If the NPC is interrupted before arriving, clean up their reservation
+                if (nodeScript.incomingCrowd.Contains(ctx)) 
+                {
+                    nodeScript.incomingCrowd.Remove(ctx);
+                    ctx.targetNode = null; // Only clear the target if they never made it
+                }
+            }
+        }
+
+        hasReservedSpot    = false;
+        ctx.forceNewPath   = false;
+        attemptTimer       = 0f;
+
+        if (agent != null && agent.isOnNavMesh)
+        {
+            agent.isStopped = true;
+            agent.ResetPath();
         }
     }
 }

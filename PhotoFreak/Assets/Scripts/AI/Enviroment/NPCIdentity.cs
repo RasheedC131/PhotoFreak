@@ -32,9 +32,11 @@ public class NPCIdentity : MonoBehaviour
         string prefix = isSmartMonster ? "[Monster] " : "[Infected] ";
         gameObject.name = prefix + gameObject.name;
         
-        ctx.isMonster = true;
-        ctx.isOccupied = false;
-        ctx.currentVictim = null;
+        ctx.isMonster              = true;
+        ctx.isOccupied             = false;
+        ctx.currentVictim          = null;
+        ctx.hasArrivedAtKillNode   = false;
+        ctx.isAwareOfStalker       = false;
 
         UnityEngine.AI.NavMeshAgent agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
         if (agent != null && agent.isActiveAndEnabled) agent.ResetPath();
@@ -68,7 +70,12 @@ public class NPCIdentity : MonoBehaviour
             Debug.Log($"{gameObject.name} became a standard infected.");
         }
 
-        // Re-cache the brain's array. Because we don't pass 'true' into this method, 
+        // Give the tell a fresh cooldown so the new monster doesn't immediately
+        // perform a tell while still standing at the kill node.
+        ConsiderationTellCooldown tellCooldown = GetComponentInChildren<ConsiderationTellCooldown>(true);
+        if (tellCooldown != null) tellCooldown.ResetTimer();
+
+        // Re-cache the brain's array. Because we don't pass 'true' into this method,
         // it automatically ignores the disabled Guest actions!
         if (brain != null)
         {

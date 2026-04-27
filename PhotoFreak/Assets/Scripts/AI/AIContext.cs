@@ -38,6 +38,11 @@ public class AIContext : MonoBehaviour
     public void AddStalker()    => _stalkerCount++;
     public void RemoveStalker() => _stalkerCount = Mathf.Max(0, _stalkerCount - 1);
 
+    // Set to true by ConsiderationIsStalked once the realization threshold is met
+    // AND a kill node is available. All competing considerations watch this flag so
+    // normal behaviour continues during the unaware pre-threshold window.
+    public bool isAwareOfStalker = false;
+
     [Header("Crowd State")]
     public float vigilance = 0f;
     public float panicBoost = 0f;

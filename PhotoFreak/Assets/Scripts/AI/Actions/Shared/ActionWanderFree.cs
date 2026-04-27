@@ -155,16 +155,24 @@ public class ActionWanderFree : UtilityAction
 
     public override void OnExit()
     {
-        if (hasReservedSpot && ctx.targetNode != null)
+        if (ctx.targetNode != null)
         {
             if (ctx.targetNode.TryGetComponent<ZoneNode>(out ZoneNode nodeScript))
             {
                 if (nodeScript.incomingCrowd.Contains(ctx)) nodeScript.incomingCrowd.Remove(ctx);
+                if (nodeScript.currentCrowd.Contains(ctx))  nodeScript.currentCrowd.Remove(ctx);
             }
-            
-            hasReservedSpot = false;
-            ctx.targetNode = null;
-            ctx.forceNewPath = false; 
+        }
+
+        hasReservedSpot  = false;
+        ctx.targetNode   = null;
+        ctx.forceNewPath = false;
+        attemptTimer     = 0f;
+
+        if (agent != null && agent.isOnNavMesh)
+        {
+            agent.isStopped = true;
+            agent.ResetPath();
         }
     }
 }

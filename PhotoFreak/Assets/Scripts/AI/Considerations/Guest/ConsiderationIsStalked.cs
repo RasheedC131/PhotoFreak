@@ -2,39 +2,34 @@ using UnityEngine;
 
 public class ConsiderationIsStalked : Consideration
 {
-    private AIContext ctx; 
-    private GuestWeights gw; 
-    private MonsterSettings ms; 
-
-    [Header("Paranoia Settings")]
-    public float realizationThreshold = 0.7f;
-    private float _exposureStartTime = -1f;
+    private AIContext ctx;
+    private GuestWeights gw;
 
     void Awake()
     {
         ctx = GetComponentInParent<AIContext>();
-        gw = GuestWeights.Instance;
-        ms = MonsterSettings.Instance;
+        gw  = GuestWeights.Instance;
     }
 
     protected override float EvaluateRawValue()
     {
+        // Not being stalked — reset awareness and score zero.
         if (ctx == null || !ctx.isBeingStalked || ctx.currentStalker == null)
         {
-            _exposureStartTime = -1f; // reset if stalking ends
+            ctx.isAwareOfStalker = false;
             return 0f;
         }
 
-        if (ms.stalkDuration <= 0f) return gw.isStalkedWeight;
+        // All kill nodes are taken — nowhere to go, keep wandering.
+        if (!KillNodeRegistry.HasAvailableNode(ctx))
+        {
+            ctx.isAwareOfStalker = false;
+            return 0f;
+        }
 
-        // Start the victim-side exposure clock the first tick stalking begins.
-        if (_exposureStartTime < 0f) _exposureStartTime = Time.time;
-
-        float timeRatio = (Time.time - _exposureStartTime) / ms.stalkDuration;
-        if (timeRatio < realizationThreshold) return 0f;
-
-        if (!KillNodeRegistry.HasAvailableNode(ctx)) return 0f; 
-        
+        // Stalked and a slot is free: set awareness immediately so every
+        // competing consideration zeros itself out this same tick.
+        ctx.isAwareOfStalker = true;
         return gw.isStalkedWeight;
     }
 }

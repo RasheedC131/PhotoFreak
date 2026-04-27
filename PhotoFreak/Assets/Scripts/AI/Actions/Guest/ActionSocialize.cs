@@ -103,7 +103,20 @@ public class ActionSocialize : UtilityAction
             else
             {
                 if (agent.enabled && !isSwitchingToAgent) ctx.StartCoroutine(SafeDisableAgent());
-                if (!_isSocializing) { _isSocializing = true; ctx.OnEnterSocialize(); }
+
+                // Show Smile only when the NPC is relaxed. If the freak meter is
+                // accumulating strikes (AlertSuppressor threshold crossed) or time
+                // is running low (TimeAnxiety threshold crossed), revert to Neutral
+                // so the NPC reads as uneasy even while still in the social group.
+                if (IsUneasy())
+                {
+                    if (_isSocializing) { _isSocializing = false; ctx.OnExitSocialize(); }
+                }
+                else
+                {
+                    if (!_isSocializing) { _isSocializing = true; ctx.OnEnterSocialize(); }
+                }
+
                 ctx.currentActionState = NPCActionState.SOCIALIZE;
             }
         }
@@ -174,6 +187,25 @@ public class ActionSocialize : UtilityAction
             }
         }
         return bestPartner;
+    }
+
+    // Returns true when either the alert level (freak-meter strikes) or the
+    // time-remaining anxiety crosses its respective threshold — mirroring the
+    // same conditions that ConsiderationAlertSuppressor and
+    // ConsiderationTimeAnxiety use to suppress the social score.
+    private bool IsUneasy()
+    {
+        float alertThreshold = gs != null ? gs.alertSuppressThreshold : 0.45f;
+        float alertLevel     = CrowdStateManager.Instance != null
+                               ? CrowdStateManager.Instance.AlertLevel : 0f;
+        if (alertLevel >= alertThreshold) return true;
+
+        float anxietyStart = gs != null ? gs.timeAnxietyStartRatio : 0.4f;
+        float timeRatio    = Timer.MainInstance != null
+                             ? Timer.MainInstance.TimeRatio : 1f;
+        if (timeRatio < anxietyStart) return true;
+
+        return false;
     }
 
     private void BreakPartnerLink()

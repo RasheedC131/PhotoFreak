@@ -22,7 +22,10 @@ public class ConsiderationPlayerSpotted : Consideration
     {
         if (ctx == null || playerTransform == null) return 0f;
 
-        if (ctx.panicBoost >= gs.panicFleeThreshold && !ctx.isBeingStalked)
+        // Suppress panic-based player flee only after the NPC has realised it's
+        // being stalked and is heading to the kill room. Pre-threshold, panic
+        // still fires normally so regular crowd behaviour is unaffected.
+        if (ctx.panicBoost >= gs.panicFleeThreshold && !ctx.isAwareOfStalker)
         {
             if (ctx.currentThreat == null) ctx.currentThreat = playerTransform;
             return ctx.panicBoost * gw.playerSpottedWeight;

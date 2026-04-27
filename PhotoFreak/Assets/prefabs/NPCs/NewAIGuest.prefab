@@ -265,7 +265,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &5872870021737463499
 Transform:
   m_ObjectHideFlags: 0
@@ -344,7 +344,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &347114435592930451
 Transform:
   m_ObjectHideFlags: 0
@@ -424,8 +424,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2926530552927595741}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -5.017761, y: 0.01600027, z: -0.4881897}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -475,7 +475,6 @@ Transform:
   - {fileID: 2554121075497137863}
   - {fileID: 1884257152682147760}
   - {fileID: 6087063230768825231}
-  - {fileID: 642942122418972910}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1579040667734335981
@@ -510,7 +509,8 @@ MonoBehaviour:
   panicBoost: 0
   hasArrivedAtKillNode: 0
   forcedIdleEndTime: 0
-  isMonster: 0
+  isMonster: 1
+  isSpawnAsSmartMonster: 1
   isHuntingPlayer: 0
   currentVictim: {fileID: 0}
   currentStalker: {fileID: 0}
@@ -700,7 +700,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &253435451435678139
 Transform:
   m_ObjectHideFlags: 0
@@ -962,7 +962,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.Animation.Rigging::UnityEngine.Animations.Rigging.OverrideTransform
   m_Weight: 0
   m_Data:
-    m_ConstrainedObject: {fileID: 0}
+    m_ConstrainedObject: {fileID: 2603333755879746977}
     m_OverrideSource: {fileID: 0}
     m_OverridePosition: {x: 0, y: -0.15, z: 0}
     m_OverrideRotation: {x: 0, y: 0, z: 5}
@@ -1075,7 +1075,7 @@ Transform:
   m_GameObject: {fileID: 5888867060181556938}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.642, z: 2.01}
+  m_LocalPosition: {x: 0.089, y: 1.926, z: 2.01}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1127,9 +1127,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.Animation.Rigging::UnityEngine.Animations.Rigging.TwoBoneIKConstraint
   m_Weight: 0
   m_Data:
-    m_Root: {fileID: 0}
-    m_Mid: {fileID: 0}
-    m_Tip: {fileID: 0}
+    m_Root: {fileID: 3176755086547675676}
+    m_Mid: {fileID: 1341894631768870683}
+    m_Tip: {fileID: 5723407815688467860}
     m_Target: {fileID: 1100186089366356396}
     m_Hint: {fileID: 7143203819859288238}
     m_TargetPositionWeight: 1
@@ -1161,8 +1161,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6010881693617429796}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.10998535, y: 0.045099974, z: -0.057006836}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.124, y: 0, z: -0.058}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1193,7 +1193,7 @@ Transform:
   m_GameObject: {fileID: 6297281634742065597}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.12701416, y: 0.6619998, z: 0.049987793}
+  m_LocalPosition: {x: 5.138, y: 0.6619998, z: 0.491}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1245,7 +1245,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.Animation.Rigging::UnityEngine.Animations.Rigging.MultiAimConstraint
   m_Weight: 0
   m_Data:
-    m_ConstrainedObject: {fileID: 0}
+    m_ConstrainedObject: {fileID: 5811364952122953856}
     m_SourceObjects:
       m_Length: 1
       m_Item0:
@@ -1309,8 +1309,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6430038693645323013}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -492.69998, y: 95.7, z: -545.8}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1578,7 +1578,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &192471121549713005
 Transform:
   m_ObjectHideFlags: 0
@@ -1775,44 +1775,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.Animation.Rigging::UnityEngine.Animations.Rigging.OverrideTransform
   m_Weight: 0
   m_Data:
-    m_ConstrainedObject: {fileID: 0}
+    m_ConstrainedObject: {fileID: 3048198219535899144}
     m_OverrideSource: {fileID: 0}
     m_OverridePosition: {x: 0, y: 0, z: 0}
     m_OverrideRotation: {x: 25, y: 0, z: 0}
     m_PositionWeight: 1
     m_RotationWeight: 1
     m_Space: 1
---- !u!1 &7344511237462477098
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 642942122418972910}
-  m_Layer: 0
-  m_Name: GameObject
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &642942122418972910
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7344511237462477098}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 3190395934615653629}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &9056229514069802410
 GameObject:
   m_ObjectHideFlags: 0
@@ -1822,7 +1791,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 398198143851678}
-  - component: {fileID: 3949097364311235839}
+  - component: {fileID: 1682624103674192687}
   m_Layer: 0
   m_Name: Rig 1
   m_TagString: Untagged
@@ -1846,7 +1815,7 @@ Transform:
   - {fileID: 584764398224564679}
   m_Father: {fileID: 2554121075497137863}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3949097364311235839
+--- !u!114 &1682624103674192687
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1938,9 +1907,19 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 5605649814029669930}
   m_SourcePrefab: {fileID: 100100000, guid: 175cb7170e96e4693b9b574d5a613844, type: 3}
+--- !u!4 &1341894631768870683 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3920358076539166263, guid: 175cb7170e96e4693b9b574d5a613844, type: 3}
+  m_PrefabInstance: {fileID: 2664080289367920940}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &2554121075497137863 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 175cb7170e96e4693b9b574d5a613844, type: 3}
+  m_PrefabInstance: {fileID: 2664080289367920940}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &2603333755879746977 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -9162484748627739507, guid: 175cb7170e96e4693b9b574d5a613844, type: 3}
   m_PrefabInstance: {fileID: 2664080289367920940}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &2898593272721583229 stripped
@@ -1961,9 +1940,37 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Unity.Animation.Rigging::UnityEngine.Animations.Rigging.RigBuilder
   m_RigLayers:
-  - m_Rig: {fileID: 0}
+  - m_Rig: {fileID: 1682624103674192687}
     m_Active: 1
-  m_Effectors: []
+  m_Effectors:
+  - m_Transform: {fileID: 8461012624331685648}
+    m_Style:
+      shape: {fileID: 4300000, guid: c6793350c150f456688e39a81f97364a, type: 2}
+      color: {r: 1, g: 0, b: 0, a: 0.5}
+      size: 0.1
+      position: {x: 0, y: 0, z: 0}
+      rotation: {x: 0, y: 0, z: 0}
+    m_Visible: 1
+--- !u!4 &3048198219535899144 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1059989450195421988, guid: 175cb7170e96e4693b9b574d5a613844, type: 3}
+  m_PrefabInstance: {fileID: 2664080289367920940}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &3176755086547675676 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 643644224397638448, guid: 175cb7170e96e4693b9b574d5a613844, type: 3}
+  m_PrefabInstance: {fileID: 2664080289367920940}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &5723407815688467860 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7752128709421376696, guid: 175cb7170e96e4693b9b574d5a613844, type: 3}
+  m_PrefabInstance: {fileID: 2664080289367920940}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &5811364952122953856 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8385327893941879212, guid: 175cb7170e96e4693b9b574d5a613844, type: 3}
+  m_PrefabInstance: {fileID: 2664080289367920940}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &4220184010573480610
 PrefabInstance:
   m_ObjectHideFlags: 0

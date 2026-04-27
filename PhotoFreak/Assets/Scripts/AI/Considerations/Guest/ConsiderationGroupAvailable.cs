@@ -21,7 +21,10 @@ public class Consideration_GroupAvailable : Consideration
     {
         if (context == null || context.isMonster) return 0f;
 
-        // if there's high tension like freak meter going off too much or monster is spotted by the guest reduces the will to socialize at the part 
+        // Once the NPC has realized it's being stalked, drop the social score so ActionIsolate can win.
+        if (context.isAwareOfStalker) return 0f;
+
+        // if there's high tension like freak meter going off too much or monster is spotted by the guest reduces the will to socialize at the part
         float alertLevel = CrowdStateManager.Instance != null ? CrowdStateManager.Instance.AlertLevel : 0f;
         if (alertLevel >= gs.alertSuppressThreshold)
         {
