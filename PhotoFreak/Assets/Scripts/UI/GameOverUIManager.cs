@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class GameOverUIManager : MonoBehaviour
 {
@@ -10,18 +11,18 @@ public class GameOverUIManager : MonoBehaviour
     [SerializeField] private RectTransform bottomShutter;
     [SerializeField] private Image flashImage;
     [SerializeField] private TextMeshProUGUI gameOverText;
+    [SerializeField] private Button retryButton; 
 
     [Header("Animation Settings")]
-    [SerializeField] private float shutterSpeed = 0.2f;   // How fast the shutters close
-    [SerializeField] private float flashDuration = 0.5f;  // How long the flash fades out
-    [SerializeField] private float textFadeSpeed = 1.0f;  // How fast the text fades in
+    [SerializeField] private float shutterSpeed = 0.2f;   
+    [SerializeField] private float flashDuration = 0.5f;  
+    [SerializeField] private float textFadeSpeed = 1.0f;  
 
     private Vector2 topShutterStartPos;
     private Vector2 bottomShutterStartPos;
 
     void Start()
     {
-        // 1. Hide the text and flash, set their alpha to 0
         if (gameOverText != null) 
         {
             gameOverText.gameObject.SetActive(false);
@@ -34,11 +35,15 @@ public class GameOverUIManager : MonoBehaviour
             flashImage.color = new Color(1f, 1f, 1f, 0f);
         }
 
-        // 2. Store the starting positions of the shutters (off-screen)
+        // Hide the button at the start of the game
+        if (retryButton != null)
+        {
+            retryButton.gameObject.SetActive(false);
+        }
+
         if (topShutter != null) topShutterStartPos = topShutter.anchoredPosition;
         if (bottomShutter != null) bottomShutterStartPos = bottomShutter.anchoredPosition;
 
-        // 3. Subscribe to the Game Over event
         if (GlobalGameState.Instance != null)
         {
             GlobalGameState.Instance.onGameOver += TriggerGameOverSequence;
@@ -60,28 +65,27 @@ public class GameOverUIManager : MonoBehaviour
 
     private IEnumerator PlayCameraShutterEffect()
     {
-        // Close the Shutters
-        float t = 0f;
-        while (t < 1f)
-        {
-            t += Time.unscaledDeltaTime / shutterSpeed;
+        // TODO: fix this 
+        // close shutter effect
+        // float t = 0f;
+        // while (t < 1f)
+        // {
+        //     t += Time.unscaledDeltaTime / shutterSpeed;
+        //     float smoothStep = Mathf.SmoothStep(0f, 1f, t);
+
+        //     if (topShutter != null)
+        //         topShutter.anchoredPosition = Vector2.Lerp(topShutterStartPos, Vector2.zero, smoothStep);
             
-            float smoothStep = Mathf.SmoothStep(0f, 1f, t);
+        //     if (bottomShutter != null)
+        //         bottomShutter.anchoredPosition = Vector2.Lerp(bottomShutterStartPos, Vector2.zero, smoothStep);
 
-            if (topShutter != null)
-                topShutter.anchoredPosition = Vector2.Lerp(topShutterStartPos, Vector2.zero, smoothStep);
-            
-            if (bottomShutter != null)
-                bottomShutter.anchoredPosition = Vector2.Lerp(bottomShutterStartPos, Vector2.zero, smoothStep);
+        //     yield return null;
+        // }
 
-            yield return null;
-        }
-
-        // Snap them exactly to zero just to be safe
         if (topShutter != null) topShutter.anchoredPosition = Vector2.zero;
         if (bottomShutter != null) bottomShutter.anchoredPosition = Vector2.zero;
 
-        // Camera Flash
+        // camera flash effect 
         if (flashImage != null)
         {
             flashImage.gameObject.SetActive(true);
@@ -90,8 +94,6 @@ public class GameOverUIManager : MonoBehaviour
             while (flashT < 1f)
             {
                 flashT += Time.unscaledDeltaTime / flashDuration;
-                
-                // Fade from full white (alpha 1) to invisible (alpha 0)
                 float alpha = Mathf.Lerp(1f, 0f, flashT);
                 flashImage.color = new Color(1f, 1f, 1f, alpha);
                 yield return null;
@@ -99,7 +101,7 @@ public class GameOverUIManager : MonoBehaviour
             flashImage.gameObject.SetActive(false);
         }
 
-        // Text fade in 
+        // Fade in game over text 
         if (gameOverText != null)
         {
             gameOverText.gameObject.SetActive(true);
@@ -113,5 +115,20 @@ public class GameOverUIManager : MonoBehaviour
                 yield return null;
             }
         }
+
+        
+        if (retryButton != null)
+        {
+            retryButton.gameObject.SetActive(true);
+            
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+        }
+    }
+
+    public void RestartGame()
+    {
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }
