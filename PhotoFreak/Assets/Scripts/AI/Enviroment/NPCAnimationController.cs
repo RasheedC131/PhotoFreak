@@ -42,9 +42,6 @@ public class NPCAnimationController : MonoBehaviour
         animator = GetComponentInChildren<Animator>();
         ctx = GetComponent<AIContext>();
 
-        // Disable the agent's built-in rotation so we can smooth it ourselves.
-        // Without this, avoidance steering snaps the body direction instantly,
-        // which breaks the walk cycle when an NPC steers around another.
         if (agent != null) agent.updateRotation = false;
     }
 
@@ -59,17 +56,12 @@ public class NPCAnimationController : MonoBehaviour
 
     private void UpdateLocomotionState()
     {
-        // Only manage IDLE / WALK — leave SOCIALIZE and any other states untouched.
         if (ctx.currentActionState != NPCActionState.IDLE &&
             ctx.currentActionState != NPCActionState.WALK) return;
 
         bool isMoving = false;
         if (agent != null && agent.enabled && agent.isOnNavMesh)
         {
-            // Velocity is the ground truth: it reflects what the character is
-            // physically doing right now, including avoidance steering.  The old
-            // path-pending / remainingDistance approach had a 1–2 frame gap every
-            // time SetDestination was called, causing the idle animation to flash.
             isMoving = agent.velocity.magnitude > moveSpeedThreshold;
         }
 
@@ -80,17 +72,14 @@ public class NPCAnimationController : MonoBehaviour
         }
         else
         {
-            // Don't flip to IDLE immediately — wait for the settle timer so that
-            // brief stops during path recalculation don't show a frame of idle.
+
             idleSettleTimer -= Time.deltaTime;
             if (idleSettleTimer <= 0f)
                 ctx.currentActionState = NPCActionState.IDLE;
         }
     }
 
-    // Smoothly rotate the NPC to face the next corner of its NavMesh path.
-    // Using steeringTarget (the next waypoint) rather than raw velocity prevents
-    // jitter from the avoidance system causing sudden body direction snaps.
+    // rotate the NPC to face the next corner of its NavMesh path
     private void SmoothRotationToMovement()
     {
         if (agent == null || !agent.enabled || !agent.isOnNavMesh) return;
@@ -141,9 +130,33 @@ public class NPCAnimationController : MonoBehaviour
         }
     }
 
+    void OnEnable()
+    {
+        currentAnimHash = 0; 
+    }
+
     private void PlayAnimation(int targetHash, bool forceTransition = false)
     {
-        if (currentAnimHash == targetHash && !forceTransition) return;
+        if (animator == null || !animator.isActiveAndEnabled || animator.runtimeAnimatorController == null) return;
+
+        if (forceTransition)
+        {
+            animator.CrossFade(targetHash, crossFadeDuration);
+            currentAnimHash = targetHash;
+            return;
+        }
+
+ 
+        if (currentAnimHash == targetHash)
+        {
+            AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
+            if (stateInfo.shortNameHash != targetHash && !animator.IsInTransition(0))
+            {
+                animator.CrossFade(targetHash, crossFadeDuration);
+            }
+            return;
+        }
+
         animator.CrossFade(targetHash, crossFadeDuration);
         currentAnimHash = targetHash;
     }

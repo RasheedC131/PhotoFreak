@@ -27,8 +27,10 @@ public class ActionHuntPlayer : UtilityAction
 
         if (ctx.currentVictim != null)
         {
-            ctx.currentVictim.isBeingStalked  = false;
-            ctx.currentVictim.currentStalker  = null;
+            // isBeingStalked is now a computed property (stalkerCount > 0).
+            // ActionStalk.OnExit already decremented the count before OnEnter
+            // runs here, so we only need to clear the stalker reference.
+            ctx.currentVictim.currentStalker = null;
             ctx.currentVictim = null;
         }
 
@@ -40,7 +42,7 @@ public class ActionHuntPlayer : UtilityAction
     public override void ExecuteAction()
     {
         if (playerTransform == null) return;
-        if (CrowdStateManager.Instance == null || !CrowdStateManager.Instance.IsFinalPanic) return;
+        if (!ctx.isHuntingPlayer) return;
 
         // Keep the monster model visible every tick in case another action changed it
         if (identity != null) identity.ShowMonsterModel();

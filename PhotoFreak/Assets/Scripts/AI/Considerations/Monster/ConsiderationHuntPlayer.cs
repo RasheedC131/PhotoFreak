@@ -18,14 +18,16 @@ public class ConsiderationHuntPlayer : Consideration
 
     protected override float EvaluateRawValue()
     {
-        if (ctx == null || !ctx.isMonster)  return 0f;
-        if (CrowdStateManager.Instance == null || !CrowdStateManager.Instance.IsFinalPanic) return 0f;
+        if (ctx == null || !ctx.isMonster) return 0f;
+
+        // Only hunt if the monster has noticed the player taking a photo.
+        if (!ctx.isHuntingPlayer) return 0f;
+
         if (playerTransform == null) return 0f;
 
         float dist = Vector3.Distance(ctx.transform.position, playerTransform.position);
         if (dist > ms.stalkSenseRadius) return 0f;
 
-  
         float proximityBonus = 1f - Mathf.Clamp01(dist / ms.stalkSenseRadius);
         return 0.88f + proximityBonus * 0.08f; // range: 0.88 – 0.96
     }

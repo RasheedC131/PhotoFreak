@@ -10,9 +10,21 @@ public class ActionStalk : UtilityAction
     private AIBrain brain; 
     private NPCIdentity identity; 
 
-    private float stalkBuffer = 1.5f; 
-    
-    void Awake() 
+    private float stalkBuffer = 1.5f;
+
+    // Tracks which victim this monster has incremented the stalker count on.
+    // Ensures AddStalker/RemoveStalker are always balanced even if the victim
+    // changes or the action exits unexpectedly.
+    private AIContext _registeredVictim = null;
+
+    // Cache the last position we sent to SetDestination so we only recalculate
+    // the path when the victim has actually moved a meaningful distance.
+    // Without this every monster recalculates every brain tick while the victim
+    // is standing still at the kill node, causing constant NavMesh churn.
+    private Vector3 _lastDestination = Vector3.positiveInfinity;
+    private const float DestMoveThreshold = 0.5f;
+
+    void Awake()
     {
         agent = GetComponentInParent<NavMeshAgent>();
         ctx = GetComponentInParent<AIContext>();
@@ -26,10 +38,12 @@ public class ActionStalk : UtilityAction
         if (ctx.currentVictim == null || ctx.currentVictim.isMonster)
         {
             ctx.currentVictim = null;
+            RegisterVictim(null);
             return;
         }
 
-        ctx.currentVictim.isBeingStalked = true; 
+        // Keep the registration in sync if the victim ever changes mid-action.
+        RegisterVictim(ctx.currentVictim);
         ctx.currentVictim.currentStalker = ctx;
 
         bool isFinalPanic       = CrowdStateManager.Instance != null && CrowdStateManager.Instance.IsFinalPanic;
@@ -49,7 +63,7 @@ public class ActionStalk : UtilityAction
             agent.speed            = ms.revealedSpeed;
             agent.isStopped        = false;
             agent.stoppingDistance = 0.5f;
-            agent.SetDestination(ctx.currentVictim.transform.position);
+            SetDestinationIfMoved(ctx.currentVictim.transform.position);
             ctx.currentActionState = NPCActionState.WALK;
         }
 
@@ -94,8 +108,7 @@ public class ActionStalk : UtilityAction
                 // Move closer to the target 
                 agent.isStopped        = false;
                 agent.stoppingDistance = ms.stalkDistance;
-                agent.SetDestination(ctx.currentVictim.transform.position);
-
+                SetDestinationIfMoved(ctx.currentVictim.transform.position);
                 ctx.currentActionState = NPCActionState.WALK;
             }
         }
@@ -116,7 +129,9 @@ public class ActionStalk : UtilityAction
             if (hit.CompareTag("Player")) return false;
 
             AIContext otherNPC = hit.GetComponentInParent<AIContext>();
-            if (otherNPC != null && otherNPC != ctx && otherNPC != ctx.currentVictim)
+            // Other monsters are co-conspirators, not witnesses — don't let them
+            // block one monster from revealing and chasing its own victim.
+            if (otherNPC != null && !otherNPC.isMonster && otherNPC != ctx && otherNPC != ctx.currentVictim)
                 return false;
         }
         return true;
@@ -124,6 +139,8 @@ public class ActionStalk : UtilityAction
 
     public override void OnExit()
     {
+        RegisterVictim(null); // decrement victim's stalker count before leaving
+
         if (agent != null)
         {
             agent.speed            = ms != null ? ms.walkSpeed : 3.5f;
@@ -132,5 +149,33 @@ public class ActionStalk : UtilityAction
         }
 
         if (ctx != null) ctx.currentActionState = NPCActionState.IDLE;
+    }
+
+    // Keeps _registeredVictim in sync with the actual victim and balances
+    // the stalker reference count on both the old and new victim correctly.
+    private void RegisterVictim(AIContext newVictim)
+    {
+        if (newVictim == _registeredVictim) return;
+
+        if (_registeredVictim != null)
+        {
+            _registeredVictim.RemoveStalker();
+            _lastDestination = Vector3.positiveInfinity;
+        }
+
+        _registeredVictim = newVictim;
+
+        if (_registeredVictim != null)
+            _registeredVictim.AddStalker();
+    }
+
+    // Only calls SetDestination when the victim has moved beyond DestMoveThreshold.
+    // Prevents every monster from triggering a NavMesh recalculation every tick
+    // while the victim is stationary at the kill node.
+    private void SetDestinationIfMoved(Vector3 targetPos)
+    {
+        if (Vector3.Distance(targetPos, _lastDestination) < DestMoveThreshold) return;
+        if (agent.isOnNavMesh) agent.SetDestination(targetPos);
+        _lastDestination = targetPos;
     }
 }

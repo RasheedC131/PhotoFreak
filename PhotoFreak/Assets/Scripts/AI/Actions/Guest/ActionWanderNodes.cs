@@ -46,18 +46,17 @@ public override void ExecuteAction()
 
         bool hasArrived = false;
         if (agent.enabled && agent.isOnNavMesh && !agent.pathPending && agent.hasPath && agent.remainingDistance <= gs.wanderMaxDistToDest) hasArrived = true;
-        if (Vector3.Distance(ctx.transform.position, ctx.currentDestination) <= gs.wanderMaxDistToDest) hasArrived = true; 
+        if (Vector3.Distance(ctx.transform.position, ctx.currentDestination) <= gs.wanderMaxDistToDest - 0.5f) hasArrived = true; 
         if (!hasArrived && attemptTimer > 2.0f && Vector3.Distance(ctx.transform.position, ctx.targetNode.position) <= gs.wanderNodeSpreadRadius + 2.0f) hasArrived = true;
         if (!hasArrived && attemptTimer > 15.0f) { AbandonNode(); return; }
+        
+        ctx.currentActionState = NPCActionState.WALK;
 
         if (hasArrived)
         {
             if (nodeScript.incomingCrowd.Contains(ctx)) nodeScript.incomingCrowd.Remove(ctx);
-            
+            if (!nodeScript.currentCrowd.Contains(ctx)) nodeScript.currentCrowd.Add(ctx);
             hasReservedSpot = false; 
-            ctx.forcedIdleEndTime = Time.time + Random.Range(2.0f, 5.0f);
-            ctx.targetNode = null;
-            ctx.forceNewPath = true;
             attemptTimer = 0f;
             ctx.currentActionState = NPCActionState.IDLE;
         }
@@ -68,7 +67,6 @@ public override void ExecuteAction()
             {
                 if (agent.isStopped) agent.isStopped = false;
                 agent.SetDestination(ctx.currentDestination);
-                ctx.currentActionState = NPCActionState.WALK;
             }
         }
     }    

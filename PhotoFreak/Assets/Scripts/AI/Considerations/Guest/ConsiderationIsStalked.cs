@@ -7,27 +7,34 @@ public class ConsiderationIsStalked : Consideration
     private MonsterSettings ms; 
 
     [Header("Paranoia Settings")]
-    [Tooltip("Percentage of the monster's stalk timer required before the guest isolates (e.g., 0.7 = 70%)")]
     public float realizationThreshold = 0.7f;
+    private float _exposureStartTime = -1f;
 
     void Awake()
     {
-        ctx = GetComponentInParent<AIContext>(); 
-        gw = GuestWeights.Instance; 
-        ms = MonsterSettings.Instance; 
+        ctx = GetComponentInParent<AIContext>();
+        gw = GuestWeights.Instance;
+        ms = MonsterSettings.Instance;
     }
 
     protected override float EvaluateRawValue()
     {
-        if (ctx == null || !ctx.isBeingStalked || ctx.currentStalker == null) return 0f;
+        if (ctx == null || !ctx.isBeingStalked || ctx.currentStalker == null)
+        {
+            _exposureStartTime = -1f; // reset if stalking ends
+            return 0f;
+        }
 
-        AIContext stalker = ctx.currentStalker;
         if (ms.stalkDuration <= 0f) return gw.isStalkedWeight;
 
-        float timeRatio = stalker.currentStalkTimer / ms.stalkDuration;
+        // Start the victim-side exposure clock the first tick stalking begins.
+        if (_exposureStartTime < 0f) _exposureStartTime = Time.time;
 
-        if (timeRatio >= realizationThreshold) return gw.isStalkedWeight; 
+        float timeRatio = (Time.time - _exposureStartTime) / ms.stalkDuration;
+        if (timeRatio < realizationThreshold) return 0f;
+
+        if (!KillNodeRegistry.HasAvailableNode(ctx)) return 0f; 
         
-        return 0f; 
+        return gw.isStalkedWeight;
     }
 }

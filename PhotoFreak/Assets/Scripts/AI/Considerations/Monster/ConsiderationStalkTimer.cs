@@ -36,7 +36,6 @@ public class ConsiderationStalkTimer : Consideration
         if (timeRatio >= 3.0f && !isVictimIsolating && !isFinalPanic)
         {
             Debug.Log("Monster got bored and gave up chasing");
-            ctx.currentVictim.isBeingStalked = false;
             ctx.currentVictim.currentStalker = null;
             ctx.currentVictim = null;
             ctx.currentStalkTimer = 0f;

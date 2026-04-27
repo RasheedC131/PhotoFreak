@@ -10,9 +10,10 @@ public class ActionSocialize : UtilityAction
     private AIContext ctx;
     private GuestSettings gs; 
     
-    public Transform currentPartner; 
-    public bool isHost = false; 
+    public Transform currentPartner;
+    public bool isHost = false;
     private bool isSwitchingToAgent = false;
+    private bool _isSocializing = false; // tracks whether smile expression is active
 
     void Awake()
     {
@@ -75,8 +76,9 @@ public class ActionSocialize : UtilityAction
                     closeEnough = true;
             }
             
-            if (!closeEnough) 
+            if (!closeEnough)
             {
+                if (_isSocializing) { _isSocializing = false; ctx.OnExitSocialize(); }
                 if (isHost)
                 {
                     if (agent.enabled && !isSwitchingToAgent) ctx.StartCoroutine(SafeDisableAgent());
@@ -98,14 +100,16 @@ public class ActionSocialize : UtilityAction
                     }
                 }
             }
-            else 
+            else
             {
                 if (agent.enabled && !isSwitchingToAgent) ctx.StartCoroutine(SafeDisableAgent());
-                ctx.currentActionState = NPCActionState.SOCIALIZE; 
+                if (!_isSocializing) { _isSocializing = true; ctx.OnEnterSocialize(); }
+                ctx.currentActionState = NPCActionState.SOCIALIZE;
             }
         }
-        else 
+        else
         {
+            if (_isSocializing) { _isSocializing = false; ctx.OnExitSocialize(); }
             if (agent.enabled && !isSwitchingToAgent) ctx.StartCoroutine(SafeDisableAgent());
             ctx.currentActionState = NPCActionState.IDLE;
         }
@@ -188,6 +192,8 @@ public class ActionSocialize : UtilityAction
 
     public void LeaveGroup()
     {
+        if (_isSocializing) { _isSocializing = false; ctx.OnExitSocialize(); }
+
         if (ctx.targetNode != null)
         {
             ZoneNode nodeScript = ctx.targetNode.GetComponent<ZoneNode>();

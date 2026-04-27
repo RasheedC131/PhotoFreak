@@ -33,7 +33,10 @@ public class AIContext : MonoBehaviour
     public AIContext customLeader;
     public int groupIdx = 0;
     public int groupTotalSize = 1;
-    public bool isBeingStalked = false;
+    private int _stalkerCount = 0;
+    public bool isBeingStalked => _stalkerCount > 0;
+    public void AddStalker()    => _stalkerCount++;
+    public void RemoveStalker() => _stalkerCount = Mathf.Max(0, _stalkerCount - 1);
 
     [Header("Crowd State")]
     public float vigilance = 0f;
@@ -42,10 +45,11 @@ public class AIContext : MonoBehaviour
     public float forcedIdleEndTime = 0f;
 
     [Header("Monster State")]
-    public bool isMonster = false; 
-    public AIContext currentVictim; 
+    public bool isMonster = false;
+    public bool isHuntingPlayer = false;
+    public AIContext currentVictim;
     public AIContext currentStalker;
-    public float currentStalkTimer; 
+    public float currentStalkTimer;
 
     private float MIN_WARP_OFFSET = -2.0f; 
     private float MAX_WARP_OFFSET = 2.0f; 

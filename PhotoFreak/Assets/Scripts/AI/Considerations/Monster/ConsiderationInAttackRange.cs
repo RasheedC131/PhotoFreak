@@ -24,6 +24,10 @@ public class ConsiderationInAttackRange : Consideration
 
         if (!IsAreaIsolated()) return 0f;
 
+        // Always use attackRange for the distance check. killRoomAttackRange was
+        // meant to be tighter but the NavMesh stoppingDistance (0.5 m) is path-
+        // distance, not Euclidean — the agent can stop further than expected on
+        // indirect routes, causing the tighter range to never fire.
         float dist = Vector3.Distance(ctx.transform.position, ctx.currentVictim.transform.position);
         if (dist <= ms.attackRange) return 2.0f;
 
@@ -32,7 +36,6 @@ public class ConsiderationInAttackRange : Consideration
 
     private bool IsAreaIsolated()
     {
-
         bool    victimAtKillNode = ctx.currentVictim != null && ctx.currentVictim.hasArrivedAtKillNode;
         Vector3 checkOrigin = victimAtKillNode ? ctx.currentVictim.transform.position : ctx.transform.position;
         float   checkRadius = victimAtKillNode ? ms.killRoomWitnessRadius : ms.witnessRadius;
@@ -40,13 +43,16 @@ public class ConsiderationInAttackRange : Consideration
         Collider[] hits = Physics.OverlapSphere(checkOrigin, checkRadius);
         foreach (Collider hit in hits)
         {
-            if (hit.CompareTag("Player")) return false;
-
+            // Player proximity no longer blocks the actual attack — the monster
+            // can infect even if the player is watching. The reveal in ActionStalk
+            // still requires the player to be outside witnessRadius, so the
+            // player gets a chance to intervene before the monster closes in.
+            // Other monsters are allies, not witnesses — exclude them too.
             AIContext otherNPC = hit.GetComponentInParent<AIContext>();
-            if (otherNPC != null && otherNPC != ctx && otherNPC != ctx.currentVictim)
+            if (otherNPC != null && !otherNPC.isMonster && otherNPC != ctx && otherNPC != ctx.currentVictim)
                 return false;
         }
 
-        return true; 
+        return true;
     }
 }

@@ -25,8 +25,7 @@ public class ActionAttack : UtilityAction
 
         if (MatchManager.Instance != null)
         {
-            ctx.currentVictim.isBeingStalked = false; 
-            ctx.currentVictim.currentStalker = null; 
+            ctx.currentVictim.currentStalker = null;
             MatchManager.Instance.HandleInfection(ctx.currentVictim, ctx);
         }
 

@@ -25,6 +25,8 @@ public class MonsterSettings : ScriptableObject
 
     [Header("Action Attack")]
     [SerializeField] private float _attackRange = 2.0f;
+    [Tooltip("Tighter attack range used when the victim is already waiting at their kill node. Should be smaller than attackRange.")]
+    [SerializeField] private float _killRoomAttackRange = 1.0f;
     [SerializeField] private float _witnessRadius = 20f;
     [SerializeField] private float _killRoomWitnessRadius = 5f;
 
@@ -50,11 +52,14 @@ public class MonsterSettings : ScriptableObject
     [Header("Revealed Chase")]
     [SerializeField] private float _revealedSpeed = 5.5f;
 
-    [Header("Action Hunt Player (Final Panic)")]
+    [Header("Action Hunt Player")]
     [SerializeField] private float _huntPlayerSpeed = 6.0f;
+    [Tooltip("Radius around the monster within which a camera flash is noticed. If the player is inside this sphere when they photograph the monster, the monster begins hunting them.")]
+    [SerializeField] private float _photoDetectRadius = 15f;
 
-    public float walkSpeed => _walkSpeed; 
+    public float walkSpeed => _walkSpeed;
     public float attackRange => _attackRange;
+    public float killRoomAttackRange => _killRoomAttackRange;
     public float witnessRadius => _witnessRadius;
     public float killRoomWitnessRadius => _killRoomWitnessRadius;
     public float stalkDistance => _stalkDistance; 
@@ -67,5 +72,6 @@ public class MonsterSettings : ScriptableObject
     public float tellTimerMaxTime => _tellTimerMaxTime;
     public float revealedSpeed => _revealedSpeed;
     public float huntPlayerSpeed => _huntPlayerSpeed;
+    public float photoDetectRadius => _photoDetectRadius;
     public float idleMaxFatigue => _idleMaxFatigue;
 }

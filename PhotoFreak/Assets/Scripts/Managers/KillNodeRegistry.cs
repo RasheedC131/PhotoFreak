@@ -1,53 +1,76 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-
-public class KillNodeRegistry : MonoBehaviour
+// Static registry — never null, no scene setup required.
+// RuntimeInitializeOnLoadMethod clears stale state each play session so
+// editor runs without domain reload don't carry over old reservations.
+public static class KillNodeRegistry
 {
-    public static KillNodeRegistry Instance { get; private set; }
+    private static readonly Dictionary<Transform, AIContext> _reservations
+        = new Dictionary<Transform, AIContext>();
 
-    private readonly Dictionary<Transform, AIContext> reservations = new Dictionary<Transform, AIContext>();
-
-    void Awake()
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+    private static void Initialize()
     {
-        if (Instance == null) Instance = this;
-        else Destroy(gameObject);
+        _reservations.Clear();
+        Debug.Log("[KillNodeRegistry] Cleared for new session.");
     }
 
-    public bool TryReserve(Transform node, AIContext reserver)
+    // Returns true if the reservation was taken (or was already held by this reserver).
+    public static bool TryReserve(Transform node, AIContext reserver)
     {
         if (node == null || reserver == null) return false;
 
-        if (reservations.TryGetValue(node, out AIContext current))
-            return current == reserver;   
+        if (_reservations.TryGetValue(node, out AIContext current))
+            return current == reserver;   // already held by this NPC — resume OK
 
-        reservations[node] = reserver;
+        _reservations[node] = reserver;
         Debug.Log($"[KillNodeRegistry] {reserver.gameObject.name} reserved {node.name}.");
         return true;
     }
 
-    public void Release(Transform node, AIContext reserver)
+    public static void Release(Transform node, AIContext reserver)
     {
         if (node == null || reserver == null) return;
 
-        if (reservations.TryGetValue(node, out AIContext current) && current == reserver)
+        if (_reservations.TryGetValue(node, out AIContext current) && current == reserver)
         {
-            reservations.Remove(node);
+            _reservations.Remove(node);
             Debug.Log($"[KillNodeRegistry] {reserver.gameObject.name} released {node.name}.");
         }
     }
 
-    public bool IsReserved(Transform node) => node != null && reservations.ContainsKey(node);
+    public static bool IsReserved(Transform node)
+        => node != null && _reservations.ContainsKey(node);
 
-    public bool IsReservedBy(Transform node, AIContext ctx)
+    public static bool IsReservedBy(Transform node, AIContext ctx)
         => node != null
-           && reservations.TryGetValue(node, out AIContext current)
+           && _reservations.TryGetValue(node, out AIContext current)
            && current == ctx;
 
-
-    public void ClearAll()
+    // True if this NPC already holds a reservation, OR at least one kill node
+    // is free. False when every node is taken by a different NPC — the caller
+    // should score ActionIsolate as 0 and let the NPC keep wandering.
+    public static bool HasAvailableNode(AIContext ctx)
     {
-        reservations.Clear();
+        foreach (Transform node in ActionIsolate.AllKillNodes)
+        {
+            if (node == null) continue;
+            if (IsReservedBy(node, ctx)) return true;   // this NPC already has a spot
+        }
+
+        foreach (Transform node in ActionIsolate.AllKillNodes)
+        {
+            if (node == null) continue;
+            if (!IsReserved(node)) return true;          // a free slot exists
+        }
+
+        return false;
+    }
+
+    public static void ClearAll()
+    {
+        _reservations.Clear();
         Debug.Log("[KillNodeRegistry] All reservations cleared.");
     }
 }

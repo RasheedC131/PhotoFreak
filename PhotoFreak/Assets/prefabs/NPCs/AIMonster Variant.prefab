@@ -170,6 +170,7 @@ Transform:
   m_Children:
   - {fileID: 984053189051767424}
   - {fileID: 5956013772390466818}
+  - {fileID: 5297026299409817355}
   - {fileID: 7080526437278732983}
   - {fileID: 7390653515624268250}
   m_Father: {fileID: 2472430161614822828}
@@ -339,6 +340,87 @@ MonoBehaviour:
     m_PositionWeight: 1
     m_RotationWeight: 1
     m_Space: 1
+--- !u!1 &1425443174038826449
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5297026299409817355}
+  - component: {fileID: 7830389650715849159}
+  - component: {fileID: 3460793554160510314}
+  m_Layer: 0
+  m_Name: ActionHuntPlayer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5297026299409817355
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1425443174038826449}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 48.670166, y: 0.9428297, z: 63.264343}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7483695134237620493}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7830389650715849159
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1425443174038826449}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad2ab1bed07234280922440e7966a8b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ActionHuntPlayer
+--- !u!114 &3460793554160510314
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1425443174038826449}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1aad6fb0a826d4f17bf50a36b6c7cbd3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ConsiderationHuntPlayer
+  responseCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 1
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 1
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &1487131462299352268
 GameObject:
   m_ObjectHideFlags: 0
@@ -1103,21 +1185,25 @@ PrefabInstance:
       propertyPath: m_Name
       value: AIMonster Variant
       objectReference: {fileID: 0}
+    - target: {fileID: 8390474066837175829, guid: 7b987dece12eb4186936fc65e8715261, type: 3}
+      propertyPath: m_TagString
+      value: Monster
+      objectReference: {fileID: 0}
     - target: {fileID: 8728105403306932411, guid: 7b987dece12eb4186936fc65e8715261, type: 3}
       propertyPath: isMonster
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9167960056996865199, guid: 7b987dece12eb4186936fc65e8715261, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -349.96225
+      value: -357.66776
       objectReference: {fileID: 0}
     - target: {fileID: 9167960056996865199, guid: 7b987dece12eb4186936fc65e8715261, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.7449998
+      value: 1.7450002
       objectReference: {fileID: 0}
     - target: {fileID: 9167960056996865199, guid: 7b987dece12eb4186936fc65e8715261, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -328.2944
+      value: -336.7382
       objectReference: {fileID: 0}
     - target: {fileID: 9167960056996865199, guid: 7b987dece12eb4186936fc65e8715261, type: 3}
       propertyPath: m_LocalRotation.w
@@ -1168,6 +1254,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 8390474066837175829, guid: 7b987dece12eb4186936fc65e8715261, type: 3}
       insertIndex: -1
       addedObject: {fileID: 4515276360144203014}
+    - targetCorrespondingSourceObject: {fileID: 8390474066837175829, guid: 7b987dece12eb4186936fc65e8715261, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4717401634170571578}
   m_SourcePrefab: {fileID: 100100000, guid: 7b987dece12eb4186936fc65e8715261, type: 3}
 --- !u!4 &2472430161614822828 stripped
 Transform:
@@ -1192,6 +1281,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NPCAnimationController
   crossFadeDuration: 0.2
+  moveSpeedThreshold: 0.15
+  idleSettleDelay: 0.25
+  rotationSmoothSpeed: 8
   socialStateNames:
   - AnnoyedHeadNod
   - acknowledge
@@ -1208,6 +1300,33 @@ MonoBehaviour:
   - HardHeadNod
   minSocialAnimTime: 3
   maxSocialAnimTime: 7
+--- !u!54 &4717401634170571578
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2955494460029601558}
+  serializedVersion: 5
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 112
+  m_CollisionDetection: 0
 --- !u!4 &7103991990435909410 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4603389289951196705, guid: 7b987dece12eb4186936fc65e8715261, type: 3}

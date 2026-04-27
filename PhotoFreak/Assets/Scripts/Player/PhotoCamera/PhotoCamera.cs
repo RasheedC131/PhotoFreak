@@ -202,15 +202,12 @@ public class PhotoCamera : MonoBehaviour, IEquippable
 
         if (hitSubject != null)
         {
-
-            // TODO: don't make hard-coded 
+            // TODO: don't make hard-coded
             if (hitSubject.CompareTag(guestTag) || hitSubject.CompareTag("Elite"))
             {
                 Debug.Log($"Photographed a {hitSubject.tag}.");
-                
                 if (freakMeter != null) freakMeter.AddFreakScore(freakPenaltyAmount);
             }
-            
         }
 
         // draw ui/animate shutter
@@ -302,6 +299,28 @@ public class PhotoCamera : MonoBehaviour, IEquippable
     public bool getCameraState()
     {
         return cameraRaised;
+    }
+
+    // While the camera is raised, check every tick for monsters within
+    // photoDetectRadius. Any monster that close immediately notices the
+    // player and begins hunting them.
+    private void Update()
+    {
+        if (!cameraRaised) return;
+
+        MonsterSettings ms = MonsterSettings.Instance;
+        if (ms == null) return;
+
+        Collider[] nearby = Physics.OverlapSphere(transform.position, ms.photoDetectRadius);
+        foreach (Collider col in nearby)
+        {
+            AIContext monsterCtx = col.GetComponentInParent<AIContext>();
+            if (monsterCtx != null && monsterCtx.isMonster && !monsterCtx.isHuntingPlayer)
+            {
+                monsterCtx.isHuntingPlayer = true;
+                Debug.Log($"[{monsterCtx.gameObject.name}] Spotted raised camera — entering hunt mode.");
+            }
+        }
     }
 
 }
