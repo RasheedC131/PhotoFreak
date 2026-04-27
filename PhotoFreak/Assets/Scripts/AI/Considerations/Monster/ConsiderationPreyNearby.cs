@@ -16,7 +16,12 @@ public class ConsiderationPreyNearby : Consideration
     {
         if (ctx is null || !ctx.isMonster) return 0f;
 
-        if (ctx.currentVictim is not null && !ctx.currentVictim.isMonster) return 0.8f;
+        // In kill mode (strike 3) monsters are aggressive — bump base score so
+        // stalk/attack outranks idle and tell behaviour.
+        bool killMode = CrowdStateManager.Instance != null && CrowdStateManager.Instance.IsKillMode;
+        float baseScore = killMode ? 1.0f : 0.8f;
+
+        if (ctx.currentVictim is not null && !ctx.currentVictim.isMonster) return baseScore;
 
         Collider[] hits = Physics.OverlapSphere(ctx.transform.position, ms.stalkSenseRadius);
 
@@ -46,7 +51,7 @@ public class ConsiderationPreyNearby : Consideration
         if (bestTarget is not null)
         {
             ctx.currentVictim = bestTarget;
-            return 0.8f;
+            return baseScore;
         }
 
         return 0f;

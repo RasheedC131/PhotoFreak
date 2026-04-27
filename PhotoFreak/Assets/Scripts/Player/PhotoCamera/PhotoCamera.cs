@@ -301,9 +301,7 @@ public class PhotoCamera : MonoBehaviour, IEquippable
         return cameraRaised;
     }
 
-    // While the camera is raised, check every tick for monsters within
-    // photoDetectRadius. Any monster that close immediately notices the
-    // player and begins hunting them.
+    
     private void Update()
     {
         if (!cameraRaised) return;
@@ -311,6 +309,11 @@ public class PhotoCamera : MonoBehaviour, IEquippable
         MonsterSettings ms = MonsterSettings.Instance;
         if (ms == null) return;
 
+        // if monsters are a majority they can now target the player 
+        bool monsterMajority = CrowdStateManager.Instance != null && CrowdStateManager.Instance.MonsterMajority;
+        if (!monsterMajority) return;
+
+        // if player raises camera near the a monster that specific monster will now target them 
         Collider[] nearby = Physics.OverlapSphere(transform.position, ms.photoDetectRadius);
         foreach (Collider col in nearby)
         {
@@ -318,7 +321,7 @@ public class PhotoCamera : MonoBehaviour, IEquippable
             if (monsterCtx != null && monsterCtx.isMonster && !monsterCtx.isHuntingPlayer)
             {
                 monsterCtx.isHuntingPlayer = true;
-                Debug.Log($"[{monsterCtx.gameObject.name}] Spotted raised camera — entering hunt mode.");
+                Debug.Log($"[{monsterCtx.gameObject.name}] Spotted raised camera now targeting player");
             }
         }
     }

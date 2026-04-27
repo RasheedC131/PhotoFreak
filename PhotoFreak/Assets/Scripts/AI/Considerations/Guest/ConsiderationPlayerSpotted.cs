@@ -31,9 +31,17 @@ public class ConsiderationPlayerSpotted : Consideration
             return ctx.panicBoost * gw.playerSpottedWeight;
         }
 
-        float alertLevel = CrowdStateManager.Instance != null ? CrowdStateManager.Instance.AlertLevel : 0f;
+        CrowdStateManager crowd = CrowdStateManager.Instance;
+        float alertLevel = crowd != null ? crowd.AlertLevel : 0f;
 
-        float effectiveRadius = gs.fleePlayerSightRadius * (1f + ctx.vigilance*gs.vigilanceRadiusMultiplier) * (1f + alertLevel*gs.alertRadiusMultiplier);
+        // If the player has accrued strikes, the crowd manager dictates an absolute
+        // avoidance radius (5m / 10m / "close"). Use that directly so the spec's
+        // distances are honored regardless of vigilance/alert pile-on. Pre-strike
+        // we keep the original organic-feeling formula.
+        float strikeRadius = crowd != null ? crowd.PlayerAvoidRadius : 0f;
+        float effectiveRadius = strikeRadius > 0f
+            ? strikeRadius
+            : gs.fleePlayerSightRadius * (1f + ctx.vigilance * gs.vigilanceRadiusMultiplier) * (1f + alertLevel * gs.alertRadiusMultiplier);
 
         float dist = Vector3.Distance(ctx.transform.position, playerTransform.position);
 

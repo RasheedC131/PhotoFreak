@@ -1,31 +1,14 @@
 using UnityEngine;
 
 // Distributes ConsumableItems already in the scene across ItemSpawnNodes at runtime.
-//
-// Setup:
-//   1. Place ItemSpawnNode components on empty GameObjects around your map.
-//   2. Place your item GameObjects anywhere in the scene (position doesn't matter —
-//      ScatterItems will move them). They can be inactive at edit time.
-//   3. Add this ScatterItems component to any manager GameObject and hit Play.
-//
-// Rules:
-//   - Each node receives exactly one item chosen at random.
-//   - If there are more items than nodes, surplus items are deactivated.
-//   - If there are more nodes than items, the extra nodes stay empty.
-//   - Items are placed slightly above the node position so gravity can
-//     settle them naturally onto whatever surface is below.
 public class ScatterItems : MonoBehaviour
 {
-    [Tooltip("Lift items this many units above the node before releasing them so they settle onto the surface below.")]
     [SerializeField] private float spawnHeightOffset = 0.15f;
-
-    [Tooltip("Randomise which item goes to which node. Disable to assign items in scene order.")]
     [SerializeField] private bool shuffleItems = true;
 
     private void Start()
     {
         ItemSpawnNode[] nodes = FindObjectsOfType<ItemSpawnNode>();
-        // includeInactive: true so items that were left inactive in the scene are still found.
         ConsumableItem[] items = FindObjectsOfType<ConsumableItem>(true);
 
         if (nodes.Length == 0)
