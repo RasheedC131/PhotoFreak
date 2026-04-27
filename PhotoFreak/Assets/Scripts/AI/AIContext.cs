@@ -46,6 +46,7 @@ public class AIContext : MonoBehaviour
 
     [Header("Monster State")]
     public bool isMonster = false;
+    public bool isSpawnAsSmartMonster = false; 
     public bool isHuntingPlayer = false;
     public AIContext currentVictim;
     public AIContext currentStalker;
@@ -71,8 +72,9 @@ public class AIContext : MonoBehaviour
         }
     }
 
+    
 
-    // used for monster ai pathfinding aswell 
+
     protected virtual void Start()
     {
         if (agent is null) agent = GetComponent<NavMeshAgent>(); 
@@ -84,9 +86,18 @@ public class AIContext : MonoBehaviour
         }  
 
         SetupNavigation(); 
-        agent.avoidancePriority = Random.Range(30, 70);         // prevents npcs from colliding into eachother by giving each npc a priority number
+        agent.avoidancePriority = Random.Range(30, 70);
 
         if (appearance == null) appearance = GetComponent<NPCAppearance>();
+
+        if (isMonster)
+        {
+            NPCIdentity identity = GetComponent<NPCIdentity>();
+            
+            if (identity != null) identity.Mutate(isSpawnAsSmartMonster); 
+            
+            else Debug.LogWarning($"[{gameObject.name}] is marked as a Monster but is missing an NPCIdentity script");            
+        }
     }
 
     public void SetupNavigation(bool isMutating = false)

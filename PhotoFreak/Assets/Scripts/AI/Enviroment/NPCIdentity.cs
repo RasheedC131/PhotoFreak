@@ -11,20 +11,24 @@ public class NPCIdentity : MonoBehaviour
     [Header("Action References")]
     [SerializeField] private GameObject standardActionsObj;
     [SerializeField] private GameObject monsterActionsObj;
+    
+    public bool isDisguised => guestModel != null && guestModel.activeSelf;
 
     private AIContext ctx;
     private MutationEffect mutationEffect;
+    private AIBrain brain; // Cached reference
 
     void Awake()
     {
         ctx = GetComponent<AIContext>();
         mutationEffect = GetComponentInChildren<MutationEffect>();
+        brain = GetComponent<AIBrain>(); 
         ShowGuestModel();
     }
 
     public void Mutate(bool isSmartMonster)
     {
-        // change name of infected guest 
+        // change name of infected guest
         string prefix = isSmartMonster ? "[Monster] " : "[Infected] ";
         gameObject.name = prefix + gameObject.name;
         
@@ -35,6 +39,14 @@ public class NPCIdentity : MonoBehaviour
         UnityEngine.AI.NavMeshAgent agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
         if (agent != null && agent.isActiveAndEnabled) agent.ResetPath();
 
+        // --- THE BRAIN INTERRUPT ---
+        // Force the AI Brain to immediately exit its current Guest action 
+        if (brain != null && brain.currentAction != null)
+        {
+            brain.currentAction.OnExit();
+            brain.currentAction = null;
+        }
+
         // scoring logic
         gameObject.tag = "Monster";
         PhotoTag tag = GetComponent<PhotoTag>();
@@ -43,6 +55,7 @@ public class NPCIdentity : MonoBehaviour
 
         if (isSmartMonster)
         {
+            // Toggle the action containers
             if (standardActionsObj != null) standardActionsObj.SetActive(false);
             if (monsterActionsObj != null) monsterActionsObj.SetActive(true);
             tag.poseScore = 3;
@@ -55,7 +68,12 @@ public class NPCIdentity : MonoBehaviour
             Debug.Log($"{gameObject.name} became a standard infected.");
         }
 
-        GetComponent<AIBrain>().availableActions = GetComponentsInChildren<UtilityAction>();
+        // Re-cache the brain's array. Because we don't pass 'true' into this method, 
+        // it automatically ignores the disabled Guest actions!
+        if (brain != null)
+        {
+            brain.availableActions = GetComponentsInChildren<UtilityAction>();
+        }
     }
 
     public void ShowGuestModel()
