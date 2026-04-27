@@ -35,7 +35,7 @@ public class Development : MonoBehaviour
                 currDevelop = Mathf.Max(currDevelop, minDevelop);
             }
         }
-        Debug.Log("develop %: " + GetDevelopPercent());
+        //Debug.Log("develop %: " + GetDevelopPercent());
     }
 
     public void ToggleDevelopment(bool toggle)

@@ -9,8 +9,7 @@ public class CameraController : MonoBehaviour
     //Camera Type
     public CameraScriptable currentCamera;
 
-    //States
-    enum CaptureState
+    public enum CaptureState
     {
         Idle,
         Capturing,
@@ -30,11 +29,14 @@ public class CameraController : MonoBehaviour
     private CaptureSystem captureSystem;
     private Development development;
     private PhotoScoring eval;
+    private PlayerUIManager ui;
 
     //Camera Features
     private CameraZoom cameraZoom;
     private CameraAutoFocus autoFocus;
     private CameraManualFocus manualFocus;
+
+    private bool cameraRaised;
 
     void Awake()
     {
@@ -50,6 +52,8 @@ public class CameraController : MonoBehaviour
         development = GetComponent<Development>();
         eval = GetComponent<PhotoScoring>();
 
+        ui = GetComponentInParent<Transform>().parent.GetComponentInChildren<PlayerUIManager>();
+
         cameraZoom = GetComponentInChildren<CameraZoom>();
         autoFocus = GetComponentInChildren<CameraAutoFocus>();
         manualFocus = GetComponentInChildren<CameraManualFocus>();
@@ -59,7 +63,7 @@ public class CameraController : MonoBehaviour
 
     void Start()
     {
-        currentState = CaptureState.Idle;
+        TransitionToState(CaptureState.Idle);
         currFilm = maxFilm;
     }
 
@@ -74,6 +78,8 @@ public class CameraController : MonoBehaviour
 
     private void UpdateCaptureState(bool isActive)
     {
+        if (currentState == CaptureState.Reviewing) return;
+
         if (isActive)
         {
             if (hasPendingPhoto)
@@ -98,13 +104,14 @@ public class CameraController : MonoBehaviour
         currentState = nextState;
         Debug.Log(currentState);
 
+        cameraRaised = currentState == CaptureState.Capturing;
+
         if (currentState == CaptureState.Developing)development.ToggleDevelopment(true);
         else development.ToggleDevelopment(false);
 
         ApplyFeatureState(currentState);
 
-
-        //Method from UI to update state
+        ui.UpdateCanvasState(cameraRaised);
         //Method from Player interaction to update state
     }
 
@@ -147,12 +154,33 @@ public class CameraController : MonoBehaviour
         development.ResetDevelopment();
         hasPendingPhoto = false;
         eval.EvaluatePostData(developPercent);
-        TransitionToState(CaptureState.Idle);
+        
+        StartReview();
+    }
+
+    private void StartReview()
+    {
+        TransitionToState(CaptureState.Reviewing);
+
+        ScoreParameters newResult = eval.CalculatePhotoScore();
+        Debug.Log("Toal: " + newResult.result);
+        Debug.Log("dist: " + newResult.distance);
+        Debug.Log("facing: " + newResult.facing);
+        Debug.Log("size: " + newResult.size);
+        Debug.Log("focus: " + newResult.focus);
+        Debug.Log("devlop: " + newResult.development);
+        Debug.Log("extras: " + newResult.extras);
+
     }
 
     public bool HasPendingPhoto()
     {
         return hasPendingPhoto;
+    }
+
+    public bool getCameraState()
+    {
+        return cameraRaised;
     }
 
 

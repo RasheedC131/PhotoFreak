@@ -62,6 +62,7 @@ public class CaptureSystem : MonoBehaviour
                 data.focus = controller.currentCamera.manualFocus ? manualFocus.GetFocusError() : autoFocus.GetFocus();
                 data.manualFocus = controller.currentCamera.manualFocus;
 
+                data.extras = CaptureExtras(subject);
                 
                 eval.EvaluateCaptureData(data);
 
@@ -100,7 +101,7 @@ public class CaptureSystem : MonoBehaviour
             if(inPlayerView && !Blocked) extrasCount += 1;
         }
         
-        Debug.Log("Extras: " + extrasCount);
+        //Debug.Log("Extras: " + extrasCount);
         return extrasCount;
     }
 
