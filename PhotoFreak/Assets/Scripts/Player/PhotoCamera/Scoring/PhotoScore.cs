@@ -3,6 +3,7 @@ using UnityEngine;
 public class PhotoScore : MonoBehaviour
 
 {
+    [SerializeField] private Transform playerCamTransform;
     [SerializeField] private Transform cameraTransform;
     [Header("SphereCast")]
     public float radius = 0.5f;
@@ -47,7 +48,7 @@ public class PhotoScore : MonoBehaviour
         ScoreParameters photo = new ScoreParameters();
         GameObject hitObject = null; 
 
-        Vector3 origin = cameraTransform ? cameraTransform.position : transform.position;
+        Vector3 origin = playerCamTransform ? playerCamTransform.position : transform.position;
         Vector3 direction = cameraTransform ? cameraTransform.forward : transform.forward;
 
         if(Physics.SphereCast(origin, radius, direction, out subject, maxDistance, layer))
@@ -148,7 +149,7 @@ public class PhotoScore : MonoBehaviour
     //Debug to see SphereCast
     void OnDrawGizmos()
     {
-        Vector3 origin = cameraTransform ? cameraTransform.position : transform.position;
+        Vector3 origin = playerCamTransform ? playerCamTransform.position : transform.position;
         Vector3 direction = cameraTransform ? cameraTransform.forward : transform.forward;
 
         Gizmos.color = Color.red;

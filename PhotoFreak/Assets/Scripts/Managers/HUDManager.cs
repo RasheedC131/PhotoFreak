@@ -24,4 +24,9 @@ public class HUDManager : MonoBehaviour
     {
         if (myCanvas != null) myCanvas.enabled = false;
     }
+
+    public void SetHUDVisible(bool visible)
+    {
+        if (myCanvas != null) myCanvas.enabled = visible;
+    }
 }

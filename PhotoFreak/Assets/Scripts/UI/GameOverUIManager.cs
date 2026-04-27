@@ -129,6 +129,11 @@ public class GameOverUIManager : MonoBehaviour
     public void RestartGame()
     {
         Time.timeScale = 1f;
+        if (flashImage != null) flashImage.gameObject.SetActive(false);
+        if (gameOverText != null) gameOverText.gameObject.SetActive(false);
+        if (retryButton != null) retryButton.gameObject.SetActive(false);
+        if (topShutter != null) topShutter.gameObject.SetActive(false);
+        if (bottomShutter != null) bottomShutter.gameObject.SetActive(false);
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-// Distributes ConsumableItems already in the scene across ItemSpawnNodes at runtime.
+// Distributes ConsumableItems already in the scene across ItemSpawnNodes at runtime
 public class ScatterItems : MonoBehaviour
 {
     [SerializeField] private float spawnHeightOffset = 0.15f;
@@ -27,13 +27,13 @@ public class ScatterItems : MonoBehaviour
 
         int assignCount = Mathf.Min(nodes.Length, items.Length);
 
-        // Assign one item to each node.
+        // Assign one item to each node
         for (int i = 0; i < assignCount; i++)
         {
             PlaceItem(items[i], nodes[i]);
         }
 
-        // Deactivate any items that didn't receive a node.
+        // Deactivate any items that didn't receive a node
         for (int i = assignCount; i < items.Length; i++)
         {
             items[i].gameObject.SetActive(false);
@@ -50,7 +50,7 @@ public class ScatterItems : MonoBehaviour
     {
         Rigidbody rb = item.GetComponent<Rigidbody>();
 
-        // Briefly make kinematic so the item doesn't drift during placement.
+        // Briefly make kinematic so the item doesn't drift during placement
         if (rb != null)
         {
             rb.isKinematic = true;
@@ -58,13 +58,13 @@ public class ScatterItems : MonoBehaviour
             rb.angularVelocity  = Vector3.zero;
         }
 
-        // Position above the node so gravity drops it onto the surface.
+        // Position above the node so gravity drops it onto the surface
         item.transform.SetParent(null);
         item.transform.position = node.transform.position + Vector3.up * spawnHeightOffset;
         item.transform.rotation = Quaternion.Euler(0f, Random.Range(0f, 360f), 0f);
         item.gameObject.SetActive(true);
 
-        // Re-enable physics so the item settles naturally.
+        // Re-enable physics so the item settles naturally
         if (rb != null) rb.isKinematic = false;
     }
 

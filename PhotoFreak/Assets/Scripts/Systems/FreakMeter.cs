@@ -16,6 +16,10 @@ public class FreakMeter : MonoBehaviour
     [Header("Camera Freak Function")]
     [SerializeField] private float k1;
     [SerializeField] private float x1;
+    [Header("Camera Detection")]
+    [SerializeField] private Transform cameraTransform;
+    [SerializeField] private float cameraDetectRange = 10f;
+    [SerializeField] private float cameraDetectAngle = 35f;
     [Header("Sprint Freak Function")]
     [SerializeField] private float k2;
     [SerializeField] private float x2;
@@ -34,7 +38,7 @@ public class FreakMeter : MonoBehaviour
 
     private float prevVal = 0;
     private int currentStrikes = 0;
-    private bool _dramaticEndingStarted = false;
+    private bool isFinalPanic = false;
 
     // normalized freak meter to tweak the AI behaivor and react to it. 
     public float FreakRatio => maxFreak > 0f ? Mathf.Clamp01(currentFreak / maxFreak) : 0f;
@@ -66,9 +70,9 @@ public class FreakMeter : MonoBehaviour
         if (currentStrikes >= maxStrikes)
         {
 
-            if (!_dramaticEndingStarted)
+            if (!isFinalPanic)
             {
-                _dramaticEndingStarted = true;
+                isFinalPanic = true;
                 if (CrowdStateManager.Instance != null) CrowdStateManager.Instance.TriggerFinalPanic();
                 // else if (GlobalGameState.Instance != null) GlobalGameState.Instance.TriggerGameOver();
             }
@@ -86,10 +90,14 @@ public class FreakMeter : MonoBehaviour
         }
         else if (CameraScript.getCameraState())
         {
-            freakTimer.unpause();
-            timer.restart();
-            currentFreak += cameraFunction(count, freakTimer.getTime()) * 1f;
-            isMeterRising = true; 
+            int viewCount = CountNPCsInCameraView();
+            if (viewCount > 0)
+            {
+                freakTimer.unpause();
+                timer.restart();
+                currentFreak += cameraFunction(viewCount, freakTimer.getTime());
+                isMeterRising = true;
+            }
         }
         else
         {
@@ -124,6 +132,39 @@ public class FreakMeter : MonoBehaviour
         {
             isMeterDecaying = false;
         }
+    }
+
+    private int CountNPCsInCameraView()
+    {
+        if (player == null) return 0;
+
+        Transform aimTransform = cameraTransform != null ? cameraTransform : (Camera.main != null ? Camera.main.transform : null);
+        if (aimTransform == null)
+        {
+            Debug.LogWarning("[FreakMeter] CountNPCsInCameraView: no camera transform found. Assign cameraTransform in the Inspector.");
+            return 0;
+        }
+
+        Vector3 sphereOrigin = player.transform.position;
+
+        Collider[] hits = Physics.OverlapSphere(sphereOrigin, cameraDetectRange);
+        // Deduplicate by root transform so we count NPCs, not individual colliders
+        System.Collections.Generic.HashSet<Transform> counted = new System.Collections.Generic.HashSet<Transform>();
+        int viewCount = 0;
+        foreach (Collider col in hits)
+        {
+            // Use PhotoTag (same as PhotoScore) to identify valid NPC subjects
+            PhotoTag tag = col.GetComponentInParent<PhotoTag>();
+            if (tag == null) continue;
+
+            Transform root = col.transform.root;
+            if (!counted.Add(root)) continue; // already counted this NPC
+
+            Vector3 dirToNPC = (col.transform.position - sphereOrigin).normalized;
+            if (Vector3.Angle(aimTransform.forward, dirToNPC) <= cameraDetectAngle)
+                viewCount++;
+        }
+        return viewCount;
     }
 
     float sprintFunction(int count, float time)

@@ -29,6 +29,7 @@ public class PhotoCamera : MonoBehaviour, IEquippable
     [SerializeField] private MonoBehaviour playerMovementScript;
 
     [Header("Game Loop Settings")]
+    [SerializeField] private HUDManager hudManager;
     [SerializeField] private FreakMeter freakMeter;
     [SerializeField] private string guestTag = "Guest"; 
     [SerializeField] private string monsterTag = "Monster"; 
@@ -92,10 +93,8 @@ public class PhotoCamera : MonoBehaviour, IEquippable
         if (photoReviewUI != null) photoReviewUI.SetActive(false); 
 
         // Safely check if cameraFocus exists before calling methods on it
-        if (cameraFocus != null) 
-        {
-            cameraFocus.DisableDepthOfField();
-        }
+        if (cameraFocus != null) cameraFocus.DisableDepthOfField();
+        
 
     }
 
@@ -115,8 +114,6 @@ public class PhotoCamera : MonoBehaviour, IEquippable
         isReview = false;
         
         if (GlobalGameState.Instance != null && GlobalGameState.Instance.currentState == GlobalGameState.GameState.PLAYING) Time.timeScale = 1f;
-        
-
         gameObject.SetActive(false);
     }
 
@@ -187,9 +184,9 @@ public class PhotoCamera : MonoBehaviour, IEquippable
     // routine that captures the photo and displays it 
     private IEnumerator CapturePhotoRoutine()
     {
-        isReview = true; 
-        
-        yield return new WaitForEndOfFrame(); 
+        isReview = true;
+        if (hudManager != null) hudManager.SetHUDVisible(false);
+        yield return new WaitForEndOfFrame();
         Texture2D screenCap = ScreenCapture.CaptureScreenshotAsTexture();
         Time.timeScale = 0f; 
 
@@ -232,15 +229,17 @@ public class PhotoCamera : MonoBehaviour, IEquippable
         // if (viewFinderUI != null && currentState == CaptureState.Capturing) viewFinderUI.SetActive(true); 
         isReview = false;
         
-        // ui is draw based on game state 
+        if (hudManager != null) hudManager.SetHUDVisible(true);
+
+        // ui is draw based on game state
         if (GlobalGameState.Instance != null && GlobalGameState.Instance.currentState == GlobalGameState.GameState.GAMEOVER)
         {
             Debug.Log("Game Over hit during photo review.");
-            if (viewFinderUI != null) viewFinderUI.SetActive(false); 
+            if (viewFinderUI != null) viewFinderUI.SetActive(false);
         }
-        else if (viewFinderUI != null && currentState == CaptureState.Capturing) 
+        else if (viewFinderUI != null && currentState == CaptureState.Capturing)
         {
-            viewFinderUI.SetActive(true); 
+            viewFinderUI.SetActive(true);
         }
     }
 
