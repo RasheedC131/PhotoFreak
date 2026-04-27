@@ -399,8 +399,8 @@ MonoBehaviour:
     m_Root: {fileID: 7489346364271412664}
     m_Mid: {fileID: 6535322785381907234}
     m_Tip: {fileID: 2216276596035212164}
-    m_Target: {fileID: 0}
-    m_Hint: {fileID: 0}
+    m_Target: {fileID: 7341116999296705761}
+    m_Hint: {fileID: 7975962212472762372}
     m_TargetPositionWeight: 1
     m_TargetRotationWeight: 1
     m_HintWeight: 1
@@ -535,7 +535,79 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Unity.Animation.Rigging::UnityEngine.Animations.Rigging.Rig
   m_Weight: 1
-  m_Effectors: []
+  m_Effectors:
+  - m_Transform: {fileID: 3415836324920207357}
+    m_Style:
+      shape: {fileID: 4300000, guid: c6793350c150f456688e39a81f97364a, type: 2}
+      color: {r: 1, g: 0, b: 0, a: 0.5}
+      size: 0.1
+      position: {x: 0, y: 0, z: 0}
+      rotation: {x: 0, y: 0, z: 0}
+    m_Visible: 1
+  - m_Transform: {fileID: 3415836324920207357}
+    m_Style:
+      shape: {fileID: 4300000, guid: c6793350c150f456688e39a81f97364a, type: 2}
+      color: {r: 1, g: 0, b: 0, a: 0.5}
+      size: 0.1
+      position: {x: 0, y: 0, z: 0}
+      rotation: {x: 0, y: 0, z: 0}
+    m_Visible: 1
+  - m_Transform: {fileID: 3415836324920207357}
+    m_Style:
+      shape: {fileID: 4300000, guid: c6793350c150f456688e39a81f97364a, type: 2}
+      color: {r: 1, g: 0, b: 0, a: 0.5}
+      size: 0.1
+      position: {x: 0, y: 0, z: 0}
+      rotation: {x: 0, y: 0, z: 0}
+    m_Visible: 1
+  - m_Transform: {fileID: 3415836324920207357}
+    m_Style:
+      shape: {fileID: 4300000, guid: c6793350c150f456688e39a81f97364a, type: 2}
+      color: {r: 1, g: 0, b: 0, a: 0.5}
+      size: 0.1
+      position: {x: 0, y: 0, z: 0}
+      rotation: {x: 0, y: 0, z: 0}
+    m_Visible: 1
+  - m_Transform: {fileID: 3415836324920207357}
+    m_Style:
+      shape: {fileID: 4300000, guid: c6793350c150f456688e39a81f97364a, type: 2}
+      color: {r: 1, g: 0, b: 0, a: 0.5}
+      size: 0.1
+      position: {x: 0, y: 0, z: 0}
+      rotation: {x: 0, y: 0, z: 0}
+    m_Visible: 1
+  - m_Transform: {fileID: 3415836324920207357}
+    m_Style:
+      shape: {fileID: 4300000, guid: c6793350c150f456688e39a81f97364a, type: 2}
+      color: {r: 1, g: 0, b: 0, a: 0.5}
+      size: 0.1
+      position: {x: 0, y: 0, z: 0}
+      rotation: {x: 0, y: 0, z: 0}
+    m_Visible: 1
+  - m_Transform: {fileID: 3415836324920207357}
+    m_Style:
+      shape: {fileID: 4300000, guid: c6793350c150f456688e39a81f97364a, type: 2}
+      color: {r: 1, g: 0, b: 0, a: 0.5}
+      size: 0.1
+      position: {x: 0, y: 0, z: 0}
+      rotation: {x: 0, y: 0, z: 0}
+    m_Visible: 1
+  - m_Transform: {fileID: 3415836324920207357}
+    m_Style:
+      shape: {fileID: 4300000, guid: c6793350c150f456688e39a81f97364a, type: 2}
+      color: {r: 1, g: 0, b: 0, a: 0.5}
+      size: 0.1
+      position: {x: 0, y: 0, z: 0}
+      rotation: {x: 0, y: 0, z: 0}
+    m_Visible: 1
+  - m_Transform: {fileID: 3415836324920207357}
+    m_Style:
+      shape: {fileID: 4300000, guid: c6793350c150f456688e39a81f97364a, type: 2}
+      color: {r: 1, g: 0, b: 0, a: 0.5}
+      size: 0.1
+      position: {x: 0, y: 0, z: 0}
+      rotation: {x: 0, y: 0, z: 0}
+    m_Visible: 1
 --- !u!1 &3684791469386392861
 GameObject:
   m_ObjectHideFlags: 0
@@ -815,6 +887,7 @@ MonoBehaviour:
   legIKHint: {fileID: 0}
   proceduralLimpConstraint: {fileID: 0}
   proceduralSlouchConstraint: {fileID: 0}
+  forceLimpTest: 0
 --- !u!114 &4613606955124605650
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -904,7 +977,6 @@ GameObject:
   - component: {fileID: 4168878722833580215}
   - component: {fileID: 3961388715744793645}
   - component: {fileID: 8330840134967365986}
-  - component: {fileID: 4555500793493565102}
   - component: {fileID: 6426933882425033256}
   m_Layer: 0
   m_Name: AIGuestFem
@@ -964,6 +1036,7 @@ MonoBehaviour:
   hasArrivedAtKillNode: 0
   forcedIdleEndTime: 0
   isMonster: 1
+  isSpawnAsSmartMonster: 1
   isHuntingPlayer: 0
   currentVictim: {fileID: 0}
   currentStalker: {fileID: 0}
@@ -999,8 +1072,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::NPCIdentity
   guestModel: {fileID: 1905466196524746921}
   monsterModel: {fileID: 7378936044269665481}
-  standardActionsObj: {fileID: 0}
-  monsterActionsObj: {fileID: 0}
+  standardActionsObj: {fileID: 1069689247277638716}
+  monsterActionsObj: {fileID: 3834346947809195801}
 --- !u!114 &6471456444416803625
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1141,22 +1214,6 @@ MonoBehaviour:
   lipColorPropertyName: _LipColor
   initialExpression: 0
   initialPalette: {fileID: 0}
---- !u!114 &4555500793493565102
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6616486110427068599}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 19530e53ae18246fdbd74452eedc0c66, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::NPCIdentity
-  guestModel: {fileID: 7948139632234178103}
-  monsterModel: {fileID: 7378936044269665481}
-  standardActionsObj: {fileID: 3834346947809195801}
-  monsterActionsObj: {fileID: 1069689247277638716}
 --- !u!54 &6426933882425033256
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1873,7 +1930,7 @@ Transform:
   m_GameObject: {fileID: 9160728673955833632}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.642, z: 2.01}
+  m_LocalPosition: {x: -0.038, y: 2.012, z: 2.01}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1952,7 +2009,10 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: dca9af14c69ca4bb491889a13c89927a, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2941003846552925045}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: dca9af14c69ca4bb491889a13c89927a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7961557255308956073}
   m_SourcePrefab: {fileID: 100100000, guid: dca9af14c69ca4bb491889a13c89927a, type: 3}
 --- !u!4 &1241379158096810515 stripped
 Transform:
@@ -1969,6 +2029,30 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: dca9af14c69ca4bb491889a13c89927a, type: 3}
   m_PrefabInstance: {fileID: 1635082337669772792}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &7961557255308956073
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1905466196524746921}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fff0960ef4ea6e04eac66b4a7fd2189d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Animation.Rigging::UnityEngine.Animations.Rigging.RigBuilder
+  m_RigLayers:
+  - m_Rig: {fileID: 7823341340228955473}
+    m_Active: 1
+  m_Effectors:
+  - m_Transform: {fileID: 5942561598918814443}
+    m_Style:
+      shape: {fileID: 4300000, guid: c6793350c150f456688e39a81f97364a, type: 2}
+      color: {r: 1, g: 0, b: 0, a: 0.5}
+      size: 0.1
+      position: {x: 0, y: 0, z: 0}
+      rotation: {x: 0, y: 0, z: 0}
+    m_Visible: 1
 --- !u!4 &2216276596035212164 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 608321761475470972, guid: dca9af14c69ca4bb491889a13c89927a, type: 3}
@@ -1992,11 +2076,6 @@ Transform:
 --- !u!4 &7489346364271412664 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8169382868667117632, guid: dca9af14c69ca4bb491889a13c89927a, type: 3}
-  m_PrefabInstance: {fileID: 1635082337669772792}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &7948139632234178103 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: -505093258715081777, guid: dca9af14c69ca4bb491889a13c89927a, type: 3}
   m_PrefabInstance: {fileID: 1635082337669772792}
   m_PrefabAsset: {fileID: 0}
 --- !u!137 &8679054652808512503 stripped

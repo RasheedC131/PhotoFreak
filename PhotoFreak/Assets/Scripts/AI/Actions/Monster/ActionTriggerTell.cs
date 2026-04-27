@@ -9,12 +9,12 @@ public class ActionTriggerTell : UtilityAction
     private NavMeshAgent agent; 
     private MonsterSettings ms; 
     private ConsiderationTellCooldown tellTimer; 
-    private NPCIdentity identity; // Added identity reference
+    private NPCIdentity identity;
 
     private bool _isPerformingTell = false; 
     public bool isPerformingTell => _isPerformingTell; 
 
-    [Header("IK Rigging Dependencies (Assign GUEST Constraints here)")]
+    [Header("IK Rigging Dependencies")]
     public MultiAimConstraint headSnapConstraint; 
     public Transform headSnapTarget; 
     
@@ -25,9 +25,6 @@ public class ActionTriggerTell : UtilityAction
     [Header("Procedural Tells (IK)")]
     public OverrideTransform proceduralLimpConstraint; 
     public OverrideTransform proceduralSlouchConstraint; 
-
-    [Header("DEBUGGING")]
-    public bool forceLimpTest = false;
 
     void Awake()
     {
@@ -58,7 +55,8 @@ public class ActionTriggerTell : UtilityAction
         _isPerformingTell = true; 
         tellTimer.ResetTimer(); 
 
-        int tellChoice =  Random.Range(0, 4);
+        // int tellChoice =  Random.Range(0, 4);
+        int tellChoice = 3; 
 
         switch (tellChoice)
         {
