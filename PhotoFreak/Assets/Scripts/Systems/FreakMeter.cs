@@ -32,6 +32,7 @@ public class FreakMeter : MonoBehaviour
     private bool isGameOver = false; 
     private float prevVal = 0;
     private int currentStrikes = 0;
+    private bool striked = false;
     void Start()
     {
         count = 0;
@@ -46,35 +47,48 @@ public class FreakMeter : MonoBehaviour
 
     void Update()
     {
-        if (isGameOver) return; 
+        if (isGameOver) return;
 
         if (count > maxNPC) count = maxNPC;
 
         if (currentFreak >= maxFreak)
         {
+            if (!striked)
+                striked = true;
             freakTimer.restartTime();
             currentStrikes += 1;
-            currentFreak = 0;
+            if (currentStrikes >= maxStrikes)
+            {
+                TriggerGameOver(); 
+                return; 
+            }
+            currentFreak = maxFreak - 2;
             if (UI != null) UI.UpdateMeter(currentFreak, maxFreak);
             UI.UpdateStrikes(currentStrikes);
         }
-        
-        if (currentStrikes >= maxStrikes)
+
+        if (striked)
         {
-            TriggerGameOver(); 
-            return; 
+            currentFreak -= .01f * 10;
+            UI.UpdateMeter(currentFreak, maxFreak);
+            if (currentFreak <= 0)
+            {
+                currentFreak = 0;
+                striked = false;
+            }
         }
 
         bool isMeterRising = false; 
 
-        if (player.getSprint() && count > -1)
+        if (player.getSprint() && count > -1 && !striked)
         {
+            Time.timeScale = 50;
             freakTimer.unpause();
             timer.restart();
             currentFreak += sprintFunction(1, freakTimer.getTime()) * 1f; // tmp values
             isMeterRising = true; 
         }
-        else if (CameraScript.getCameraState())
+        else if (CameraScript.getCameraState() && !striked)
         {
             freakTimer.unpause();
             timer.restart();
