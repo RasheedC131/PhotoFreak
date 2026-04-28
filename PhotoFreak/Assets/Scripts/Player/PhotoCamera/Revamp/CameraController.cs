@@ -1,0 +1,199 @@
+using UnityEngine;
+
+/*
+    This script keeps track of the camera and scoring states
+*/
+
+public class CameraController : MonoBehaviour
+{
+    //Camera Type
+    public CameraScriptable currentCamera;
+
+    public enum CaptureState
+    {
+        Idle,
+        Capturing,
+        Developing,
+        Reviewing,
+    };
+
+    [Header("Settings")]
+    [SerializeField] private int currFilm;
+    [SerializeField] private int maxFilm = 10;
+
+    private CaptureState currentState;
+    private bool hasPendingPhoto;
+
+    //Other Scripts
+    private InputManager inputManager;
+    private CaptureSystem captureSystem;
+    private Development development;
+    private PhotoScoring eval;
+    private PlayerUIManager ui;
+
+    //Camera Features
+    private CameraZoom cameraZoom;
+    private CameraAutoFocus autoFocus;
+    private CameraManualFocus manualFocus;
+
+    private bool cameraRaised;
+
+    void Awake()
+    {
+        inputManager = GetComponentInParent<InputManager>();
+
+        if (inputManager != null)
+        {
+            inputManager.OnAim += UpdateCaptureState;
+            inputManager.OnShoot += HandleCaptureAction;
+        }
+
+        captureSystem = GetComponent<CaptureSystem>();
+        development = GetComponent<Development>();
+        eval = GetComponent<PhotoScoring>();
+
+        ui = GetComponentInParent<Transform>().parent.GetComponentInChildren<PlayerUIManager>();
+
+        cameraZoom = GetComponentInChildren<CameraZoom>();
+        autoFocus = GetComponentInChildren<CameraAutoFocus>();
+        manualFocus = GetComponentInChildren<CameraManualFocus>();
+
+
+    }
+
+    void Start()
+    {
+        TransitionToState(CaptureState.Idle);
+        currFilm = maxFilm;
+    }
+
+    void Update()
+    {
+        //Check if done Developing
+        if(currentState == CaptureState.Developing && development.IsDevelopComplete())
+        {
+            EndDevelopment(development.GetDevelopPercent());
+        }
+    }
+
+    private void UpdateCaptureState(bool isActive)
+    {
+        if (currentState == CaptureState.Reviewing) return;
+
+        if (isActive)
+        {
+            if (hasPendingPhoto)
+            {
+                TransitionToState(CaptureState.Developing);
+            } else
+            {
+                TransitionToState(CaptureState.Capturing);
+            }
+
+        } else if (!isActive)
+        {
+            if (currentState == CaptureState.Capturing || currentState == CaptureState.Developing)
+            {
+                TransitionToState(CaptureState.Idle);
+            }
+        }
+    }
+
+    private void TransitionToState(CaptureState nextState)
+    {
+        currentState = nextState;
+        Debug.Log(currentState);
+
+        cameraRaised = currentState == CaptureState.Capturing;
+
+        if (currentState == CaptureState.Developing)development.ToggleDevelopment(true);
+        else development.ToggleDevelopment(false);
+
+        ApplyFeatureState(currentState);
+
+        ui.UpdateCanvasState(cameraRaised);
+        //Method from Player interaction to update state
+    }
+
+    private void HandleCaptureAction()
+    {
+        
+        if (currentState == CaptureState.Capturing) //Attempts to Capture Photo
+        {
+            if (currFilm <= 0)
+            {
+                Debug.Log("No more Film");
+                return; 
+            }
+
+            if (captureSystem.CaptureSubject())
+            {
+                hasPendingPhoto = true;
+                currFilm -= 1;
+                Debug.Log(currFilm + " Shoots Left");
+                TransitionToState(CaptureState.Idle);
+            }
+        } else if (currentState == CaptureState.Developing) //Ends Development prematurely
+        {
+            EndDevelopment(development.GetDevelopPercent());
+        }
+    }
+
+
+    private void ApplyFeatureState(CaptureState state)
+    {
+        bool capturing = (state == CaptureState.Capturing);
+
+        cameraZoom.SetActive(capturing);
+        autoFocus.SetActive(capturing && !currentCamera.manualFocus);
+        manualFocus.SetActive(capturing && currentCamera.manualFocus);
+    }
+
+    private void EndDevelopment(float developPercent)
+    {
+        development.ResetDevelopment();
+        hasPendingPhoto = false;
+        eval.EvaluatePostData(developPercent);
+        
+        StartReview();
+    }
+
+    private void StartReview()
+    {
+        TransitionToState(CaptureState.Reviewing);
+
+        ScoreParameters newResult = eval.CalculatePhotoScore();
+        Debug.Log("Toal: " + newResult.result);
+        Debug.Log("dist: " + newResult.distance);
+        Debug.Log("facing: " + newResult.facing);
+        Debug.Log("size: " + newResult.size);
+        Debug.Log("focus: " + newResult.focus);
+        Debug.Log("devlop: " + newResult.development);
+        Debug.Log("extras: " + newResult.extras);
+
+        ui.DisplayResults(newResult);
+
+        //Destroy(newResult.currentPhoto);
+
+    }
+
+    public bool HasPendingPhoto()
+    {
+        return hasPendingPhoto;
+    }
+
+    public bool getCameraState()
+    {
+        return cameraRaised;
+    }
+
+
+    void OnDestroy()
+    {
+        if (inputManager != null)
+        {
+            inputManager.OnAim -= UpdateCaptureState;
+            inputManager.OnShoot -= HandleCaptureAction;
+        }
+    }
+}

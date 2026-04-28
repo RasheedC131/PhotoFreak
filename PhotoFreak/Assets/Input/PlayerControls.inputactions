@@ -34,15 +34,6 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Jump",
-                    "type": "Button",
-                    "id": "0435cfef-a7c9-402a-b8f7-fc7e43f17902",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
                     "name": "Pause",
                     "type": "Button",
                     "id": "47ed365e-115f-4e23-bccf-4ad333409e89",
@@ -86,6 +77,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "ScrollAction",
+                    "type": "Value",
+                    "id": "a46c0bfa-c8cd-4d47-8a64-7daa3f89b2a6",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
                 }
             ],
             "bindings": [
@@ -168,17 +168,6 @@
                 },
                 {
                     "name": "",
-                    "id": "a52eeda0-a737-4a5c-b003-5ea12fc3da97",
-                    "path": "<Keyboard>/space",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Jump",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "e3647a06-b371-4c3f-afd5-d0dd8ec14500",
                     "path": "<Keyboard>/escape",
                     "interactions": "",
@@ -191,7 +180,7 @@
                 {
                     "name": "",
                     "id": "b1a5e241-b32c-411d-b88b-955101cf273b",
-                    "path": "<Mouse>/leftButton",
+                    "path": "<Keyboard>/e",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -231,6 +220,17 @@
                     "action": "Shoot",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f6089f02-97dd-4a30-9796-b280788cd463",
+                    "path": "<Mouse>/scroll",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ScrollAction",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         },
@@ -239,7 +239,7 @@
             "id": "4cb4b613-6abc-4af9-a275-e479096ea517",
             "actions": [
                 {
-                    "name": "New action",
+                    "name": "Resume",
                     "type": "Button",
                     "id": "de89ba0d-ff8e-44d3-82f8-13fbfbea2209",
                     "expectedControlType": "",
@@ -252,11 +252,11 @@
                 {
                     "name": "",
                     "id": "4a0ff757-50fd-41b7-9da7-ba92a9cf9ac2",
-                    "path": "",
+                    "path": "<Keyboard>/escape",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "New action",
+                    "action": "Resume",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
