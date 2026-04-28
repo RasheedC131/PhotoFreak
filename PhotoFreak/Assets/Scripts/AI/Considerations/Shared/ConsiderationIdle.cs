@@ -30,28 +30,27 @@ public class ConsiderationIdle : Consideration
 
         if (ctx.isMonster && ctx.currentVictim != null)
         {
-            walkingStartTime = -1f;
-            return 0f;
+            walkingStartTime = -1f; 
+            return 0f; 
         }
-
-        // Once the guest NPC has realized it's being stalked, ActionIsolate needs to win uncontested.
-        if (!ctx.isMonster && ctx.isAwareOfStalker) return 0f;
 
         float maxFatigueTime = ctx.isMonster ? ms.idleMaxFatigue : gs.idleMaxFatigue;
 
         bool isWalking = agent.isActiveAndEnabled && agent.velocity.sqrMagnitude > 0.1f;
 
+        float dynamicScore = 0.1f; 
         if (isWalking)
         {
-            if (ctx.walkingStartTime < 0f) ctx.walkingStartTime = Time.time;
+            if (walkingStartTime < 0f) walkingStartTime = Time.time;
+            float timeSpentWalking = Time.time - walkingStartTime;
+            dynamicScore = Mathf.Max(0.1f, Mathf.Clamp01(timeSpentWalking / maxFatigueTime));
         }
         else
         {
-            ctx.walkingStartTime = -1f;
+            walkingStartTime = -1f;
         }
 
-        float fatigue = ctx.GetWalkingFatigue(maxFatigueTime);
-        float dynamicScore = Mathf.Max(0.1f, fatigue);
-        return dynamicScore * gw.idleWeight;
+        float staticWeightMultiplier = ctx.isMonster ? mw.idleWeight : gw.idleWeight;
+        return dynamicScore * staticWeightMultiplier; 
     }
 }

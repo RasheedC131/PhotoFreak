@@ -19,20 +19,13 @@ public class ActionAttack : UtilityAction
     public override void ExecuteAction()
     {
         if (ctx.currentVictim == null || ctx.currentVictim.isMonster) return;
-
+        
         agent.isStopped = false;
-        if (myIdentity != null) myIdentity.ShowMonsterModel();
-
-        // Free the victim's reserved kill node immediately so the next stalked
-        // guest can claim it right away, and clear the arrival flag so it does
-        // not persist onto the newly-infected monster.
-        ActionIsolate victimIsolate = ctx.currentVictim.GetComponentInChildren<ActionIsolate>(true);
-        if (victimIsolate != null) victimIsolate.ReleaseKillNode();
-        ctx.currentVictim.hasArrivedAtKillNode = false;
+        if (myIdentity != null) myIdentity.ShowMonsterModel(); 
 
         if (MatchManager.Instance != null)
         {
-            ctx.currentVictim.currentStalker = null;
+            ctx.currentVictim.isBeingStalked = false; 
             MatchManager.Instance.HandleInfection(ctx.currentVictim, ctx);
         }
         else
@@ -40,9 +33,8 @@ public class ActionAttack : UtilityAction
             Debug.LogError("MatchManager Instance not found!");
         }
 
-        Debug.Log($"Monster: [{ctx.gameObject.name}] infected: [{ctx.currentVictim.gameObject.name}]");
-
-        ctx.currentVictim     = null;
-        ctx.currentStalkTimer = 0f;
+        Debug.Log($"Monster: [{ctx.gameObject.name}] infected: [{ctx.currentVictim.gameObject.name}]"); 
+        
+        ctx.currentVictim = null; 
     }
 }

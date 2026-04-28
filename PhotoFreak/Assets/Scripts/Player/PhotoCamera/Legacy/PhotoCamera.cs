@@ -29,7 +29,6 @@ public class PhotoCamera : MonoBehaviour, IEquippable
     [SerializeField] private MonoBehaviour playerMovementScript;
 
     [Header("Game Loop Settings")]
-    [SerializeField] private HUDManager hudManager;
     [SerializeField] private FreakMeter freakMeter;
     [SerializeField] private string guestTag = "Guest"; 
     [SerializeField] private string monsterTag = "Monster"; 
@@ -93,8 +92,10 @@ public class PhotoCamera : MonoBehaviour, IEquippable
         if (photoReviewUI != null) photoReviewUI.SetActive(false); 
 
         // Safely check if cameraFocus exists before calling methods on it
-        if (cameraFocus != null) cameraFocus.DisableDepthOfField();
-        
+        if (cameraFocus != null) 
+        {
+            cameraFocus.DisableDepthOfField();
+        }
 
     }
 
@@ -112,14 +113,14 @@ public class PhotoCamera : MonoBehaviour, IEquippable
         UpdateCaptureState(false);
         if (photoReviewUI != null) photoReviewUI.SetActive(false);
         isReview = false;
+
+        if (Time.timeScale == 0f) Time.timeScale = 1f;
         
-        if (GlobalGameState.Instance != null && GlobalGameState.Instance.currentState == GlobalGameState.GameState.PLAYING) Time.timeScale = 1f;
         gameObject.SetActive(false);
     }
 
     public void OnUse()
     {
-        if (GlobalGameState.Instance != null && GlobalGameState.Instance.currentState != GlobalGameState.GameState.PLAYING) return;
         if (currentState == CaptureState.Capturing && !isReview) AttemptTakePhoto(); 
         else if (currentState == CaptureState.Idle) Debug.Log("Can't take photo with camera being aimed"); 
     }
@@ -184,9 +185,9 @@ public class PhotoCamera : MonoBehaviour, IEquippable
     // routine that captures the photo and displays it 
     private IEnumerator CapturePhotoRoutine()
     {
-        isReview = true;
-        if (hudManager != null) hudManager.SetHUDVisible(false);
-        yield return new WaitForEndOfFrame();
+        isReview = true; 
+        
+        yield return new WaitForEndOfFrame(); 
         Texture2D screenCap = ScreenCapture.CaptureScreenshotAsTexture();
         Time.timeScale = 0f; 
 
@@ -199,12 +200,15 @@ public class PhotoCamera : MonoBehaviour, IEquippable
 
         if (hitSubject != null)
         {
-            // TODO: don't make hard-coded
+
+            // TODO: don't make hard-coded 
             if (hitSubject.CompareTag(guestTag) || hitSubject.CompareTag("Elite"))
             {
                 Debug.Log($"Photographed a {hitSubject.tag}.");
+                
                 if (freakMeter != null) freakMeter.AddFreakScore(freakPenaltyAmount);
             }
+            
         }
 
         // draw ui/animate shutter
@@ -223,23 +227,19 @@ public class PhotoCamera : MonoBehaviour, IEquippable
         yield return StartCoroutine(AnimateShutters(0f, shutterOpenHeight, shutterSpeed)); 
         yield return new WaitForSecondsRealtime(photoReviewTime); 
 
-        if (GlobalGameState.Instance != null && GlobalGameState.Instance.currentState == GlobalGameState.GameState.PLAYING) Time.timeScale = 1f; 
+        // cleanup the states 
+        if (freakMeter == null || !freakMeter.IsGameOver()) Time.timeScale = 1f; 
         
+
         if (photoReviewUI != null) photoReviewUI.SetActive(false); 
-        // if (viewFinderUI != null && currentState == CaptureState.Capturing) viewFinderUI.SetActive(true); 
+        if (viewFinderUI != null && currentState == CaptureState.Capturing) viewFinderUI.SetActive(true); 
         isReview = false;
         
-        if (hudManager != null) hudManager.SetHUDVisible(true);
-
-        // ui is draw based on game state
-        if (GlobalGameState.Instance != null && GlobalGameState.Instance.currentState == GlobalGameState.GameState.GAMEOVER)
+        if(freakMeter != null && freakMeter.IsGameOver())
         {
-            Debug.Log("Game Over hit during photo review.");
-            if (viewFinderUI != null) viewFinderUI.SetActive(false);
-        }
-        else if (viewFinderUI != null && currentState == CaptureState.Capturing)
-        {
-            viewFinderUI.SetActive(true);
+            Debug.Log("Game loop done.");
+            freakMeter.TriggerGameOver(); 
+            if (viewFinderUI != null) viewFinderUI.SetActive(false); 
         }
     }
 
@@ -298,31 +298,6 @@ public class PhotoCamera : MonoBehaviour, IEquippable
     public bool getCameraState()
     {
         return cameraRaised;
-    }
-
-    
-    private void Update()
-    {
-        if (!cameraRaised) return;
-
-        MonsterSettings ms = MonsterSettings.Instance;
-        if (ms == null) return;
-
-        // if monsters are a majority they can now target the player 
-        bool monsterMajority = CrowdStateManager.Instance != null && CrowdStateManager.Instance.MonsterMajority;
-        if (!monsterMajority) return;
-
-        // if player raises camera near the a monster that specific monster will now target them 
-        Collider[] nearby = Physics.OverlapSphere(transform.position, ms.photoDetectRadius);
-        foreach (Collider col in nearby)
-        {
-            AIContext monsterCtx = col.GetComponentInParent<AIContext>();
-            if (monsterCtx != null && monsterCtx.isMonster && !monsterCtx.isHuntingPlayer)
-            {
-                monsterCtx.isHuntingPlayer = true;
-                Debug.Log($"[{monsterCtx.gameObject.name}] Spotted raised camera now targeting player");
-            }
-        }
     }
 
 }

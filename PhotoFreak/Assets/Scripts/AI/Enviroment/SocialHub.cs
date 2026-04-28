@@ -1,13 +1,11 @@
 using UnityEngine;
-using System.Collections.Generic;
 
 // used to create temporary areas where the npcs can travel to
 public class SocialHub : MonoBehaviour
 {
     public int MaxCapacity { get; private set; }
-    
-    public List<AIContext> currentAttendees = new List<AIContext>();
-    public List<AIContext> incomingAttendees = new List<AIContext>();
+    public int CurrentAttendees { get; set; } = 0;
+    public int IncomingAttendees { get; set; } = 0;
     
     public void Initialize(int capacity, float timeToLive)
     {
@@ -30,6 +28,6 @@ public class SocialHub : MonoBehaviour
 
     public bool HasOpenSlots()
     {
-        return (currentAttendees.Count + incomingAttendees.Count) < MaxCapacity;    
+        return (CurrentAttendees + IncomingAttendees) < MaxCapacity;    
     }
 }

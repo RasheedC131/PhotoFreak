@@ -1,106 +1,68 @@
 using UnityEngine;
-using UnityEngine.AI;
-using UnityEngine.SceneManagement;
+using System.Collections;
+using System.Collections.Generic; 
 
 public class ScatterNpcs : MonoBehaviour
 {
-    private GuestSettings gs;
+    private GuestSettings gs; 
 
-    void Awake()
+    private IEnumerator Start()
     {
-        SceneManager.sceneLoaded += OnSceneLoaded;
-    }
+        gs = GuestSettings.Instance; 
+        
+        yield return new WaitForEndOfFrame(); 
 
-    void OnDestroy()
-    {
-        SceneManager.sceneLoaded -= OnSceneLoaded;
-    }
-
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        gs = GuestSettings.Instance;
-        ScatterAll();
-    }
-
-    private void ScatterAll()
-    {
         ZoneNode[] allNodes = FindObjectsOfType<ZoneNode>();
-        if (allNodes.Length == 0) return;
-
-        // Clear any stale crowd data left over from the previous session so
-        foreach (ZoneNode node in allNodes)
-        {
-            node.incomingCrowd.Clear();
-            node.currentCrowd.Clear();
-        }
+        if (allNodes.Length == 0) yield break; 
 
         AIContext[] allAgents = FindObjectsOfType<AIContext>();
-        ShuffleArray(allAgents);
-
-        int nodeIndex = 0;
 
         foreach (AIContext agent in allAgents)
         {
-            if (agent == null) continue;
-
-            ZoneNode placementNode = allNodes[nodeIndex % allNodes.Length];
-            nodeIndex++;
-
-            NavMeshAgent navAgent = agent.GetComponent<NavMeshAgent>();
-            if (navAgent == null) continue;
-
-            // Ensure the agent component is in a clean state before teleporting.
-
-            NavMeshObstacle obstacle = agent.GetComponent<NavMeshObstacle>();
-            if (obstacle != null) obstacle.enabled = false;
-
-            Vector3 offsetVec   = new Vector3(Random.Range(-4.0f, 4.0f), 0, Random.Range(-4.0f, 4.0f));
-            Vector3 desiredPos  = placementNode.transform.position + offsetVec;
-
-            navAgent.enabled = false;
-
-            NavMeshHit hit;
-            agent.transform.position = NavMesh.SamplePosition(desiredPos, out hit, 10f, NavMesh.AllAreas)
-                ? hit.position
-                : placementNode.transform.position;
-
-            navAgent.enabled = true;
-
-            agent.currentDestination = placementNode.transform.position;
-
-            // Reset AI state so the brain starts fresh.
-            agent.targetNode         = null;
-            agent.forceNewPath       = false;
-            agent.isAwareOfStalker   = false;
-            agent.hasArrivedAtKillNode = false;
-
-            if (placementNode.HasOpenSlots())
+            if (agent != null && !agent.isMonster)
             {
-                placementNode.incomingCrowd.Add(agent);
-                agent.targetNode = placementNode.transform;
+                Transform placementNode = allNodes[Random.Range(0, allNodes.Length)].transform;
+                Transform assignedNode = GetRandomOpenNode(allNodes);
 
-                // ActionWanderNodes lives on a child GameObject, not the root.
-                ActionWanderNodes wanderScript = agent.GetComponentInChildren<ActionWanderNodes>(true);
-                if (wanderScript != null) wanderScript.hasReservedSpot = true;
-            }
+                agent.targetNode = assignedNode; 
+                agent.forceNewPath = true; 
 
-            if (gs != null)
-            {
-                navAgent.speed            = Random.Range(gs.wanderBaseSpeed * 0.8f, gs.wanderBaseSpeed * 1.2f);
-                navAgent.acceleration     = Random.Range(gs.wanderMinAcceleration, gs.wanderMaxAcceleration);
-                navAgent.avoidancePriority = Random.Range(30, 70);
+                UnityEngine.AI.NavMeshAgent navAgent = agent.GetComponent<UnityEngine.AI.NavMeshAgent>();
+                
+                if (navAgent != null)
+                {
+                    Vector3 offsetVec = new Vector3(Random.Range(-4.0f, 4.0f), 0, Random.Range(-4.0f, 4.0f));
+                    Vector3 targetPos = placementNode.position + offsetVec;
+                    navAgent.enabled = false;
+                    agent.transform.position = targetPos;
+                    navAgent.enabled = true;
+
+                    float baseSpeed = gs.wanderBaseSpeed * 0.5f; 
+                    navAgent.speed = Random.Range(gs.wanderBaseSpeed * 0.8f, gs.wanderBaseSpeed * 1.2f);
+                    navAgent.acceleration = Random.Range(gs.wanderMinAcceleration, gs.wanderMaxAcceleration);
+                    navAgent.avoidancePriority = Random.Range(30, 70);
+                }
             }
         }
+        
+        Debug.Log($"Scattered {allAgents.Length} agents across {allNodes.Length} nodes.");
     }
 
-    private void ShuffleArray(AIContext[] array)
+    private Transform GetRandomOpenNode(ZoneNode[] nodes)
     {
-        for (int i = 0; i < array.Length; i++)
+        List<ZoneNode> shuffledNodes = new List<ZoneNode>(nodes);
+        for (int i = 0; i < shuffledNodes.Count; i++)
         {
-            int randomIndex  = Random.Range(i, array.Length);
-            AIContext temp   = array[i];
-            array[i]         = array[randomIndex];
-            array[randomIndex] = temp;
+            ZoneNode temp = shuffledNodes[i];
+            int randomIndex = Random.Range(i, shuffledNodes.Count);
+            shuffledNodes[i] = shuffledNodes[randomIndex];
+            shuffledNodes[randomIndex] = temp;
         }
+
+        foreach (ZoneNode node in shuffledNodes)
+        {
+            if (node.GetCurrentCrowd() < node.activeCapacity) return node.transform;
+        }
+        return null;
     }
 }

@@ -24,7 +24,7 @@ public class MatchManager : MonoBehaviour
         NPCIdentity victimIdentity = victim.GetComponent<NPCIdentity>();
         if (victimIdentity == null)
         {
-            Debug.LogError("Victim is missing their NPCIdentity script");
+            Debug.LogError("Victim is missing their NPCIdentity script!");
             return;
         }
 
@@ -42,6 +42,7 @@ public class MatchManager : MonoBehaviour
             case InfectionMode.RANDOM:          makeSmart = Random.Range(0f, 100f) < smartAIChance; break; 
         }
 
+        // Issue the final command
         victimIdentity.Mutate(makeSmart); 
     }
 }

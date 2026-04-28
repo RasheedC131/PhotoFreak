@@ -13,9 +13,6 @@ public class GlobalGameState : MonoBehaviour
     public event Action onGameOver; 
 
     [SerializeField] private InputManager inputManager; 
-    
-    // Add a tracker for when the scene started
-    private float sceneStartTime; 
 
     void Awake()
     {
@@ -26,9 +23,6 @@ public class GlobalGameState : MonoBehaviour
     void Start()
     {
         currentState = GameState.PLAYING; 
-        
-        // Use realtime so it ignores Time.timeScale freezing
-        sceneStartTime = Time.realtimeSinceStartup; 
 
         if (inputManager != null)
         {
@@ -59,15 +53,13 @@ public class GlobalGameState : MonoBehaviour
         Cursor.visible = false; 
         onGameResumed?.Invoke(); 
         Debug.Log("Game Resumed"); 
+        
     }
 
     public void TriggerGameOver()
     {
-        // wait one sec for game over 
-        if (Time.realtimeSinceStartup - sceneStartTime < 1.0f) return;
-
         currentState = GameState.GAMEOVER; 
-        Time.timeScale = 0f; 
+        Time.timeScale = 1f; 
         onGameOver?.Invoke();
         Debug.Log("Game Over"); 
     }

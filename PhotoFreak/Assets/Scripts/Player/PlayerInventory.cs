@@ -5,7 +5,7 @@ using TMPro;
 
 public class PlayerInventory : MonoBehaviour
 {
-    public event Action<Sprite, string> OnSlotChanged; 
+    public event Action<int> OnSlotChanged; 
     public event Action<int, Sprite> OnSlotUpdated;
 
     [Header("Inventory Settings")]
@@ -38,7 +38,7 @@ public class PlayerInventory : MonoBehaviour
             inventorySlots[0] = camTool;
             camTool.OnEquip(); 
             
-            StartCoroutine(InitializeCameraUI(camTool.itemIcon, camTool.itemName));
+            StartCoroutine(InitializeCameraUI(camTool.itemIcon));
         }
         else
         {
@@ -50,10 +50,11 @@ public class PlayerInventory : MonoBehaviour
         inputManager.OnInteract += HandleInteraction; 
     }
 
-    private IEnumerator InitializeCameraUI(Sprite camIcon, string name)
+    private IEnumerator InitializeCameraUI(Sprite camIcon)
     {
         yield return new WaitForEndOfFrame();
-        OnSlotChanged?.Invoke(camIcon, name);
+        OnSlotUpdated?.Invoke(0, camIcon);
+        OnSlotChanged?.Invoke(0);
     }
 
     void Update()
@@ -61,7 +62,7 @@ public class PlayerInventory : MonoBehaviour
         CheckForInteractable();
     }
 
-private void CheckForInteractable()
+    private void CheckForInteractable()
     {
         if (interactPromptText == null) return; 
 
@@ -72,14 +73,14 @@ private void CheckForInteractable()
             IInteractable interactableFixture = hit.collider.GetComponent<IInteractable>();
             if (interactableFixture != null)
             {
-                ShowPrompt(hit, $"[E]) {interactableFixture.promptText}", interactableFixture.promptLocation);
+                ShowPrompt(hit, $"[E]) {interactableFixture.promptText}");
                 return;
             }
 
             IEquippable itemOnGround = hit.collider.GetComponent<IEquippable>();
             if (itemOnGround != null)
             {
-                ShowPrompt(hit, $"[E]) {itemOnGround.itemName}", null);
+                ShowPrompt(hit, $"[E]) {itemOnGround.itemName}");
                 return; 
             }
         }
@@ -87,16 +88,10 @@ private void CheckForInteractable()
         interactPromptText.gameObject.SetActive(false);
     }
 
-    private void ShowPrompt(RaycastHit hit, string textToShow, Transform customLocation)
+    private void ShowPrompt(RaycastHit hit, string textToShow)
     {
         interactPromptText.text = textToShow;
-
-        Vector3 basePosition = customLocation != null 
-            ? customLocation.position 
-            : hit.collider.transform.position + (Vector3.up * promptHeightOffset);
-
-        Vector3 directionToCamera = (playerCamera.transform.position - basePosition).normalized;
-        interactPromptText.transform.position = basePosition + (directionToCamera * 0.15f);
+        interactPromptText.transform.position = hit.collider.transform.position + (Vector3.up * promptHeightOffset);
         interactPromptText.transform.rotation = Quaternion.LookRotation(interactPromptText.transform.position - playerCamera.transform.position);
         interactPromptText.gameObject.SetActive(true);
     }
@@ -176,7 +171,7 @@ private void CheckForInteractable()
         inventorySlots[targetSlot] = newItem;
         newItem.OnPickup(handHoldPos);
         newItem.OnEquip();
-        OnSlotChanged?.Invoke(newItem.itemIcon, newItem.itemName);
+        OnSlotUpdated?.Invoke(targetSlot, newItem.itemIcon);
     }
 
     public void RemoveCurrentItem()
@@ -184,7 +179,7 @@ private void CheckForInteractable()
         if (inventorySlots[currentSlotIndex] == null) return;
         inventorySlots[currentSlotIndex].OnUnequip(); 
         inventorySlots[currentSlotIndex] = null;
-        OnSlotChanged?.Invoke(null, "");
+        OnSlotUpdated?.Invoke(currentSlotIndex, null);
         SwitchToSlot(0); 
     }
 
@@ -199,7 +194,7 @@ private void CheckForInteractable()
             itemToDrop.OnUnequip();
             itemToDrop.OnDrop();
             inventorySlots[currentSlotIndex] = null;
-            OnSlotChanged?.Invoke(null, "");
+            OnSlotUpdated?.Invoke(currentSlotIndex, null);
             SwitchToSlot(0); 
         }
     }
@@ -212,14 +207,7 @@ private void CheckForInteractable()
         currentSlotIndex = newSlot;
         if (inventorySlots[currentSlotIndex] != null) inventorySlots[currentSlotIndex].OnEquip();
 
-        if (inventorySlots[currentSlotIndex] != null)
-        {
-            OnSlotChanged?.Invoke(inventorySlots[currentSlotIndex].itemIcon, inventorySlots[currentSlotIndex].itemName);
-        }
-        else
-        {
-            OnSlotChanged?.Invoke(null, "");
-        }
+        OnSlotChanged?.Invoke(currentSlotIndex);
     }
 
     void OnDestroy()

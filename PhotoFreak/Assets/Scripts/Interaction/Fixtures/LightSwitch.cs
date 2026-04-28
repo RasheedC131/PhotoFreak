@@ -6,7 +6,6 @@ public class LightSwitch : MonoBehaviour, IInteractable
     [SerializeField] private Light targetLight; 
     [SerializeField] private bool isOn = true;  
     public string promptText => isOn ? "Turn Off Light" : "Turn On Light";
-    public Transform promptLocation => transform; 
 
     private void Start()
     {

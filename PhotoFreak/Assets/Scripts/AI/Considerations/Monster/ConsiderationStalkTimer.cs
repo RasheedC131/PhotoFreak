@@ -4,13 +4,11 @@ public class ConsiderationStalkTimer : Consideration
 {
     private AIContext ctx; 
     private MonsterWeights mw; 
-    private MonsterSettings ms; 
 
     void Awake()
     {
         ctx = GetComponentInParent<AIContext>(); 
         mw = MonsterWeights.Instance; 
-        ms = MonsterSettings.Instance; 
     }
 
     protected override float EvaluateRawValue()
@@ -19,30 +17,19 @@ public class ConsiderationStalkTimer : Consideration
 
         if (ctx.currentVictim is null) return 1.0f;    
 
-        float timeRatio = ctx.currentStalkTimer / ms.stalkDuration;
+        float timeRatio = ctx.currentStalkTimer / ctx.stalkDuration;
 
-        bool isVictimIsolating = false;
-        
-        if (ctx.currentVictim.GetComponent<AIBrain>() != null)
+         if (timeRatio >= 1.0f)
         {
-            AIBrain victimBrain = ctx.currentVictim.GetComponent<AIBrain>();
-            if (victimBrain.currentAction is ActionIsolate) isVictimIsolating = true;
-            
-        }
-
-        // when strikes reach 3 then we don't get bored and pursue our target 
-        bool isFinalPanic = CrowdStateManager.Instance != null && CrowdStateManager.Instance.IsFinalPanic;
-
-        if (timeRatio >= 3.0f && !isVictimIsolating && !isFinalPanic)
-        {
-            Debug.Log("Monster got bored and gave up chasing");
-            ctx.currentVictim.currentStalker = null;
+            Debug.Log("Monster got bored and gave up stalking");
             ctx.currentVictim = null;
             ctx.currentStalkTimer = 0f;
-            return 0f;
+            return 0f; 
         }
 
-        float clampedRatio = Mathf.Clamp01(timeRatio / 3.0f);
-        return Mathf.Lerp(1.0f, mw.stalkMinWeight, clampedRatio);
+        // score scales with time that the monster is hunting the target (e.g. if it is hunting for a while then it starts to lose interest if it can't land a kill)
+        float score = Mathf.Lerp(1.0f, mw.stalkMinWeight, timeRatio);
+
+        return score;
     }
 }

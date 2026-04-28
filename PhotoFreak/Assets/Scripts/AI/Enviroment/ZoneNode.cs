@@ -1,22 +1,33 @@
 using UnityEngine;
-using System.Collections.Generic;
 
+// npcs hang around these nodes 
 public class ZoneNode : MonoBehaviour
 {
+    private static AIContext[] allAgents; 
     private GuestSettings gs; 
+    
     public int activeCapacity { get; private set; } 
-
-    public List<AIContext> currentCrowd = new List<AIContext>();
-    public List<AIContext> incomingCrowd = new List<AIContext>();
 
     void Awake()
     {
         gs = GuestSettings.Instance; 
         activeCapacity = Random.Range(2, gs.wanderNodeMaxCapacity + 1);
+
+        if (allAgents == null) allAgents = FindObjectsOfType<AIContext>();
     }
 
-    public bool HasOpenSlots()
+    public int GetCurrentCrowd()
     {
-        return (currentCrowd.Count + incomingCrowd.Count) < activeCapacity; 
+        int currentCrowd = 0;
+        if (allAgents == null) allAgents = FindObjectsOfType<AIContext>(); 
+        
+        foreach (AIContext agent in allAgents)
+        {
+            if (agent != null && !agent.isMonster && agent.targetNode == this.transform)
+            {
+                currentCrowd++;
+            }
+        }
+        return currentCrowd;
     }
 }
