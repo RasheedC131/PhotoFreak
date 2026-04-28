@@ -1808,14 +1808,14 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2037803872167456665}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 43389c33028c27a409e9a189ce43b740, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Timer
   UI: {fileID: 0}
   player: {fileID: 2037803872167456665}
-  MainTimer: 1
+  MainTimer: 0
   timeRemaining: 3
 --- !u!135 &7336599285751389772
 SphereCollider:
@@ -1845,7 +1845,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2037803872167456665}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1ca7e61cfd093044abe4bf82c32cb9f4, type: 3}
   m_Name: 

@@ -57,7 +57,6 @@ public class CameraBlurController : MonoBehaviour
     {
         if (dof == null)
         {
-            Debug.Log("uhoh");
            return; 
         }
 

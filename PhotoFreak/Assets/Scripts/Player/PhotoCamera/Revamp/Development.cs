@@ -53,6 +53,7 @@ public class Development : MonoBehaviour
     public void ResetDevelopment()
     {
         currDevelop = minDevelop;
+        ui.UpdateDevelopmentBar(GetDevelopPercent());
     }
 
     public float GetDevelopPercent()
