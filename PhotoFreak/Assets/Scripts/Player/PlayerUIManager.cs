@@ -9,16 +9,11 @@ public class PlayerUIManager : MonoBehaviour
     [SerializeField] private GameObject gameUICanvas;
     [SerializeField] private GameObject interactionCanvas;
 
-    [SerializeField] private UnityEngine.UI.Slider developmentBar;
-
-    //Other Scripts
     private StarRating star;
-    private ReviewDetails details;
 
     void Awake()
     {
         star = photoReviewCanvas.GetComponentInChildren<StarRating>();
-        details = photoReviewCanvas.GetComponentInChildren<ReviewDetails>();
     }
 
     public void UpdateCanvasState(bool raised)
@@ -35,7 +30,6 @@ public class PlayerUIManager : MonoBehaviour
         capturedPhoto.texture = data.currentPhoto;
 
         star.DisplayStars(Mathf.RoundToInt(data.result));
-        details.FillDetails(data);
 
         gameUICanvas.SetActive(false);
         photoCanvas.SetActive(false);
@@ -47,10 +41,5 @@ public class PlayerUIManager : MonoBehaviour
     {
         gameUICanvas.SetActive(active);
         Debug.Log("boop");
-    }
-
-    public void UpdateDevelopmentBar(float value)
-    {
-        developmentBar.value = Mathf.Clamp01(value);
     }
 }
