@@ -18,7 +18,7 @@ public class FreakMeter : MonoBehaviour
     [SerializeField] private float k2;
     [SerializeField] private float x2;
     [Header("Script info")]
-    [SerializeField] PhotoCamera CameraScript;
+    [SerializeField] CameraController CameraScript;
     [SerializeField] PlayerMovement player;
     [SerializeField] private FreakMeterUI UI;
     [SerializeField] private Timer timer;

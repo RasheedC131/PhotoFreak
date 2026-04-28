@@ -40,6 +40,17 @@ public class CameraController : MonoBehaviour
 
     private ScoreParameters currentResult;
 
+    public bool isDroppable => false; 
+    public bool isInUse => cameraRaised;
+    public string itemName => "Photo Camera"; 
+    public void OnPickup(Transform holdParent) {}
+    public void OnDrop() {}
+
+    [Header("UI Settings")]
+    [SerializeField] private Sprite cameraIcon;
+    public Sprite itemIcon => cameraIcon;
+    [SerializeField] private GameObject cameraModel; 
+
     void Awake()
     {
         inputManager = GetComponentInParent<InputManager>();
@@ -123,6 +134,8 @@ public class CameraController : MonoBehaviour
             Cursor.visible = false;
         }
 
+        cameraModel.SetActive(!cameraRaised);
+
         ApplyFeatureState(currentState);
         ui.UpdateCanvasState(cameraRaised);
         //Method from Player interaction to update state
@@ -192,7 +205,6 @@ public class CameraController : MonoBehaviour
 
     public void EndReview()
     {
-        Debug.Log("wow");
         TransitionToState(CaptureState.Idle);
         Destroy(currentResult.currentPhoto);
 
@@ -207,6 +219,11 @@ public class CameraController : MonoBehaviour
     public bool getCameraState()
     {
         return cameraRaised;
+    }
+
+    public int getCurrFilm()
+    {
+        return currFilm;
     }
 
 

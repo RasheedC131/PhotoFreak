@@ -11,10 +11,12 @@ public class Development : MonoBehaviour
 
     //Other Scripts
     private CameraController controller;
+    private PlayerUIManager ui;
 
     void Awake()
     {
         controller = GetComponent<CameraController>();
+        ui = GetComponentInParent<Transform>().parent.GetComponentInChildren<PlayerUIManager>();
     }
 
     void Update()
@@ -35,7 +37,7 @@ public class Development : MonoBehaviour
                 currDevelop = Mathf.Max(currDevelop, minDevelop);
             }
         }
-        //Debug.Log("develop %: " + GetDevelopPercent());
+        ui.UpdateDevelopmentBar(GetDevelopPercent());
     }
 
     public void ToggleDevelopment(bool toggle)
