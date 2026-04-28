@@ -14,12 +14,18 @@ public class ActionIdle : UtilityAction
 
     public override void ExecuteAction()
     {
-        if (!agent.enabled)
+        // Switch to NavMeshObstacle so this NPC becomes a hard blocker.
+        // A stopped NavMeshAgent only creates soft RVO repulsion, meaning
+        // moving agents can still drift through it under avoidance pressure.
+        // As an obstacle, other agents path around it properly.
+        // AIBrain.BrainTickRoutine already disables the obstacle and
+        // re-enables the agent before any movement action begins, so the
+        // transition back to mobility is handled automatically.
+        if (agent.enabled)
         {
-            if (obstacle != null) obstacle.enabled = false;
-            agent.enabled = true;
+            if (agent.isOnNavMesh) agent.ResetPath();
+            agent.enabled = false;
+            if (obstacle != null) obstacle.enabled = true;
         }
-
-        if (agent.isOnNavMesh && !agent.isStopped) agent.isStopped = true;
     }
 }

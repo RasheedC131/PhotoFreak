@@ -23,8 +23,13 @@ public class MonsterWeights : ScriptableObject
     [Header("Consideration Idle")]
     [SerializeField] [Range(0, 1)] private float _idleWeight = 0.9f; 
 
+    [Header("Consideration Tell Timer")]
+    [SerializeField] [Range(0, 1)] private float _tellThreshold = 0.7f; 
+
+
     public float stalkMinWeight => _stalkMinWeight; 
     public float preySpottedWeight => _preySpottedWeight; 
     public float wanderFreeWeight => _wanderFreeWeight; 
     public float idleWeight => _idleWeight; 
+    public float tellThreshold => _tellThreshold; 
 }

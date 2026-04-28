@@ -2,6 +2,12 @@ using UnityEngine;
 
 public abstract class UtilityAction : MonoBehaviour
 {
+    [Tooltip("Tick this on every action that belongs to the monster behaviour set " +
+             "(ActionStalk, ActionAttack, ActionHuntPlayer, etc.). " +
+             "Leave unticked for guest actions (ActionWanderNodes, ActionSocialize, ActionIsolate, etc.). " +
+             "AIBrain uses this flag to only score actions that match the NPC's current role.")]
+    public bool isMonsterAction = false;
+
     private Consideration[] considerations;
 
     public abstract void ExecuteAction();
