@@ -38,6 +38,8 @@ public class CameraController : MonoBehaviour
 
     private bool cameraRaised;
 
+    private ScoreParameters currentResult;
+
     void Awake()
     {
         inputManager = GetComponentInParent<InputManager>();
@@ -109,8 +111,19 @@ public class CameraController : MonoBehaviour
         if (currentState == CaptureState.Developing)development.ToggleDevelopment(true);
         else development.ToggleDevelopment(false);
 
-        ApplyFeatureState(currentState);
+        //Cursor Handling
+        if (currentState == CaptureState.Reviewing)
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+        }
+        else
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
 
+        ApplyFeatureState(currentState);
         ui.UpdateCanvasState(cameraRaised);
         //Method from Player interaction to update state
     }
@@ -162,19 +175,28 @@ public class CameraController : MonoBehaviour
     {
         TransitionToState(CaptureState.Reviewing);
 
-        ScoreParameters newResult = eval.CalculatePhotoScore();
-        Debug.Log("Toal: " + newResult.result);
-        Debug.Log("dist: " + newResult.distance);
-        Debug.Log("facing: " + newResult.facing);
-        Debug.Log("size: " + newResult.size);
-        Debug.Log("focus: " + newResult.focus);
-        Debug.Log("devlop: " + newResult.development);
-        Debug.Log("extras: " + newResult.extras);
+        currentResult = eval.CalculatePhotoScore();
 
-        ui.DisplayResults(newResult);
+        Debug.Log("Toal: " + currentResult.result);
+        Debug.Log("dist: " + currentResult.distance);
+        Debug.Log("facing: " + currentResult.facing);
+        Debug.Log("size: " + currentResult.size);
+        Debug.Log("focus: " + currentResult.focus);
+        Debug.Log("devlop: " + currentResult.development);
+        Debug.Log("extras: " + currentResult.extras);
 
-        //Destroy(newResult.currentPhoto);
+        ui.DisplayResults(currentResult);
 
+        Time.timeScale = 0f; 
+    }
+
+    public void EndReview()
+    {
+        Debug.Log("wow");
+        TransitionToState(CaptureState.Idle);
+        Destroy(currentResult.currentPhoto);
+
+        Time.timeScale = 1f; 
     }
 
     public bool HasPendingPhoto()

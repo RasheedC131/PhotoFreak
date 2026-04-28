@@ -21,11 +21,12 @@ public class CaptureSystem : MonoBehaviour
     public LayerMask subjectLayer;
     public LayerMask obstructionLayer;
 
-    //OtherScript
+    //Other Scripts
     private PhotoScoring eval;
     private CameraController controller;
     private CameraAutoFocus autoFocus;
     private CameraManualFocus manualFocus;
+    private PlayerUIManager ui;
 
 
     void Awake()
@@ -36,6 +37,7 @@ public class CaptureSystem : MonoBehaviour
         controller = GetComponent<CameraController>();
         autoFocus = GetComponentInChildren<CameraAutoFocus>();
         manualFocus = GetComponentInChildren<CameraManualFocus>();
+        ui = GetComponentInParent<Transform>().parent.GetComponentInChildren<PlayerUIManager>();
     }
 
     //Shoots a raycast straight forward, looking for a subject or bumping into a wall
@@ -109,8 +111,13 @@ public class CaptureSystem : MonoBehaviour
 
         data.extras = CaptureExtras(subject);
 
-        yield return new WaitForEndOfFrame(); 
-        data.currentPhoto = ScreenCapture.CaptureScreenshotAsTexture();
+
+        yield return new WaitForEndOfFrame();
+        Texture2D screenShot = ScreenCapture.CaptureScreenshotAsTexture();
+        data.currentPhoto = new Texture2D(Screen.width, Screen.height, TextureFormat.RGB24, false);
+        data.currentPhoto.SetPixels(screenShot.GetPixels());
+        data.currentPhoto.Apply();
+
 
         eval.EvaluateCaptureData(data);
         
