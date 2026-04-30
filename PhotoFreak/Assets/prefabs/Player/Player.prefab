@@ -372,7 +372,7 @@ CanvasRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1092506966443463832}
-  m_CullTransparentMesh: 1
+  m_CullTransparentMesh: 0
 --- !u!114 &627607284634968175
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1047,6 +1047,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HotbarUI
   playerInventory: {fileID: 4645469748073848643}
+  itemName: {fileID: 0}
   slotBackgrounds:
   - {fileID: 7619889456673708251}
   - {fileID: 7619889456673708251}
@@ -1274,7 +1275,7 @@ SphereCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 2
+  m_Radius: 4
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &6327150031944974703
 MonoBehaviour:
@@ -1292,8 +1293,11 @@ MonoBehaviour:
   maxFreak: 20
   maxStrikes: 3
   decayRate: 10
-  k1: 0.006
+  k1: 2
   x1: 2
+  cameraTransform: {fileID: 0}
+  cameraDetectRange: 10
+  cameraDetectAngle: 35
   k2: 0.006
   x2: 2
   CameraScript: {fileID: 3172967152751098486}
@@ -1315,10 +1319,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 977214a27547c854e8fe04b757c93230, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FreakMeterUI
+  maxIntensity: 0
+  volume: {fileID: 0}
+  meter: {fileID: 0}
+  strike1: {fileID: 0}
+  strike2: {fileID: 0}
+  strike3: {fileID: 0}
   Needle: {fileID: 2311746587949828099}
   secondHand: {fileID: 449354735126762728}
   minuteHand: {fileID: 1449578941832488777}
-  strikeText: {fileID: 8295032162796219338}
 --- !u!54 &354265123027015243
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -3964,6 +3973,10 @@ PrefabInstance:
       propertyPath: m_UiScaleMode
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 2953483965976892184, guid: 11706e3fec13d4e81b496fb012c0042b, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3416870244286570694, guid: 11706e3fec13d4e81b496fb012c0042b, type: 3}
       propertyPath: m_AnchoredPosition.x
       value: -283
@@ -4128,13 +4141,33 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 5039144273508643958, guid: 11706e3fec13d4e81b496fb012c0042b, type: 3}
       insertIndex: -1
       addedObject: {fileID: 8179904090636757236}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 8770810143506084900, guid: 11706e3fec13d4e81b496fb012c0042b, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4142521805727875217}
   m_SourcePrefab: {fileID: 100100000, guid: 11706e3fec13d4e81b496fb012c0042b, type: 3}
 --- !u!224 &6523293193190256529 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 5039144273508643958, guid: 11706e3fec13d4e81b496fb012c0042b, type: 3}
   m_PrefabInstance: {fileID: 2263559761695415271}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &7408961003891437507 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8770810143506084900, guid: 11706e3fec13d4e81b496fb012c0042b, type: 3}
+  m_PrefabInstance: {fileID: 2263559761695415271}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &4142521805727875217
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7408961003891437507}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d71e191d4fa21494386c6b5fe0f1260a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HUDManager
 --- !u!1001 &3609653812402832438
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4325,6 +4358,7 @@ MonoBehaviour:
   filmCounterText: {fileID: 4877398444023549647}
   cameraLookScript: {fileID: 8291320912420731299}
   playerMovementScript: {fileID: 1544095912236018681}
+  hudManager: {fileID: 0}
   freakMeter: {fileID: 6327150031944974703}
   guestTag: Guest
   monsterTag: Monster
@@ -4369,7 +4403,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CameraFocus
   inputManager: {fileID: 1544095912236018681}
-  cameraZoom: {fileID: 3182318573186504152}
+  cameraZoom: {fileID: 0}
   globalVolume: {fileID: 0}
   cameraTransform: {fileID: 6362894696699967186}
   focusIndicatorText: {fileID: 627607284634968175}
@@ -4418,12 +4452,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 04510d53731e5d6439f404392413c7c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PhotoScore
+  playerCamTransform: {fileID: 0}
   cameraTransform: {fileID: 4948534344289601864}
   radius: 0.5
   maxDistance: 100
   layer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 4294967295
   distanceCurve:
     serializedVersion: 2
     m_Curve: []

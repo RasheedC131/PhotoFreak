@@ -76,10 +76,7 @@ public class CrowdStateManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Returns the player-avoidance radius NPCs should use given the current strike count.
-    /// Returns 0 if no per-strike override is configured (caller should fall back to its default).
-    /// </summary>
+
     public float PlayerAvoidRadius
     {
         get
