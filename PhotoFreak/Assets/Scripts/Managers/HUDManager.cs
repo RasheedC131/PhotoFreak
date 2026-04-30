@@ -1,32 +1,32 @@
-using UnityEngine;
+// using UnityEngine;
 
-[RequireComponent(typeof(Canvas))]
-public class HUDManager : MonoBehaviour
-{
-    private Canvas myCanvas;
+// [RequireComponent(typeof(Canvas))]
+// public class HUDManager : MonoBehaviour
+// {
+//     private Canvas myCanvas;
 
-    void Start()
-    {
-        myCanvas = GetComponent<Canvas>();
+//     void Start()
+//     {
+//         myCanvas = GetComponent<Canvas>();
 
-        if (GlobalGameState.Instance != null) GlobalGameState.Instance.onGameOver += HideHUD;
+//         if (GlobalGameState.Instance != null) GlobalGameState.Instance.onGameOver += HideHUD;
         
-    }
+//     }
 
-    void OnDestroy()
-    {
+//     void OnDestroy()
+//     {
     
-        if (GlobalGameState.Instance != null) GlobalGameState.Instance.onGameOver -= HideHUD;
+//         if (GlobalGameState.Instance != null) GlobalGameState.Instance.onGameOver -= HideHUD;
         
-    }
+//     }
 
-    private void HideHUD()
-    {
-        if (myCanvas != null) myCanvas.enabled = false;
-    }
+//     private void HideHUD()
+//     {
+//         if (myCanvas != null) myCanvas.enabled = false;
+//     }
 
-    public void SetHUDVisible(bool visible)
-    {
-        if (myCanvas != null) myCanvas.enabled = visible;
-    }
-}
+//     public void SetHUDVisible(bool visible)
+//     {
+//         if (myCanvas != null) myCanvas.enabled = visible;
+//     }
+// }

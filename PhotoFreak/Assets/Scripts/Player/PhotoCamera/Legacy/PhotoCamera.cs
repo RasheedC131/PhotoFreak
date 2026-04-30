@@ -29,7 +29,7 @@ public class PhotoCamera : MonoBehaviour, IEquippable
     [SerializeField] private MonoBehaviour playerMovementScript;
 
     [Header("Game Loop Settings")]
-    [SerializeField] private HUDManager hudManager;
+    [SerializeField] private PlayerUIManager hudManager;
     [SerializeField] private FreakMeter freakMeter;
     [SerializeField] private string guestTag = "Guest"; 
     [SerializeField] private string monsterTag = "Monster"; 

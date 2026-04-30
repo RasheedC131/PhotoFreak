@@ -11,7 +11,6 @@ public class PlayerUIManager : MonoBehaviour
 
     [SerializeField] private UnityEngine.UI.Slider developmentBar;
 
-    //Other Scripts
     private StarRating star;
     private ReviewDetails details;
 
@@ -21,11 +20,22 @@ public class PlayerUIManager : MonoBehaviour
         details = photoReviewCanvas.GetComponentInChildren<ReviewDetails>();
     }
 
+    void Start()
+    {
+        if (GlobalGameState.Instance != null)
+            GlobalGameState.Instance.onGameOver += HideHUD;
+    }
+
+    void OnDestroy()
+    {
+        if (GlobalGameState.Instance != null)
+            GlobalGameState.Instance.onGameOver -= HideHUD;
+    }
+
     public void UpdateCanvasState(bool raised)
     {
         gameUICanvas.SetActive(!raised);
         photoCanvas.SetActive(raised);
-
         photoReviewCanvas.SetActive(false);
     }
 
@@ -39,14 +49,17 @@ public class PlayerUIManager : MonoBehaviour
 
         gameUICanvas.SetActive(false);
         photoCanvas.SetActive(false);
-
         photoReviewCanvas.SetActive(true);
     }
 
-    public void ToggleUI(bool active)
+    public void SetHUDVisible(bool visible)
     {
-        gameUICanvas.SetActive(active);
-        Debug.Log("boop");
+        if (gameUICanvas != null) gameUICanvas.SetActive(visible);
+    }
+
+    private void HideHUD()
+    {
+        SetHUDVisible(false);
     }
 
     public void UpdateDevelopmentBar(float value)
