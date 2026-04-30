@@ -11,12 +11,12 @@ public class Development : MonoBehaviour
 
     //Other Scripts
     private CameraController controller;
-    private PlayerUIManager ui;
+    [SerializeField] private PlayerUIManager ui;
 
     void Awake()
     {
         controller = GetComponent<CameraController>();
-        ui = GetComponentInParent<Transform>().parent.GetComponentInChildren<PlayerUIManager>();
+        if (ui == null) ui = GetComponentInParent<Transform>().root.GetComponentInChildren<PlayerUIManager>();
     }
 
     void Update()

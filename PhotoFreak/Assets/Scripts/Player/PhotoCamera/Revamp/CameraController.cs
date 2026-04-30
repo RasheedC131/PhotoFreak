@@ -4,7 +4,7 @@ using UnityEngine;
     This script keeps track of the camera and scoring states
 */
 
-public class CameraController : MonoBehaviour
+public class CameraController : MonoBehaviour, IEquippable
 {
     //Camera Type
     public CameraScriptable currentCamera;
@@ -29,7 +29,7 @@ public class CameraController : MonoBehaviour
     private CaptureSystem captureSystem;
     private Development development;
     private PhotoScoring eval;
-    private PlayerUIManager ui;
+    [SerializeField] private PlayerUIManager ui;
 
     //Camera Features
     private CameraZoom cameraZoom;
@@ -55,23 +55,33 @@ public class CameraController : MonoBehaviour
     {
         inputManager = GetComponentInParent<InputManager>();
 
-        if (inputManager != null)
-        {
-            inputManager.OnAim += UpdateCaptureState;
-            inputManager.OnShoot += HandleCaptureAction;
-        }
-
         captureSystem = GetComponent<CaptureSystem>();
         development = GetComponent<Development>();
         eval = GetComponent<PhotoScoring>();
 
-        ui = GetComponentInParent<Transform>().parent.GetComponentInChildren<PlayerUIManager>();
+        if (ui == null) ui = GetComponentInParent<Transform>().root.GetComponentInChildren<PlayerUIManager>();
 
         cameraZoom = GetComponentInChildren<CameraZoom>();
         autoFocus = GetComponentInChildren<CameraAutoFocus>();
         manualFocus = GetComponentInChildren<CameraManualFocus>();
+    }
 
+    public void OnEquip()
+    {
+        gameObject.SetActive(true);
+        if (inputManager != null) inputManager.OnAim += UpdateCaptureState;
+    }
 
+    public void OnUnequip()
+    {
+        if (inputManager != null) inputManager.OnAim -= UpdateCaptureState;
+        UpdateCaptureState(false);
+        gameObject.SetActive(false);
+    }
+
+    public void OnUse()
+    {
+        HandleCaptureAction();
     }
 
     void Start()
@@ -230,9 +240,6 @@ public class CameraController : MonoBehaviour
     void OnDestroy()
     {
         if (inputManager != null)
-        {
             inputManager.OnAim -= UpdateCaptureState;
-            inputManager.OnShoot -= HandleCaptureAction;
-        }
     }
 }

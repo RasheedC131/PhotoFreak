@@ -72,8 +72,5 @@ public class CameraHUD : MonoBehaviour
             focusIndicator.color = new Color(1f, 0.6f, 0f); // orange
         else
             focusIndicator.color = Color.red;
-    }
-
-
-    
+    }    
 }

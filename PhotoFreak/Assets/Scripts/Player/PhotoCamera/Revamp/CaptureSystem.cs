@@ -26,7 +26,7 @@ public class CaptureSystem : MonoBehaviour
     private CameraController controller;
     private CameraAutoFocus autoFocus;
     private CameraManualFocus manualFocus;
-    private PlayerUIManager ui;
+    [SerializeField] private PlayerUIManager ui;
 
 
     void Awake()
@@ -37,7 +37,7 @@ public class CaptureSystem : MonoBehaviour
         controller = GetComponent<CameraController>();
         autoFocus = GetComponentInChildren<CameraAutoFocus>();
         manualFocus = GetComponentInChildren<CameraManualFocus>();
-        ui = GetComponentInParent<Transform>().parent.GetComponentInChildren<PlayerUIManager>();
+        if (ui == null) ui = GetComponentInParent<Transform>().root.GetComponentInChildren<PlayerUIManager>();
     }
 
     //Shoots a raycast straight forward, looking for a subject or bumping into a wall
