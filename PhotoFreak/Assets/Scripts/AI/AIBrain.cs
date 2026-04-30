@@ -5,23 +5,46 @@ using UnityEngine.AI;
 public class AIBrain : MonoBehaviour
 {
     [Header("Brain Settings")]
-    public float decisionInterval = 0.25f; 
-    
+    public float decisionInterval = 0.25f;
+
     [Header("Debug Info")]
     public UtilityAction currentAction;
     public UtilityAction[] availableActions;
 
+    // Full unfiltered set — rebuilt once in Start, never changes at runtime.
+    private UtilityAction[] _allActions;
+    private AIContext _ctx;
     private Coroutine brainCoroutine;
     private NavMeshAgent agent;
     private NavMeshObstacle obstacle;
 
     void Start()
     {
-        availableActions = GetComponentsInChildren<UtilityAction>(true);
-        agent = GetComponent<NavMeshAgent>();
-        obstacle = GetComponent<NavMeshObstacle>();
-        
+        _ctx        = GetComponent<AIContext>();
+        agent       = GetComponent<NavMeshAgent>();
+        obstacle    = GetComponent<NavMeshObstacle>();
+
+        _allActions = GetComponentsInChildren<UtilityAction>(true);
+        RefreshAvailableActions();
+
         brainCoroutine = StartCoroutine(BrainTickRoutine());
+    }
+
+    // Call this whenever ctx.isMonster changes (e.g. from MatchManager after
+    // infecting an NPC) so the brain immediately switches to the correct action set.
+    public void RefreshAvailableActions()
+    {
+        if (_ctx == null || _allActions == null) return;
+
+        bool isMonster = _ctx.isMonster;
+        int count = 0;
+        foreach (var a in _allActions)
+            if (a.isMonsterAction == isMonster) count++;
+
+        availableActions = new UtilityAction[count];
+        int idx = 0;
+        foreach (var a in _allActions)
+            if (a.isMonsterAction == isMonster) availableActions[idx++] = a;
     }
 
     private IEnumerator BrainTickRoutine()

@@ -5,7 +5,7 @@ using TMPro;
 
 public class PlayerInventory : MonoBehaviour
 {
-    public event Action<int> OnSlotChanged; 
+    public event Action<Sprite, string> OnSlotChanged; 
     public event Action<int, Sprite> OnSlotUpdated;
 
     [Header("Inventory Settings")]
@@ -38,7 +38,7 @@ public class PlayerInventory : MonoBehaviour
             inventorySlots[0] = camTool;
             camTool.OnEquip(); 
             
-            StartCoroutine(InitializeCameraUI(camTool.itemIcon));
+            StartCoroutine(InitializeCameraUI(camTool.itemIcon, camTool.itemName));
         }
         else
         {
@@ -50,11 +50,10 @@ public class PlayerInventory : MonoBehaviour
         inputManager.OnInteract += HandleInteraction; 
     }
 
-    private IEnumerator InitializeCameraUI(Sprite camIcon)
+    private IEnumerator InitializeCameraUI(Sprite camIcon, string name)
     {
         yield return new WaitForEndOfFrame();
-        OnSlotUpdated?.Invoke(0, camIcon);
-        OnSlotChanged?.Invoke(0);
+        OnSlotChanged?.Invoke(camIcon, name);
     }
 
     void Update()
@@ -62,7 +61,7 @@ public class PlayerInventory : MonoBehaviour
         CheckForInteractable();
     }
 
-    private void CheckForInteractable()
+private void CheckForInteractable()
     {
         if (interactPromptText == null) return; 
 
@@ -73,14 +72,14 @@ public class PlayerInventory : MonoBehaviour
             IInteractable interactableFixture = hit.collider.GetComponent<IInteractable>();
             if (interactableFixture != null)
             {
-                ShowPrompt(hit, $"[E]) {interactableFixture.promptText}");
+                ShowPrompt(hit, $"[E]) {interactableFixture.promptText}", interactableFixture.promptLocation);
                 return;
             }
 
             IEquippable itemOnGround = hit.collider.GetComponent<IEquippable>();
             if (itemOnGround != null)
             {
-                ShowPrompt(hit, $"[E]) {itemOnGround.itemName}");
+                ShowPrompt(hit, $"[E]) {itemOnGround.itemName}", null);
                 return; 
             }
         }
@@ -88,10 +87,16 @@ public class PlayerInventory : MonoBehaviour
         interactPromptText.gameObject.SetActive(false);
     }
 
-    private void ShowPrompt(RaycastHit hit, string textToShow)
+    private void ShowPrompt(RaycastHit hit, string textToShow, Transform customLocation)
     {
         interactPromptText.text = textToShow;
-        interactPromptText.transform.position = hit.collider.transform.position + (Vector3.up * promptHeightOffset);
+
+        Vector3 basePosition = customLocation != null 
+            ? customLocation.position 
+            : hit.collider.transform.position + (Vector3.up * promptHeightOffset);
+
+        Vector3 directionToCamera = (playerCamera.transform.position - basePosition).normalized;
+        interactPromptText.transform.position = basePosition + (directionToCamera * 0.15f);
         interactPromptText.transform.rotation = Quaternion.LookRotation(interactPromptText.transform.position - playerCamera.transform.position);
         interactPromptText.gameObject.SetActive(true);
     }
@@ -171,7 +176,7 @@ public class PlayerInventory : MonoBehaviour
         inventorySlots[targetSlot] = newItem;
         newItem.OnPickup(handHoldPos);
         newItem.OnEquip();
-        OnSlotUpdated?.Invoke(targetSlot, newItem.itemIcon);
+        OnSlotChanged?.Invoke(newItem.itemIcon, newItem.itemName);
     }
 
     public void RemoveCurrentItem()
@@ -179,7 +184,7 @@ public class PlayerInventory : MonoBehaviour
         if (inventorySlots[currentSlotIndex] == null) return;
         inventorySlots[currentSlotIndex].OnUnequip(); 
         inventorySlots[currentSlotIndex] = null;
-        OnSlotUpdated?.Invoke(currentSlotIndex, null);
+        OnSlotChanged?.Invoke(null, "");
         SwitchToSlot(0); 
     }
 
@@ -194,7 +199,7 @@ public class PlayerInventory : MonoBehaviour
             itemToDrop.OnUnequip();
             itemToDrop.OnDrop();
             inventorySlots[currentSlotIndex] = null;
-            OnSlotUpdated?.Invoke(currentSlotIndex, null);
+            OnSlotChanged?.Invoke(null, "");
             SwitchToSlot(0); 
         }
     }
@@ -207,7 +212,14 @@ public class PlayerInventory : MonoBehaviour
         currentSlotIndex = newSlot;
         if (inventorySlots[currentSlotIndex] != null) inventorySlots[currentSlotIndex].OnEquip();
 
-        OnSlotChanged?.Invoke(currentSlotIndex);
+        if (inventorySlots[currentSlotIndex] != null)
+        {
+            OnSlotChanged?.Invoke(inventorySlots[currentSlotIndex].itemIcon, inventorySlots[currentSlotIndex].itemName);
+        }
+        else
+        {
+            OnSlotChanged?.Invoke(null, "");
+        }
     }
 
     void OnDestroy()

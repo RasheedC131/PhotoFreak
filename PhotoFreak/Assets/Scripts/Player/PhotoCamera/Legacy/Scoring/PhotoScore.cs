@@ -3,6 +3,7 @@ using UnityEngine;
 public class PhotoScore : MonoBehaviour
 
 {
+    [SerializeField] private Transform playerCamTransform;
     [SerializeField] private Transform cameraTransform;
     [Header("SphereCast")]
     public float radius = 0.5f;
@@ -47,36 +48,34 @@ public class PhotoScore : MonoBehaviour
         ScoreParameters photo = new ScoreParameters();
         GameObject hitObject = null; 
 
-        Vector3 origin = cameraTransform ? cameraTransform.position : transform.position;
+        Vector3 origin = playerCamTransform ? playerCamTransform.position : transform.position;
         Vector3 direction = cameraTransform ? cameraTransform.forward : transform.forward;
 
-        if(Physics.SphereCast(origin,radius,direction,out subject,maxDistance))
+        if(Physics.SphereCast(origin, radius, direction, out subject, maxDistance, layer))
         {
-            Debug.Log("Hit");
+            Debug.Log("Hit: " + subject.collider.name);
             hitObject = subject.collider.gameObject;
         
-            //For when player takes a picture of a wall or any obstruction
-            if (!subject.collider.GetComponent<PhotoTag>())
+            PhotoTag tag = subject.collider.GetComponentInParent<PhotoTag>();
+
+            if (tag == null)
             {
                 EmptyPhoto(ref photo);
-                Debug.Log("No Tag");
+                Debug.Log("No Tag found on " + subject.collider.name);
             }
             else
             {
-                PhotoTag tag = subject.collider.GetComponent<PhotoTag>();
                 photo.distance = DistanceCalculation(subject.collider.transform.position);
                 photo.facing = FacingCalculation(subject);
                 photo.pose = tag.poseScore;
                 photo.focus = FocusCalculation();
             }
-
-        } else
+        } 
+        else
         {
             EmptyPhoto(ref photo);
-            Debug.Log("Missed");
-
+            Debug.Log("Missed completely");
         }
-
 
         currentScore = CalculateResult(photo);
         return hitObject; 
@@ -150,7 +149,7 @@ public class PhotoScore : MonoBehaviour
     //Debug to see SphereCast
     void OnDrawGizmos()
     {
-        Vector3 origin = cameraTransform ? cameraTransform.position : transform.position;
+        Vector3 origin = playerCamTransform ? playerCamTransform.position : transform.position;
         Vector3 direction = cameraTransform ? cameraTransform.forward : transform.forward;
 
         Gizmos.color = Color.red;

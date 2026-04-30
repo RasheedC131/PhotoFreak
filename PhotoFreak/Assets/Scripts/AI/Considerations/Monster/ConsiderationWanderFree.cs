@@ -28,6 +28,9 @@ public class ConsiderationWanderFree : Consideration
     {
         if (ctx == null || ctx.isOccupied) return 0f;
 
+        // Once the guest NPC has realized it's being stalked, let ActionIsolate take over.
+        if (!ctx.isMonster && ctx.isAwareOfStalker) return 0f;
+
         float maxBoredomTime = ctx.isMonster ? ms.idleMaxFatigue : gs.idleMaxFatigue;
 
         bool isStandingStill = !agent.isActiveAndEnabled || agent.velocity.sqrMagnitude < 0.1f;
