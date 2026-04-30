@@ -1,0 +1,159 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1274566626410116273
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3819081409575811775}
+  m_Layer: 0
+  m_Name: IronFence1Pillar
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3819081409575811775
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1274566626410116273}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -27.714, y: 1.8999922, z: -143.516}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 4798161136523127885}
+  - {fileID: 6508396290018548184}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &1079833058297584005
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 3819081409575811775}
+    m_Modifications:
+    - target: {fileID: -3717114202187975224, guid: 0129de3ecd9ed433e9757c94a8a051cf, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -4.405998
+      objectReference: {fileID: 0}
+    - target: {fileID: -3717114202187975224, guid: 0129de3ecd9ed433e9757c94a8a051cf, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -3717114202187975224, guid: 0129de3ecd9ed433e9757c94a8a051cf, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.038757324
+      objectReference: {fileID: 0}
+    - target: {fileID: -3717114202187975224, guid: 0129de3ecd9ed433e9757c94a8a051cf, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -3717114202187975224, guid: 0129de3ecd9ed433e9757c94a8a051cf, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.000000081460335
+      objectReference: {fileID: 0}
+    - target: {fileID: -3717114202187975224, guid: 0129de3ecd9ed433e9757c94a8a051cf, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: -3717114202187975224, guid: 0129de3ecd9ed433e9757c94a8a051cf, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: -3717114202187975224, guid: 0129de3ecd9ed433e9757c94a8a051cf, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -3717114202187975224, guid: 0129de3ecd9ed433e9757c94a8a051cf, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -3717114202187975224, guid: 0129de3ecd9ed433e9757c94a8a051cf, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2242888416370347441, guid: 0129de3ecd9ed433e9757c94a8a051cf, type: 3}
+      propertyPath: m_Name
+      value: Iron Fence
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: -3199799093341109342, guid: 0129de3ecd9ed433e9757c94a8a051cf, type: 3}
+--- !u!4 &4798161136523127885 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -3717114202187975224, guid: 0129de3ecd9ed433e9757c94a8a051cf, type: 3}
+  m_PrefabInstance: {fileID: 1079833058297584005}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &1601134819486477328
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 3819081409575811775}
+    m_Modifications:
+    - target: {fileID: -3717114202187975224, guid: 26741cf218be947da8b7fa6bf2c4aa7e, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -3717114202187975224, guid: 26741cf218be947da8b7fa6bf2c4aa7e, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -3717114202187975224, guid: 26741cf218be947da8b7fa6bf2c4aa7e, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -3717114202187975224, guid: 26741cf218be947da8b7fa6bf2c4aa7e, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -3717114202187975224, guid: 26741cf218be947da8b7fa6bf2c4aa7e, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.000000081460335
+      objectReference: {fileID: 0}
+    - target: {fileID: -3717114202187975224, guid: 26741cf218be947da8b7fa6bf2c4aa7e, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: -3717114202187975224, guid: 26741cf218be947da8b7fa6bf2c4aa7e, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: -3717114202187975224, guid: 26741cf218be947da8b7fa6bf2c4aa7e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -3717114202187975224, guid: 26741cf218be947da8b7fa6bf2c4aa7e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -3717114202187975224, guid: 26741cf218be947da8b7fa6bf2c4aa7e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2242888416370347441, guid: 26741cf218be947da8b7fa6bf2c4aa7e, type: 3}
+      propertyPath: m_Name
+      value: Fence Pillar
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: -3199799093341109342, guid: 26741cf218be947da8b7fa6bf2c4aa7e, type: 3}
+--- !u!4 &6508396290018548184 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -3717114202187975224, guid: 26741cf218be947da8b7fa6bf2c4aa7e, type: 3}
+  m_PrefabInstance: {fileID: 1601134819486477328}
+  m_PrefabAsset: {fileID: 0}
