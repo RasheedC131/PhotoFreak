@@ -62,6 +62,10 @@ public class PlayerUIManager : MonoBehaviour
     {
         if (gameUICanvas == null) return;
 
+        // DisplayResults() deactivates the whole canvas — re-enable the parent
+        // before showing children, otherwise they stay hidden despite being active.
+        if (visible) gameUICanvas.SetActive(true);
+
         foreach (Transform child in gameUICanvas.transform)
         {
             if (freakMeterUI != null && child.gameObject == freakMeterUI) continue;
