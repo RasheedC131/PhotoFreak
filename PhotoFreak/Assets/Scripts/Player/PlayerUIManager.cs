@@ -8,6 +8,7 @@ public class PlayerUIManager : MonoBehaviour
     [SerializeField] private GameObject photoReviewCanvas;
     [SerializeField] private GameObject gameUICanvas;
     [SerializeField] private GameObject interactionCanvas;
+    [SerializeField] private GameObject freakMeterUI;
 
     [SerializeField] private UnityEngine.UI.Slider developmentBar;
 
@@ -34,7 +35,7 @@ public class PlayerUIManager : MonoBehaviour
 
     public void UpdateCanvasState(bool raised)
     {
-        gameUICanvas.SetActive(!raised);
+        SetGameUIVisible(!raised);
         photoCanvas.SetActive(raised);
         photoReviewCanvas.SetActive(false);
     }
@@ -54,7 +55,19 @@ public class PlayerUIManager : MonoBehaviour
 
     public void SetHUDVisible(bool visible)
     {
-        if (gameUICanvas != null) gameUICanvas.SetActive(visible);
+        SetGameUIVisible(visible);
+    }
+
+    private void SetGameUIVisible(bool visible)
+    {
+        if (gameUICanvas == null) return;
+
+        foreach (Transform child in gameUICanvas.transform)
+        {
+            if (freakMeterUI != null && child.gameObject == freakMeterUI) continue;
+
+            child.gameObject.SetActive(visible);
+        }
     }
 
     private void HideHUD()

@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
+using TMPro;
 
 public class FreakMeterUI : MonoBehaviour
 {
@@ -11,9 +12,11 @@ public class FreakMeterUI : MonoBehaviour
     private Vignette vignette;
     [Header("UI")]
     [SerializeField] private GameObject meter;
-    [SerializeField] private Sprite strike1; 
-    [SerializeField] private Sprite strike2; 
-    [SerializeField] private Sprite strike3; 
+    [SerializeField] private Sprite strike1;
+    [SerializeField] private Sprite strike2;
+    [SerializeField] private Sprite strike3;
+    [SerializeField] private TMP_Text strikeText;
+    [SerializeField] private int maxStrikes = 3;
     [SerializeField] private Transform Needle;
     [SerializeField] private Transform secondHand;
     [SerializeField] private Transform minuteHand;
@@ -42,20 +45,23 @@ public class FreakMeterUI : MonoBehaviour
 
     public void UpdateStrikes(int value)
     {
-        switch (value)
+        // Sprite swap
+        if (meter != null)
         {
-            case 3:
-                meter.GetComponent<Image>().sprite = strike3;
-                break;
-            case 2:
-                meter.GetComponent<Image>().sprite = strike2;
-                break;
-            case 1:
-                meter.GetComponent<Image>().sprite = strike1;
-                break;
-            default:
-                break;
+            Image img = meter.GetComponent<Image>();
+            if (img != null)
+            {
+                switch (value)
+                {
+                    case 3: img.sprite = strike3; break;
+                    case 2: img.sprite = strike2; break;
+                    case 1: img.sprite = strike1; break;
+                }
+            }
         }
-              
+
+        // Text display
+        if (strikeText != null)
+            strikeText.text = $"{value} / {maxStrikes}";
     }
 }

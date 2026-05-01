@@ -9,28 +9,26 @@ public class CameraBlurController : MonoBehaviour
     private DepthOfField dof;
 
     [Header("Blur Settings")]
-    [SerializeField] private float maxBlur = 10f;
+    [SerializeField] private float focalLength = 50f;      // Lens focal length in mm (keep at 50)
+    [SerializeField] private float minAperture = 1.4f;     // Max blur — unfocused
+    [SerializeField] private float maxAperture = 16f;      // Min blur — fully focused
 
     //Other Scripts
-    private CameraController controller;
-    private CameraAutoFocus autoFocus;
-    private CameraManualFocus manualFocus;
+    [SerializeField] private CameraController controller;
+    [SerializeField] private CameraAutoFocus autoFocus;
+    [SerializeField] private CameraManualFocus manualFocus;
 
     void Awake()
     {
-        controller = GetComponentInParent<CameraController>();
-        autoFocus = GetComponent<CameraAutoFocus>();
-        manualFocus = GetComponent<CameraManualFocus>();
-
         if (globalVolume == null)
         {
-            Debug.LogError("Global Volume not assigned!");
-           return;
+            Debug.LogError("[BlurController] Global Volume not assigned!");
+            return;
         }
 
         if (globalVolume.profile == null)
         {
-            Debug.LogError("Volume has no Profile assigned!");
+            Debug.LogError("[BlurController] Volume has no Profile assigned!");
             return;
         }
 
@@ -42,42 +40,49 @@ public class CameraBlurController : MonoBehaviour
             Debug.Log("[BlurController] DepthOfField not found in profile — added at runtime.");
         }
 
-        dof.mode.value = DepthOfFieldMode.Bokeh;
-        dof.mode.overrideState = true;
+        dof.mode.value            = DepthOfFieldMode.Bokeh;
+        dof.mode.overrideState    = true;
+        dof.focalLength.overrideState  = true;
+        dof.aperture.overrideState     = true;
         dof.focusDistance.overrideState = true;
-        dof.aperture.overrideState = true;
-        dof.focalLength.overrideState = true;
-        dof.active = true;
+
+        dof.focalLength.value   = focalLength;
+        dof.aperture.value      = maxAperture;
+        dof.focusDistance.value = 5f;
+        dof.active = false;
     }
 
     void Update()
     {
-        if(!controller.getCameraState()) return;
-        ApplyBlur();
+        if (controller == null || dof == null) return;
+
+        bool aiming = controller.getCameraState();
+
+        if (dof.active != aiming)
+        {
+            dof.active = aiming;
+            if (autoFocus != null) autoFocus.SetActive(aiming);
+        }
+
+        if (aiming)
+            ApplyBlur();
     }
 
     private void ApplyBlur()
     {
-        if (dof == null)
-        {
-           return; 
-        }
-
         float focusValue;
 
         if (controller.currentCamera.manualFocus)
         {
-            float error = manualFocus.GetFocusError();
-
+            float error = manualFocus != null ? manualFocus.GetFocusError() : 0f;
             focusValue = Mathf.Clamp01(1f - (error / 10f));
         }
         else
         {
-            focusValue = autoFocus.GetFocus();
+            focusValue = autoFocus != null ? autoFocus.GetFocus() : 1f;
         }
 
-        float blurAmount = Mathf.Lerp(maxBlur, 0f, focusValue);
-
-        dof.focalLength.value = blurAmount;
+        // Low aperture = wide open = lots of blur; high aperture = narrow = sharp
+        dof.aperture.value = Mathf.Lerp(minAperture, maxAperture, focusValue);
     }
 }

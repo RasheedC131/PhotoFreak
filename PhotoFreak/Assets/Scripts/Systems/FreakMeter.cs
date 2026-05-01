@@ -62,9 +62,11 @@ public class FreakMeter : MonoBehaviour
             if (!striked)
                 striked = true;
             freakTimer.restartTime();
-            currentStrikes += 1;
+            currentStrikes = Mathf.Min(currentStrikes + 1, maxStrikes);
             if (currentStrikes >= maxStrikes)
             {
+                if (UI != null) UI.UpdateStrikes(currentStrikes);
+                OnStrikeEarned?.Invoke(currentStrikes);
                 if (!isFinalPanic)
                 {
                     isFinalPanic = true;

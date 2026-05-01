@@ -2254,6 +2254,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6590577444095160344}
+  - {fileID: 8425450884292954069}
   m_Father: {fileID: 1022934730907597133}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -2744,6 +2745,7 @@ GameObject:
   - component: {fileID: 3868538771391417169}
   - component: {fileID: 2313698611831351078}
   - component: {fileID: 5196480233634223980}
+  - component: {fileID: 3907510893529950189}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -2898,6 +2900,8 @@ MonoBehaviour:
   strike1: {fileID: 0}
   strike2: {fileID: 0}
   strike3: {fileID: 0}
+  strikeText: {fileID: 0}
+  maxStrikes: 3
   Needle: {fileID: 6590577444095160344}
   secondHand: {fileID: 1193681261645857703}
   minuteHand: {fileID: 1487055130008616725}
@@ -2963,6 +2967,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 324751f187b344341bbd3060271e3414, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FreakMeterTimer
+--- !u!114 &3907510893529950189
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3552024978885301341}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e3fdca004f2d45fe8abbed571a8abd5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifier
+  m_SerializedVersion: 0
+  m_OverrideArea: 0
+  m_Area: 0
+  m_OverrideGenerateLinks: 0
+  m_GenerateLinks: 0
+  m_IgnoreFromBuild: 1
+  m_ApplyToChildren: 1
+  m_AffectedAgents: ffffffff
 --- !u!1 &3555689317010681904
 GameObject:
   m_ObjectHideFlags: 0
@@ -4971,16 +4995,16 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5691716437658241603}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1022934730907597133}
+  m_Father: {fileID: 1578111100718113212}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -290.4, y: -123.5}
+  m_AnchoredPosition: {x: 58.899963, y: 23.200012}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5826666693120098102
@@ -5671,6 +5695,7 @@ MonoBehaviour:
   photoReviewCanvas: {fileID: 2390969062707805907}
   gameUICanvas: {fileID: 7850418832995218765}
   interactionCanvas: {fileID: 1467837950180613674}
+  freakMeterUI: {fileID: 0}
   developmentBar: {fileID: 9186342384983397689}
 --- !u!1 &6694502437117149236
 GameObject:
@@ -6844,7 +6869,6 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 8425450884292954069}
   - {fileID: 4377342520613216312}
   - {fileID: 2595330361627326240}
   - {fileID: 2273589930486269817}
@@ -7379,8 +7403,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4683e73b1bb71bb449c5aed921306a3d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CameraBlurController
-  globalVolume: {fileID: 240770793309723446, guid: d01671c83ae9844dc8b3ee57abd351a0, type: 3}
-  maxBlur: 10
+  globalVolume: {fileID: 0}
+  focalLength: 50
+  minAperture: 1.4
+  maxAperture: 16
+  controller: {fileID: 3390479722610047423}
+  autoFocus: {fileID: 2894956788033364127}
+  manualFocus: {fileID: 919975325302704485}
 --- !u!114 &2390119395807333452
 MonoBehaviour:
   m_ObjectHideFlags: 0
