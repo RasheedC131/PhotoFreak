@@ -27,8 +27,12 @@ public class FreakMeter : MonoBehaviour
     [SerializeField] CameraController CameraScript;
     [SerializeField] PlayerMovement player;
     [SerializeField] private FreakMeterUI UI;
-    [SerializeField] private Timer timer;
     [SerializeField] private FreakMeterTimer freakTimer;
+
+    [Header("Decay Delay")]
+    [Tooltip("Seconds after the meter stops rising before decay begins.")]
+    [SerializeField] private float decayDelayDuration = 2f;
+    private float decayDelayTimer = 0f;
 
     [SerializeField] private float currentFreak = 0f;
     private bool isMeterDecaying;
@@ -97,7 +101,7 @@ public class FreakMeter : MonoBehaviour
         if (player.getSprint() && count > -1 && !striked)
         {
             freakTimer.unpause();
-            timer.restart();
+            decayDelayTimer = decayDelayDuration;   // reset decay delay, not the game clock
             currentFreak += sprintFunction(1, freakTimer.getTime()) * 1f;
             isMeterRising = true;
         }
@@ -107,7 +111,7 @@ public class FreakMeter : MonoBehaviour
             if (viewCount > 0)
             {
                 freakTimer.unpause();
-                timer.restart();
+                decayDelayTimer = decayDelayDuration;
                 currentFreak += cameraFunction(viewCount, freakTimer.getTime());
                 isMeterRising = true;
             }
@@ -116,6 +120,9 @@ public class FreakMeter : MonoBehaviour
         {
             freakTimer.pause();
         }
+
+        // Count the delay down each frame; decay starts once it reaches zero
+        decayDelayTimer -= Time.deltaTime;
 
         if (isMeterRising)
         {
@@ -136,14 +143,8 @@ public class FreakMeter : MonoBehaviour
                 UI.UpdateMeter(currentFreak, maxFreak);
             }
         }
-        if (timer.getTime() <= 0)
-        {
-            isMeterDecaying = true;
-        }
-        else
-        {
-            isMeterDecaying = false;
-        }
+
+        isMeterDecaying = decayDelayTimer <= 0f;
     }
 
     private int CountNPCsInCameraView()
@@ -241,7 +242,5 @@ public class FreakMeter : MonoBehaviour
     private void UpdateUI()
     {
         UI.UpdateMeter(currentFreak, maxFreak);
-        if(timer != null) timer.restart();
-        isMeterDecaying = true;
     }
 }
