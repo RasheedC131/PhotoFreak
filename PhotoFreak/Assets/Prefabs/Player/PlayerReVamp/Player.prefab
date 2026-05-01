@@ -1455,6 +1455,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HotbarUI
   playerInventory: {fileID: 4645469748073848643}
+  itemName: {fileID: 0}
   slotBackgrounds:
   - {fileID: 7619889456673708251}
   - {fileID: 8040914723323964717}
@@ -1856,6 +1857,9 @@ MonoBehaviour:
   decayRate: 0
   k1: 0
   x1: 0
+  cameraTransform: {fileID: 0}
+  cameraDetectRange: 10
+  cameraDetectAngle: 35
   k2: 0
   x2: 0
   CameraScript: {fileID: 3760710978009408208}
@@ -1863,6 +1867,8 @@ MonoBehaviour:
   UI: {fileID: 949225059836024382}
   timer: {fileID: 209242629486176167}
   freakTimer: {fileID: 0}
+  currentFreak: 0
+  count: 0
 --- !u!114 &949225059836024382
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1875,9 +1881,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 977214a27547c854e8fe04b757c93230, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FreakMeterUI
-  freakText: {fileID: 5243542948526740319}
-  timeText: {fileID: 7400692902835977353}
-  strikeText: {fileID: 5243542948526740319}
+  maxIntensity: 0
+  volume: {fileID: 0}
+  meter: {fileID: 0}
+  strike1: {fileID: 0}
+  strike2: {fileID: 0}
+  strike3: {fileID: 0}
+  Needle: {fileID: 0}
+  secondHand: {fileID: 0}
+  minuteHand: {fileID: 0}
 --- !u!54 &354265123027015243
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -2092,6 +2104,7 @@ MonoBehaviour:
   currentCamera: {fileID: 11400000, guid: 169a43864ed7c5245ab69fe04ef40936, type: 2}
   currFilm: 0
   maxFilm: 10
+  ui: {fileID: 0}
   cameraIcon: {fileID: 21300000, guid: 93ffc3bede54843db95c4943caeabdea, type: 3}
   cameraModel: {fileID: 2146272234185182304}
 --- !u!114 &1039213533765447114
@@ -2115,6 +2128,7 @@ MonoBehaviour:
   obstructionLayer:
     serializedVersion: 2
     m_Bits: 512
+  ui: {fileID: 0}
 --- !u!114 &2537560133389686805
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2324,6 +2338,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50fda12bcdb5e26428df04c1c35bf123, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Development
+  ui: {fileID: 0}
 --- !u!1 &2376817838909659663
 GameObject:
   m_ObjectHideFlags: 0
@@ -6897,40 +6912,33 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 5039144273508643958, guid: 11706e3fec13d4e81b496fb012c0042b, type: 3}
       insertIndex: -1
       addedObject: {fileID: 8618590560078040401}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 8770810143506084900, guid: 11706e3fec13d4e81b496fb012c0042b, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7888596236408992838}
   m_SourcePrefab: {fileID: 100100000, guid: 11706e3fec13d4e81b496fb012c0042b, type: 3}
---- !u!114 &5243542948526740319 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6317715868013414584, guid: 11706e3fec13d4e81b496fb012c0042b, type: 3}
-  m_PrefabInstance: {fileID: 2263559761695415271}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!224 &6523293193190256529 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 5039144273508643958, guid: 11706e3fec13d4e81b496fb012c0042b, type: 3}
   m_PrefabInstance: {fileID: 2263559761695415271}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &7400692902835977353 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8781259924479141742, guid: 11706e3fec13d4e81b496fb012c0042b, type: 3}
-  m_PrefabInstance: {fileID: 2263559761695415271}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!1 &7408961003891437507 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8770810143506084900, guid: 11706e3fec13d4e81b496fb012c0042b, type: 3}
   m_PrefabInstance: {fileID: 2263559761695415271}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &7888596236408992838
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7408961003891437507}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d71e191d4fa21494386c6b5fe0f1260a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HUDManager
 --- !u!1001 &3609653812402832438
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -46,24 +46,31 @@ public class CaptureSystem : MonoBehaviour
         Vector3 origin = cameraTransform.position;
         Vector3 dir = cameraTransform.forward;
 
-        if(Physics.Raycast(origin,dir,out subject,maxDistance, subjectLayer | obstructionLayer))
+        if (Physics.Raycast(origin, dir, out subject, maxDistance, subjectLayer | obstructionLayer, QueryTriggerInteraction.Collide))
         {
-            //Checks for photo tag
-            if (subject.collider.GetComponent<PhotoTag>())
+            Debug.Log($"[CaptureSystem] Raycast hit: '{subject.collider.gameObject.name}' " +
+                      $"on layer '{LayerMask.LayerToName(subject.collider.gameObject.layer)}'");
+
+            PhotoTag tag = subject.collider.GetComponentInParent<PhotoTag>();
+            Debug.Log($"[CaptureSystem] PhotoTag found: {tag != null}" +
+                      (tag != null ? $" (on '{tag.gameObject.name}')" :
+                      $" — collider root: '{subject.collider.transform.root.name}'"));
+
+            if (tag != null)
             {
-                Debug.Log("Hit Subject");
-
+                Debug.Log("[CaptureSystem] Capturing subject.");
                 StartCoroutine(SendCaptureData(origin, subject));
-                
-
                 return true;
             }
+        }
+        else
+        {
+            Debug.Log($"[CaptureSystem] Raycast hit nothing. " +
+                      $"SubjectLayer mask value: {subjectLayer.value}, " +
+                      $"ObstructionLayer mask value: {obstructionLayer.value}");
+        }
 
-        } 
-        
-        Debug.Log("Missed");
-        
-
+        Debug.Log("[CaptureSystem] Missed.");
         return false;
     }
 
@@ -101,7 +108,7 @@ public class CaptureSystem : MonoBehaviour
 
         data.playerPos = origin;
         data.subjectPos = subject.point;
-        data.subjectForward = subject.collider.transform.forward;
+        data.subjectForward = subject.collider.transform.root.forward;
                 
         data.camera = camera;
         data.subject = subject;
