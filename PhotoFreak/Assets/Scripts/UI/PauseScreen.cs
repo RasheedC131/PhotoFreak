@@ -5,9 +5,8 @@ using UnityEngine.UI;
 public class PauseScreen : MonoBehaviour
 {
     [Header("Panels")]
-    [Tooltip("Root panel that contains the Resume / Settings / Quit buttons.")]
+    [SerializeField] private GameObject menuRoot;
     [SerializeField] private GameObject pausePanel;
-    [Tooltip("Root panel that contains the Video + Controls settings.")]
     [SerializeField] private GameObject settingsPanel;
 
     [Header("Main Buttons")]
@@ -20,16 +19,17 @@ public class PauseScreen : MonoBehaviour
     [SerializeField] private Button settingsBackButton;
 
     [Header("Scene Navigation")]
-    [Tooltip("Scene loaded when 'Quit to Menu' is pressed.")]
-    [SerializeField] private string mainMenuSceneName = "Main Scene";
+    [SerializeField] private string mainMenuSceneName = "TitleScreen";
 
     [Header("Optional References")]
-    [Tooltip("Optional explicit InputManager. If null, the first one in the scene is used.")]
     [SerializeField] private InputManager inputManager;
 
     void Awake()
     {
         // Default to hidden – pause panel only appears when GlobalGameState pauses.
+        // Toggling the wrapper hides the dim backdrop too; falling back to toggling
+        // panels individually keeps the old behaviour for setups without a menuRoot.
+        if (menuRoot != null) menuRoot.SetActive(false);
         if (pausePanel != null) pausePanel.SetActive(false);
         if (settingsPanel != null) settingsPanel.SetActive(false);
     }
@@ -68,6 +68,7 @@ public class PauseScreen : MonoBehaviour
 
     private void ShowPause()
     {
+        if (menuRoot != null)      menuRoot.SetActive(true);
         if (pausePanel != null)    pausePanel.SetActive(true);
         if (settingsPanel != null) settingsPanel.SetActive(false);
     }
@@ -76,6 +77,9 @@ public class PauseScreen : MonoBehaviour
     {
         if (pausePanel != null)    pausePanel.SetActive(false);
         if (settingsPanel != null) settingsPanel.SetActive(false);
+        // Toggle the wrapper *last* so any nested layout updates settle before
+        // it's deactivated — also hides the dim backdrop in one shot.
+        if (menuRoot != null)      menuRoot.SetActive(false);
     }
 
     private void OnOpenSettings()
@@ -90,7 +94,6 @@ public class PauseScreen : MonoBehaviour
         if (pausePanel != null)    pausePanel.SetActive(true);
     }
 
-    // ---- Buttons ---------------------------------------------------------
 
     private void OnResumeClicked()
     {
@@ -110,8 +113,7 @@ public class PauseScreen : MonoBehaviour
 
     private void OnQuitToMenu()
     {
-        // Restore time scale before changing scenes – paused timeScale stays
-        // at 0 otherwise and the menu scene freezes.
+        // Restore time scale before changing scenes – paused timeScale stays at 0 otherwise and the menu scene freezes.
         Time.timeScale = 1f;
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;

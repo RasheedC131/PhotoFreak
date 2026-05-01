@@ -4,16 +4,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
-/// <summary>
-/// One row in the controls list: an action label, a button showing the current
-/// binding and an interactive "press a key" rebind flow.
-///
-/// Drop on a prefab that has:
-///   - TMP_Text with the action name
-///   - Button whose label is the binding display string
-///   - Optional Reset button
-/// then call <see cref="Setup"/> from <see cref="KeyRebindingUI"/>.
-/// </summary>
+// this didn't work but is still needed to draw controls ui 
 public class RebindActionUI : MonoBehaviour
 {
     [Header("UI")]
@@ -21,15 +12,14 @@ public class RebindActionUI : MonoBehaviour
     [SerializeField] private Button   rebindButton;
     [SerializeField] private TMP_Text rebindLabel;
     [SerializeField] private Button   resetButton;
-    [SerializeField] private GameObject waitingOverlay;   // optional "Press any key..."
-    [SerializeField] private TMP_Text waitingLabel;       // optional text in the overlay
+    [SerializeField] private GameObject waitingOverlay;  
+    [SerializeField] private TMP_Text waitingLabel;      
 
     private InputAction action;
     private int         bindingIndex;
     private string      controlScheme = "";
     private InputActionRebindingExtensions.RebindingOperation rebindOp;
 
-    /// <summary> Fires when this row finishes rebinding. </summary>
     public event Action OnRebound;
 
     // ---------------------------------------------------------------------
