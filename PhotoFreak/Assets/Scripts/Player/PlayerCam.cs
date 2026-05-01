@@ -5,8 +5,8 @@ public class PlayerCam : MonoBehaviour
     [SerializeField] private InputManager inputManager; 
     [SerializeField] private Transform orientation; 
 
-    public float sensX = 300f;
-    public float sensY = 300f;
+    public float sensX = 10f;
+    public float sensY = 10f;
 
     [Range(-90f, 0f)]
     [SerializeField] private float topClamp = -90f; 
@@ -42,9 +42,12 @@ public class PlayerCam : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //Get Input
-        float mouseX = Input.GetAxisRaw("Mouse X") * Time.deltaTime * sensX;
-        float mouseY = Input.GetAxisRaw("Mouse Y") * Time.deltaTime * sensY;
+        // Don't rotate the camera while paused or on game over
+        if (GlobalGameState.Instance != null &&
+            GlobalGameState.Instance.currentState != GlobalGameState.GameState.PLAYING) return;
+
+        float mouseX = mouseInput.x * Time.deltaTime * sensX;
+        float mouseY = mouseInput.y * Time.deltaTime * sensY;
 
         yRot += mouseX;
         xRot -= mouseY;
@@ -53,6 +56,6 @@ public class PlayerCam : MonoBehaviour
 
         transform.localRotation = Quaternion.Euler(xRot, 0, 0); // Rotates Camera
 
-        if (orientation != null)  orientation.Rotate(Vector3.up * mouseX); // Rotate Player orientation
+        if (orientation != null) orientation.Rotate(Vector3.up * mouseX); // Rotate Player orientation
     }
 }

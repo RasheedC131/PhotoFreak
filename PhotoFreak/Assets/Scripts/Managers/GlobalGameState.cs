@@ -25,15 +25,21 @@ public class GlobalGameState : MonoBehaviour
 
     void Start()
     {
-        currentState = GameState.PLAYING; 
-        
+        currentState = GameState.PLAYING;
+
         // Use realtime so it ignores Time.timeScale freezing
-        sceneStartTime = Time.realtimeSinceStartup; 
+        sceneStartTime = Time.realtimeSinceStartup;
+
+        if (inputManager == null) inputManager = FindFirstObjectByType<InputManager>();
 
         if (inputManager != null)
         {
-            inputManager.OnPause += GamePaused; 
-            inputManager.OnResume += GameResumed; 
+            inputManager.OnPause += GamePaused;
+            inputManager.OnResume += GameResumed;
+        }
+        else
+        {
+            Debug.LogWarning("[GlobalGameState] No InputManager found — pause/resume events won't fire.");
         }
     }
 
