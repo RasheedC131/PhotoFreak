@@ -1,32 +1,24 @@
 using UnityEngine;
-
-// Attach this to a child GameObject on the NPC prefab.
-// Unity will auto-add a ParticleSystem component via RequireComponent.
-// Call Play() to trigger the effect — NPCIdentity does this automatically
-// when the monster model is revealed.
-//
-// Setup:
-//   1. Add a child GameObject to the NPC root and name it "MutationEffect".
-//   2. Add this component to it — ParticleSystem is added automatically.
-//   3. No further Inspector setup needed; everything is configured in code.
 [RequireComponent(typeof(ParticleSystem))]
 public class MutationEffect : MonoBehaviour
 {
     [Header("Effect Tuning")]
-    [Tooltip("How many circles orbit the NPC.")]
-    [SerializeField] private int particleCount = 8;
+    [SerializeField] private int particleCount = 20;
 
-    [Tooltip("Radius of the orbit ring around the NPC.")]
-    [SerializeField] private float orbitRadius = 0.6f;
+    [SerializeField] private float burstSpeed = 2.5f;
 
-    [Tooltip("How fast the circles travel around the NPC (radians per second).")]
-    [SerializeField] private float orbitSpeed = 3f;
 
-    [Tooltip("How long the effect lasts in seconds.")]
-    [SerializeField] private float duration = 2f;
+    [SerializeField] private float duration = 1.5f;
 
-    [Tooltip("Size of each circle.")]
-    [SerializeField] private float particleSize = 0.12f;
+    [SerializeField] private float particleSize = 0.15f;
+
+
+    [SerializeField] private float gravity = 0.4f;
+
+
+    [SerializeField] private Color particleColor = Color.white;
+
+    [SerializeField] private Material squareMaterial;
 
     public float Duration => duration;
 
@@ -47,21 +39,23 @@ public class MutationEffect : MonoBehaviour
     private void Configure()
     {
         // ── Main ──────────────────────────────────────────────────────────────
-        var main          = ps.main;
-        main.duration     = duration;
-        main.loop         = false;
-        main.startLifetime  = duration;
-        main.startSpeed     = 0f;           // orbital velocity drives movement, not start speed
-        main.startSize      = particleSize;
-        main.startColor     = Color.white;
-        main.gravityModifier = 0f;
-        // Local space so the orbital velocity circles around the NPC's own origin.
-        main.simulationSpace = ParticleSystemSimulationSpace.Local;
+        var main             = ps.main;
+        main.duration        = duration;
+        main.loop            = false;
+        main.startLifetime   = new ParticleSystem.MinMaxCurve(duration * 0.5f, duration);
+        main.startSpeed      = new ParticleSystem.MinMaxCurve(burstSpeed * 0.5f, burstSpeed);
+        main.startSize       = new ParticleSystem.MinMaxCurve(particleSize * 0.6f, particleSize * 1.4f);
+        main.startColor      = particleColor;
+        main.gravityModifier = gravity;
+        // World space so squares fly out and fall independent of the NPC's movement.
+        main.simulationSpace = ParticleSystemSimulationSpace.World;
         main.stopAction      = ParticleSystemStopAction.None;
         main.playOnAwake     = false;
+        // Random starting rotation so each square lands at a different angle.
+        main.startRotation   = new ParticleSystem.MinMaxCurve(0f, 360f * Mathf.Deg2Rad);
 
-        // ── Emission — one burst at t = 0 ────────────────────────────────────
-        var emission = ps.emission;
+        // ── Emission — single burst at t = 0 ─────────────────────────────────
+        var emission          = ps.emission;
         emission.enabled      = true;
         emission.rateOverTime = 0f;
         emission.SetBursts(new ParticleSystem.Burst[]
@@ -69,51 +63,72 @@ public class MutationEffect : MonoBehaviour
             new ParticleSystem.Burst(0f, (short)particleCount)
         });
 
-        // ── Shape — spawn evenly on the edge of a circle ─────────────────────
-        // radiusThickness 0 = spawn only on the outer rim (a true ring).
+        // ── Shape — small sphere so squares scatter in all directions ─────────
         var shape          = ps.shape;
         shape.enabled      = true;
-        shape.shapeType    = ParticleSystemShapeType.Circle;
-        shape.radius       = orbitRadius;
-        shape.radiusThickness = 0f;
+        shape.shapeType    = ParticleSystemShapeType.Sphere;
+        shape.radius       = 0.25f;
 
-        // ── Velocity over lifetime — orbit around Y axis ──────────────────────
-        var vel      = ps.velocityOverLifetime;
-        vel.enabled  = true;
-        vel.space    = ParticleSystemSimulationSpace.Local;
-        vel.orbitalY = orbitSpeed;
+        // ── Velocity over lifetime — disabled (burst speed drives movement) ───
+        var vel     = ps.velocityOverLifetime;
+        vel.enabled = false;
 
-        // ── Color over lifetime — fade out in the last third ─────────────────
+        // ── Color over lifetime — hold full alpha, then fade out ──────────────
         var col      = ps.colorOverLifetime;
         col.enabled  = true;
         Gradient gradient = new Gradient();
         gradient.SetKeys(
             new GradientColorKey[]
             {
-                new GradientColorKey(Color.white, 0f),
-                new GradientColorKey(Color.white, 1f)
+                new GradientColorKey(particleColor, 0f),
+                new GradientColorKey(particleColor, 1f)
             },
             new GradientAlphaKey[]
             {
                 new GradientAlphaKey(1f, 0f),
-                new GradientAlphaKey(1f, 0.65f),
+                new GradientAlphaKey(1f, 0.6f),
                 new GradientAlphaKey(0f, 1f)
             }
         );
         col.color = new ParticleSystem.MinMaxGradient(gradient);
 
-        // ── Size over lifetime — shrink gently at the end ────────────────────
-        var sizeOverLife    = ps.sizeOverLifetime;
+        // ── Size over lifetime — hold size then shrink at the end ─────────────
+        var sizeOverLife     = ps.sizeOverLifetime;
         sizeOverLife.enabled = true;
-        AnimationCurve sizeCurve = AnimationCurve.EaseInOut(0f, 1f, 1f, 0f);
-        sizeCurve.MoveKey(0, new Keyframe(0f,    1f));
-        sizeCurve.MoveKey(1, new Keyframe(0.75f, 1f));
-        sizeCurve.AddKey(1f, 0f);
+        AnimationCurve sizeCurve = new AnimationCurve();
+        sizeCurve.AddKey(0f,    1f);
+        sizeCurve.AddKey(0.7f,  1f);
+        sizeCurve.AddKey(1f,    0f);
         sizeOverLife.size = new ParticleSystem.MinMaxCurve(1f, sizeCurve);
 
-        // ── Renderer ──────────────────────────────────────────────────────────
-        var renderer          = ps.GetComponent<ParticleSystemRenderer>();
-        renderer.renderMode   = ParticleSystemRenderMode.Billboard;
-        renderer.sortingOrder = 1;
+        // ── Rotation over lifetime — spin each square for visual interest ──────
+        var rotOverLife     = ps.rotationOverLifetime;
+        rotOverLife.enabled = true;
+        rotOverLife.z       = new ParticleSystem.MinMaxCurve(-90f * Mathf.Deg2Rad, 90f * Mathf.Deg2Rad);
+
+        // ── Renderer — Billboard so squares always face the camera ────────────
+        var rend          = ps.GetComponent<ParticleSystemRenderer>();
+        rend.renderMode   = ParticleSystemRenderMode.Billboard;
+        rend.sortingOrder = 1;
+
+        // Assign material. Sprites/Default renders as a solid flat quad with no
+        // circular texture, giving hard-edged squares. If the user has assigned
+        // their own material in the inspector that takes priority.
+        if (squareMaterial != null)
+        {
+            rend.material = squareMaterial;
+        }
+        else
+        {
+            // Try URP particles unlit first, then fall back to Sprites/Default.
+            Shader shader = Shader.Find("Universal Render Pipeline/Particles/Unlit") ?? Shader.Find("Sprites/Default");
+
+            if (shader != null)
+            {
+                Material mat   = new Material(shader);
+                mat.color      = particleColor;
+                rend.material  = mat;
+            }
+        }
     }
 }
