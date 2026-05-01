@@ -208,9 +208,15 @@ public class CameraController : MonoBehaviour, IEquippable
         Debug.Log("devlop: " + currentResult.development);
         Debug.Log("extras: " + currentResult.extras);
 
+        // Persist a copy to the player's gallery on disk *before* the in-memory
+        // texture gets destroyed in EndReview. Score modifiers + star count are
+        // written to a sidecar JSON so the main-menu gallery can render them
+        // without needing live game state.
+        PhotoArchive.SavePhoto(currentResult);
+
         ui.DisplayResults(currentResult);
 
-        Time.timeScale = 0f; 
+        Time.timeScale = 0f;
     }
 
     public void EndReview()
