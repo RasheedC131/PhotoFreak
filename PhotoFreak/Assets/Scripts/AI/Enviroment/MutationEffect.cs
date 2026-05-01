@@ -38,6 +38,9 @@ public class MutationEffect : MonoBehaviour
 
     private void Configure()
     {
+        // Must be stopped before any main module properties can be set.
+        ps.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+
         // ── Main ──────────────────────────────────────────────────────────────
         var main             = ps.main;
         main.duration        = duration;
