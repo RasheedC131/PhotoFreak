@@ -11,12 +11,12 @@ public class CameraBlurController : MonoBehaviour
 
     [Header("Blur Settings")]
     [SerializeField] private float focalLength = 100f;
-    [SerializeField] private float aperture = 1.4f;
+    [SerializeField] private float aperture    = 1.4f;
 
     [Header("Focus Distance")]
     [SerializeField] private float unfocusedDistance  = 0.5f;
     [SerializeField] private float maxRaycastDistance = 50f;
-    [SerializeField] private LayerMask raycastMask = ~0;
+    [SerializeField] private LayerMask raycastMask    = ~0;
     [SerializeField] private float defaultFocusDistance = 5f;
 
     [Header("References")]
@@ -27,9 +27,6 @@ public class CameraBlurController : MonoBehaviour
 
     private bool wasAiming = false;
 
-    // Large value pushes the focus plane far beyond the scene — no visible blur
-    private const float IdleFocusDistance = 500f;
-
     void Start()
     {
         if (globalVolume == null)
@@ -38,6 +35,7 @@ public class CameraBlurController : MonoBehaviour
             return;
         }
 
+        // Grab the runtime clone — never touches the shared profile asset
         runtimeProfile = globalVolume.profile;
 
         if (runtimeProfile == null)
@@ -61,7 +59,10 @@ public class CameraBlurController : MonoBehaviour
 
         dof.focalLength.value   = focalLength;
         dof.aperture.value      = aperture;
-        dof.focusDistance.value = IdleFocusDistance;
+        dof.focusDistance.value = defaultFocusDistance;
+
+        // Start with volume disabled — enabled only while aiming
+        globalVolume.enabled = false;
     }
 
     void Update()
@@ -72,24 +73,17 @@ public class CameraBlurController : MonoBehaviour
 
         if (aiming != wasAiming)
         {
-            wasAiming = aiming;
+            wasAiming            = aiming;
+            globalVolume.enabled = aiming;
             if (autoFocus != null) autoFocus.SetActive(aiming);
         }
 
         if (aiming)
-        {
             ApplyFocus();
-        }
-        else
-        {
-            // No blur when not aiming — focus plane is 500m away
-            dof.focusDistance.value = IdleFocusDistance;
-        }
     }
 
     private void ApplyFocus()
     {
-        // Get focus quality (0 = unfocused/shaky, 1 = locked on)
         float focusValue;
         if (controller.currentCamera.manualFocus)
         {
@@ -101,11 +95,8 @@ public class CameraBlurController : MonoBehaviour
             focusValue = autoFocus != null ? autoFocus.GetFocus() : 1f;
         }
 
-        // Find distance to subject
         float subjectDistance = GetSubjectDistance();
 
-        // At focusValue=0: focus plane is at unfocusedDistance (subject blurry)
-        // At focusValue=1: focus plane is exactly at subject (subject sharp, bg blurry)
         dof.focusDistance.value = Mathf.Lerp(unfocusedDistance, subjectDistance, focusValue);
         dof.aperture.value      = aperture;
         dof.focalLength.value   = focalLength;
