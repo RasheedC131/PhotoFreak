@@ -4,23 +4,45 @@ using UnityEngine.SceneManagement;
 
 public class TutorialPage : MonoBehaviour
 {
+    [Header("Modal Root")]
+    [SerializeField] private GameObject modalRoot;
+
+    [Header("Pages")]
     [SerializeField] private Transform pages;
     [SerializeField] private Transform forward;
     [SerializeField] private Transform backward;
     [SerializeField] private TMP_Text pageNumber;
     [SerializeField] private Transform tutorialUI;
+
     private int currentPage = 0;
     private Transform[] pageArr;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    private void Start()
+
+    private void Awake()
     {
+        if (modalRoot == null) modalRoot = gameObject;
         pageArr = new Transform[pages.childCount];
+        for (int i = 0; i < pageArr.Length; i++) pageArr[i] = pages.GetChild(i);
+        modalRoot.SetActive(false);
+    }
+
+
+    public void Open()
+    {
+        // Reset to the first page every time the tutorial is opened.
+        currentPage = 0;
         for (int i = 0; i < pageArr.Length; i++)
-        {
-            pageArr[i] = pages.GetChild(i);
-        }
+            pageArr[i].gameObject.SetActive(i == 0);
+
         showPage(pageArr[currentPage]);
         hide(backward);
+        show(forward);
+
+        modalRoot.SetActive(true);
+    }
+
+    public void Close()
+    {
+        modalRoot.SetActive(false);
     }
     private void showPage(Transform page)
     {
