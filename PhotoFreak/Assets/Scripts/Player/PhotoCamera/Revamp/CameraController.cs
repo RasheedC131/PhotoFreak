@@ -236,6 +236,19 @@ public class CameraController : MonoBehaviour, IEquippable
         return currFilm;
     }
 
+    public bool IsFilmFull()
+    {
+        return currFilm >= maxFilm;
+    }
+
+    // Adds film shots up to maxFilm. Returns true if any film was actually added.
+    public bool AddFilm(int amount)
+    {
+        if (currFilm >= maxFilm) return false;
+        currFilm = Mathf.Min(currFilm + amount, maxFilm);
+        return true;
+    }
+
 
     void OnDestroy()
     {
