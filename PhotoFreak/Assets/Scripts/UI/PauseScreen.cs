@@ -2,11 +2,6 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-/// <summary>
-/// Drives the pause-menu UI. Listens to GlobalGameState pause/resume events,
-/// shows / hides the pause and settings panels, and wires the main buttons.
-/// Drop this on the root Canvas object that holds the pause UI.
-/// </summary>
 public class PauseScreen : MonoBehaviour
 {
     [Header("Panels")]
@@ -129,9 +124,10 @@ public class PauseScreen : MonoBehaviour
 
     private void OnQuitToDesktop()
     {
-        Application.Quit();
-#if UNITY_EDITOR
+        #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
-#endif
+        #else
+        Application.Quit();
+        #endif
     }
 }

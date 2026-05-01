@@ -17,10 +17,13 @@ public class MainMenu : MonoBehaviour
         SceneManager.LoadScene(sceneName);
     }
 
-    // TODO: 
-    public void QuitGame()
+    public void OnQuitToDesktop()
     {
-        Debug.Log("Quit Pressed");
+        #if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+        #else
         Application.Quit();
+        #endif
     }
+    
 }
