@@ -4,8 +4,8 @@ using UnityEngine.AI;
 public class NPCAnimationController : MonoBehaviour
 {
     private NavMeshAgent agent;
-    private Animator animator;
     private AIContext ctx;
+    private NPCIdentity identity;
 
     [Header("Locomotion Settings")]
     [SerializeField] private float crossFadeDuration = 0.2f;
@@ -18,36 +18,77 @@ public class NPCAnimationController : MonoBehaviour
     [Tooltip("How quickly the NPC body rotates to face its movement direction. Higher = snappier, lower = more gradual.")]
     [SerializeField] private float rotationSmoothSpeed = 8f;
 
-    [Header("Social Animation Settings")]
+    [Header("Guest Animation Settings")]
+    [Tooltip("Leave empty to auto-discover the Animator on the guest model child.")]
+    [SerializeField] private Animator guestAnimator;
     [SerializeField] private string[] socialStateNames = new string[]
     {
         "AnnoyedHeadNod", "acknowledge", "RelievedSigh", "SarcasticHeadNod",
         "ThoughtfulHeadNod", "Dismisal", "ShakeHead", "HappyHand",
         "WeightShift", "YesHeadNod", "LookAway", "LengthyHeadNod", "HardHeadNod"
     };
-
     [SerializeField] private float minSocialAnimTime = 3f;
     [SerializeField] private float maxSocialAnimTime = 7f;
+
+    [Header("Monster Animation Settings")]
+    [Tooltip("Animator on the monster model child — drag it in here.")]
+    [SerializeField] private Animator monsterAnimator;
+    [Tooltip("State name in the monster Animator Controller for walking.")]
+    [SerializeField] private string monsterWalkStateName = "Walk";
+    [Tooltip("State name in the monster Animator Controller for idle. Leave empty to simply freeze the animator when the monster stops moving.")]
+    [SerializeField] private string monsterIdleStateName = "";
+
+    // Guest hashes
+    private readonly int idleHash = Animator.StringToHash("Idle");
+    private readonly int walkHash = Animator.StringToHash("Walk");
+    private int currentGuestAnimHash;
+
+    // Monster hashes — built from the inspector strings in Start()
+    private int monsterWalkHash;
+    private int monsterIdleHash;
+    private int currentMonsterAnimHash;
 
     private float socialAnimTimer = 0f;
     private float idleSettleTimer = 0f;
 
-    private readonly int idleHash = Animator.StringToHash("Idle");
-    private readonly int walkHash = Animator.StringToHash("Walk");
-    private int currentAnimHash;
+    // Returns whichever animator belongs to the currently visible model.
+    private Animator ActiveAnimator => (identity != null && !identity.isDisguised && monsterAnimator != null)
+        ? monsterAnimator
+        : guestAnimator;
+
+    // Ref to the hash tracker for the active animator.
+    private int CurrentAnimHash
+    {
+        get => (identity != null && !identity.isDisguised && monsterAnimator != null)
+            ? currentMonsterAnimHash : currentGuestAnimHash;
+        set
+        {
+            if (identity != null && !identity.isDisguised && monsterAnimator != null)
+                currentMonsterAnimHash = value;
+            else
+                currentGuestAnimHash = value;
+        }
+    }
 
     void Start()
     {
-        agent = GetComponent<NavMeshAgent>();
-        animator = GetComponentInChildren<Animator>();
-        ctx = GetComponent<AIContext>();
+        agent    = GetComponent<NavMeshAgent>();
+        ctx      = GetComponent<AIContext>();
+        identity = GetComponent<NPCIdentity>();
+
+        // Auto-discover the guest animator if not assigned in the inspector.
+        if (guestAnimator == null)
+            guestAnimator = GetComponentInChildren<Animator>();
+
+        monsterWalkHash = Animator.StringToHash(monsterWalkStateName);
+        monsterIdleHash = string.IsNullOrEmpty(monsterIdleStateName) ? 0 : Animator.StringToHash(monsterIdleStateName);
 
         if (agent != null) agent.updateRotation = false;
     }
 
     void Update()
     {
-        if (animator == null || ctx == null) return;
+        if (ctx == null) return;
 
         UpdateLocomotionState();
         SmoothRotationToMovement();
@@ -96,22 +137,46 @@ public class NPCAnimationController : MonoBehaviour
 
     private void HandleAnimations()
     {
+        bool isMonster = identity != null && !identity.isDisguised && monsterAnimator != null;
+
         switch (ctx.currentActionState)
         {
             case NPCActionState.IDLE:
-                PlayAnimation(idleHash);
+                if (isMonster)
+                    SetMonsterPaused(true);   // freeze on last frame — no idle anim needed
+                else
+                    PlayAnimation(idleHash);
                 socialAnimTimer = 0f;
                 break;
 
             case NPCActionState.WALK:
-                PlayAnimation(walkHash);
+                if (isMonster)
+                {
+                    SetMonsterPaused(false);  // resume before playing walk
+                    PlayAnimation(monsterWalkHash);
+                }
+                else
+                    PlayAnimation(walkHash);
                 socialAnimTimer = 0f;
                 break;
 
             case NPCActionState.SOCIALIZE:
-                HandleSocialAnimations();
+                // Monsters don't socialise — freeze in place.
+                if (isMonster)
+                    SetMonsterPaused(true);
+                else
+                    HandleSocialAnimations();
                 break;
         }
+    }
+
+    // Pausing via speed=0 freezes the animator on its current frame without
+    // disabling the component, so blend trees and transitions still resolve correctly
+    // the moment the monster starts moving again.
+    private void SetMonsterPaused(bool paused)
+    {
+        if (monsterAnimator != null)
+            monsterAnimator.speed = paused ? 0f : 1f;
     }
 
     private void HandleSocialAnimations()
@@ -132,32 +197,33 @@ public class NPCAnimationController : MonoBehaviour
 
     void OnEnable()
     {
-        currentAnimHash = 0; 
+        currentGuestAnimHash   = 0;
+        currentMonsterAnimHash = 0;
     }
 
     private void PlayAnimation(int targetHash, bool forceTransition = false)
     {
-        if (animator == null || !animator.isActiveAndEnabled || animator.runtimeAnimatorController == null) return;
+        Animator anim = ActiveAnimator;
+        if (anim == null || !anim.isActiveAndEnabled || anim.runtimeAnimatorController == null) return;
 
         if (forceTransition)
         {
-            animator.CrossFade(targetHash, crossFadeDuration);
-            currentAnimHash = targetHash;
+            anim.CrossFade(targetHash, crossFadeDuration);
+            CurrentAnimHash = targetHash;
             return;
         }
 
- 
-        if (currentAnimHash == targetHash)
+        if (CurrentAnimHash == targetHash)
         {
-            AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
-            if (stateInfo.shortNameHash != targetHash && !animator.IsInTransition(0))
+            AnimatorStateInfo stateInfo = anim.GetCurrentAnimatorStateInfo(0);
+            if (stateInfo.shortNameHash != targetHash && !anim.IsInTransition(0))
             {
-                animator.CrossFade(targetHash, crossFadeDuration);
+                anim.CrossFade(targetHash, crossFadeDuration);
             }
             return;
         }
 
-        animator.CrossFade(targetHash, crossFadeDuration);
-        currentAnimHash = targetHash;
+        anim.CrossFade(targetHash, crossFadeDuration);
+        CurrentAnimHash = targetHash;
     }
 }
