@@ -58,7 +58,6 @@ public class PlayerInventory : MonoBehaviour
         for (int i = 0; i < InventorySize; i++)
             OnSlotUpdated?.Invoke(i, inventorySlots[i]?.itemIcon);
 
-        OnSlotChanged?.Invoke(inventorySlots[0]?.itemIcon, inventorySlots[0]?.itemName ?? "");
         OnActiveSlotChanged?.Invoke(0);
 
         // Hide any items that aren't in the active slot
