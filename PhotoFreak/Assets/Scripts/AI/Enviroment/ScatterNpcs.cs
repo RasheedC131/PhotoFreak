@@ -84,11 +84,13 @@ public class ScatterNpcs : MonoBehaviour
                 if (wanderScript != null) wanderScript.hasReservedSpot = true;
             }
 
+            navAgent.obstacleAvoidanceType = ObstacleAvoidanceType.HighQualityObstacleAvoidance;
+            navAgent.avoidancePriority     = Random.Range(1, 99);
+
             if (gs != null)
             {
-                navAgent.speed            = Random.Range(gs.wanderBaseSpeed * 0.8f, gs.wanderBaseSpeed * 1.2f);
-                navAgent.acceleration     = Random.Range(gs.wanderMinAcceleration, gs.wanderMaxAcceleration);
-                navAgent.avoidancePriority = Random.Range(30, 70);
+                navAgent.speed        = Random.Range(gs.wanderBaseSpeed * 0.8f, gs.wanderBaseSpeed * 1.2f);
+                navAgent.acceleration = Random.Range(gs.wanderMinAcceleration, gs.wanderMaxAcceleration);
             }
         }
     }

@@ -56,9 +56,15 @@ public override void ExecuteAction()
         {
             if (nodeScript.incomingCrowd.Contains(ctx)) nodeScript.incomingCrowd.Remove(ctx);
             if (!nodeScript.currentCrowd.Contains(ctx)) nodeScript.currentCrowd.Add(ctx);
-            hasReservedSpot = false; 
+            hasReservedSpot = false;
             attemptTimer = 0f;
             ctx.currentActionState = NPCActionState.IDLE;
+
+            if (agent.enabled && agent.isOnNavMesh)
+            {
+                agent.isStopped = true;
+                agent.ResetPath();
+            }
         }
 
         else
