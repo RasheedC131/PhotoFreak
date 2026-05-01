@@ -63,16 +63,18 @@ public class AIBrain : MonoBehaviour
 
                 currentAction = newAction;
 
+                // If this NPC was parked as an obstacle, tear down that state before
+                // re-enabling the agent. The one-frame gaps let the NavMesh bake update.
                 if (obstacle != null && obstacle.enabled)
                 {
                     obstacle.enabled = false;
-                    yield return null; // Wait 1 frame
+                    yield return null;
                 }
 
                 if (agent != null && !agent.enabled)
                 {
                     agent.enabled = true;
-                    yield return null; // Wait 1 frame
+                    yield return null;
                 }
 
                 if (currentAction != null) currentAction.OnEnter();

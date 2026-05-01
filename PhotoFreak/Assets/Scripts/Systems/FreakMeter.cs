@@ -231,8 +231,8 @@ public class FreakMeter : MonoBehaviour
         UpdateUI();
     }
 
-    // Lowers the freak level without touching the strike counter.
-    // Strikes already earned are kept — only the meter bar is reduced.
+    // Lowers the freak level without touching the strike counter
+    // Strikes already earned are kept only the meter bar is reduced
     public void ReduceFreak(float amount)
     {
         currentFreak = Mathf.Max(currentFreak - amount, 0f);

@@ -776,7 +776,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ActionWanderFree
   isMonsterAction: 1
-  hasReservedSpot: 0
 --- !u!114 &702094534803053660
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -981,6 +980,8 @@ GameObject:
   - component: {fileID: 3961388715744793645}
   - component: {fileID: 8330840134967365986}
   - component: {fileID: 6426933882425033256}
+  - component: {fileID: 599632084049945868}
+  - component: {fileID: 2242860567417138528}
   m_Layer: 8
   m_Name: AIGuestFem
   m_TagString: Untagged
@@ -1124,7 +1125,7 @@ NavMeshAgent:
   m_GameObject: {fileID: 6616486110427068599}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 0.5
+  m_Radius: 0.6
   m_Speed: 3.5
   m_Acceleration: 8
   avoidancePriority: 50
@@ -1245,6 +1246,44 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 112
   m_CollisionDetection: 0
+--- !u!114 &599632084049945868
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6616486110427068599}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7df0ca50abba5448396a5dc78c8ec8fd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AgentStuckMonitor
+  stuckSpeedThreshold: 0.15
+  yieldAfter: 1.2
+  forceNewPathAfter: 3
+  yieldPriority: 99
+  yieldDuration: 2
+  blockerScanRadius: 1.5
+  recoveryCooldown: 2
+  logRecovery: 0
+--- !u!114 &2242860567417138528
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6616486110427068599}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4618ae29d294c4fdf9f6cdd4cd85cd4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AgentSeparation
+  separationRadius: 1.5
+  separationStrength: 2.5
+  agentLayer:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  blockingDotThreshold: -0.4
 --- !u!1 &6653963265284278247
 GameObject:
   m_ObjectHideFlags: 0
@@ -1532,7 +1571,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ActionWanderFree
   isMonsterAction: 0
-  hasReservedSpot: 0
 --- !u!114 &6940637132248418745
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -16,9 +16,22 @@ public class ScatterNpcs : MonoBehaviour
         SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
+    [Header("Layer Settings")]
+    [Tooltip("Layer that NPCs are on. Collision between this layer and itself is " +
+             "disabled at runtime so agents walk through each other while keeping " +
+             "their colliders intact for the photo system raycasts.")]
+    [SerializeField] private string npcLayerName = "Subject";
+
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         gs = GuestSettings.Instance;
+
+        // Disable NPC-vs-NPC physics collision so agents walk through each other.
+        // Their colliders remain active for raycasts (PhotoTag detection, etc.).
+        int npcLayer = LayerMask.NameToLayer(npcLayerName);
+        if (npcLayer >= 0)
+            Physics.IgnoreLayerCollision(npcLayer, npcLayer, true);
+
         ScatterAll();
     }
 
@@ -84,7 +97,10 @@ public class ScatterNpcs : MonoBehaviour
                 if (wanderScript != null) wanderScript.hasReservedSpot = true;
             }
 
-            navAgent.obstacleAvoidanceType = ObstacleAvoidanceType.HighQualityObstacleAvoidance;
+            // NoObstacleAvoidance disables RVO agent-vs-agent steering so moving NPCs
+            // walk through each other instead of shoving. Stopped agents still carve
+            // the NavMesh via NavMeshObstacle so pathfinding routes around them normally.
+            navAgent.obstacleAvoidanceType = ObstacleAvoidanceType.NoObstacleAvoidance;
             navAgent.avoidancePriority     = Random.Range(1, 99);
 
             if (gs != null)

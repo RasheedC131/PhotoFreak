@@ -4,18 +4,21 @@ using System.Collections.Generic;
 
 public class ActionWanderNodes : UtilityAction
 {
-    private NavMeshAgent agent; 
-    private AIContext ctx; 
-    private GuestSettings gs; 
-    
-    public bool hasReservedSpot = false; 
-    private float attemptTimer = 0f; 
+    private NavMeshAgent agent;
+    private NavMeshObstacle obstacle;
+    private AIContext ctx;
+    private GuestSettings gs;
+
+    public bool hasReservedSpot = false;
+    private float attemptTimer = 0f;
+    private Vector3 lastSetDestination = Vector3.positiveInfinity;
 
     void Awake()
     {
-        agent = GetComponentInParent<NavMeshAgent>(); 
-        ctx = GetComponentInParent<AIContext>(); 
-        gs = GuestSettings.Instance; 
+        agent    = GetComponentInParent<NavMeshAgent>();
+        obstacle = GetComponentInParent<NavMeshObstacle>();
+        ctx      = GetComponentInParent<AIContext>();
+        gs       = GuestSettings.Instance;
     }
 
 public override void ExecuteAction()
@@ -56,14 +59,29 @@ public override void ExecuteAction()
         {
             if (nodeScript.incomingCrowd.Contains(ctx)) nodeScript.incomingCrowd.Remove(ctx);
             if (!nodeScript.currentCrowd.Contains(ctx)) nodeScript.currentCrowd.Add(ctx);
-            hasReservedSpot = false;
-            attemptTimer = 0f;
+            hasReservedSpot        = false;
+            attemptTimer           = 0f;
+            lastSetDestination     = Vector3.positiveInfinity;
             ctx.currentActionState = NPCActionState.IDLE;
 
-            if (agent.enabled && agent.isOnNavMesh)
+            // Stop the agent, then hand off to the obstacle so this NPC physically
+            // carves the NavMesh — moving agents will path around it rather than
+            // walking straight through a standing crowd member.
+            if (agent != null && agent.enabled && agent.isOnNavMesh)
             {
                 agent.isStopped = true;
                 agent.ResetPath();
+                agent.enabled = false;
+            }
+
+            if (obstacle != null)
+            {
+                // Keep the carved footprint tight — matching the agent radius rather than
+                // a larger value prevents a single stopped NPC from carving across an
+                // entire narrow hallway and blocking other agents' paths completely.
+                obstacle.radius  = agent != null ? agent.radius : obstacle.radius;
+                obstacle.carving = true;
+                obstacle.enabled = true;
             }
         }
 
@@ -72,7 +90,16 @@ public override void ExecuteAction()
             if (agent.enabled && agent.isOnNavMesh && !agent.pathPending)
             {
                 if (agent.isStopped) agent.isStopped = false;
-                agent.SetDestination(ctx.currentDestination);
+
+                // Only issue a new path when the destination changed or the agent
+                // has no path yet — calling SetDestination every frame disrupts
+                // Unity's RVO avoidance calculation and makes agents walk through each other
+                bool destinationChanged = Vector3.SqrMagnitude(ctx.currentDestination - lastSetDestination) > 0.01f;
+                if (destinationChanged || !agent.hasPath)
+                {
+                    agent.SetDestination(ctx.currentDestination);
+                    lastSetDestination = ctx.currentDestination;
+                }
             }
         }
     }    
@@ -88,11 +115,11 @@ public override void ExecuteAction()
             }
         }
         
-        hasReservedSpot = false;
-        ctx.targetNode = null;
-        ctx.forceNewPath = false; 
-        
-        attemptTimer = 0f; 
+        hasReservedSpot      = false;
+        ctx.targetNode       = null;
+        ctx.forceNewPath     = false;
+        attemptTimer         = 0f;
+        lastSetDestination   = Vector3.positiveInfinity;
         ctx.currentActionState = NPCActionState.WALK;
         if (agent != null && agent.isOnNavMesh) agent.isStopped = false;
     }
@@ -180,6 +207,7 @@ public override void ExecuteAction()
         hasReservedSpot    = false;
         ctx.forceNewPath   = false;
         attemptTimer       = 0f;
+        lastSetDestination = Vector3.positiveInfinity;
 
         if (agent != null && agent.isOnNavMesh)
         {
