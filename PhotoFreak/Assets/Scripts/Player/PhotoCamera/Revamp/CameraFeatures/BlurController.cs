@@ -34,17 +34,20 @@ public class CameraBlurController : MonoBehaviour
             return;
         }
 
-        if (globalVolume.profile.TryGet(out DepthOfField tmp))
+        VolumeProfile profile = globalVolume.profile;
+
+        if (!profile.TryGet(out dof))
         {
-            dof = tmp;
-            dof.focusDistance.overrideState = true;
-            dof.aperture.overrideState = true;
-            dof.active = true;
+            dof = profile.Add<DepthOfField>(true);
+            Debug.Log("[BlurController] DepthOfField not found in profile — added at runtime.");
         }
-        else
-        {
-            Debug.LogError("No Depth Of Field override found in Volume Profile!");
-        }
+
+        dof.mode.value = DepthOfFieldMode.Bokeh;
+        dof.mode.overrideState = true;
+        dof.focusDistance.overrideState = true;
+        dof.aperture.overrideState = true;
+        dof.focalLength.overrideState = true;
+        dof.active = true;
     }
 
     void Update()
@@ -76,7 +79,5 @@ public class CameraBlurController : MonoBehaviour
         float blurAmount = Mathf.Lerp(maxBlur, 0f, focusValue);
 
         dof.focalLength.value = blurAmount;
-
-        Debug.Log("boom");
     }
 }
