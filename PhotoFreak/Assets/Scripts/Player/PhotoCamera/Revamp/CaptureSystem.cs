@@ -29,6 +29,9 @@ public class CaptureSystem : MonoBehaviour
     [SerializeField] private PlayerUIManager ui;
     [SerializeField] private CameraFlash cameraFlash;
 
+    //Other Variables
+    private bool MonsterGet;
+
 
     void Awake()
     {
@@ -61,6 +64,14 @@ public class CaptureSystem : MonoBehaviour
             if (tag != null)
             {
                 Debug.Log("[CaptureSystem] Capturing subject.");
+                if (tag.gameObject.tag == "monster")
+                {
+                    MonsterGet = true;
+                }
+                else
+                {
+                    MonsterGet = false;
+                }
                 cameraFlash?.TriggerFlash();
                 StartCoroutine(SendCaptureData(origin, subject));
                 return true;
@@ -75,6 +86,12 @@ public class CaptureSystem : MonoBehaviour
 
         Debug.Log("[CaptureSystem] Missed.");
         return false;
+    }
+
+    // get if it was a monster or not
+    public bool CheckMonster()
+    {
+        return MonsterGet;
     }
 
     //Summons an overlap sphere to catch nearby subjects
@@ -129,7 +146,7 @@ public class CaptureSystem : MonoBehaviour
         data.currentPhoto.Apply();
 
 
-        eval.EvaluateCaptureData(data);
+        eval.EvaluateCaptureData(data, MonsterGet);
         
     }
 

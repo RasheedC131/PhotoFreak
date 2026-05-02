@@ -1,5 +1,6 @@
 using UnityEngine;
 using System; 
+using UnityEngine.SceneManagement;
 
 public class GlobalGameState : MonoBehaviour
 {
@@ -76,6 +77,7 @@ public class GlobalGameState : MonoBehaviour
         Time.timeScale = 0f; 
         onGameOver?.Invoke();
         Debug.Log("Game Over"); 
+        SceneManager.LoadScene("TitleScreen");
     }
 
     void OnDestroy ()

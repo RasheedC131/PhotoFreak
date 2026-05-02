@@ -37,6 +37,7 @@ public class CameraController : MonoBehaviour, IEquippable
     private CameraManualFocus manualFocus;
 
     private bool cameraRaised;
+    private bool getMonster;
 
     private ScoreParameters currentResult;
 
@@ -165,6 +166,7 @@ public class CameraController : MonoBehaviour, IEquippable
             if (captureSystem.CaptureSubject())
             {
                 hasPendingPhoto = true;
+                getMonster = captureSystem.CheckMonster();
                 currFilm -= 1;
                 Debug.Log(currFilm + " Shoots Left");
                 TransitionToState(CaptureState.Idle);
@@ -198,7 +200,7 @@ public class CameraController : MonoBehaviour, IEquippable
     {
         TransitionToState(CaptureState.Reviewing);
 
-        currentResult = eval.CalculatePhotoScore();
+        currentResult = eval.CalculatePhotoScore(getMonster);
 
         Debug.Log("Toal: " + currentResult.result);
         Debug.Log("dist: " + currentResult.distance);

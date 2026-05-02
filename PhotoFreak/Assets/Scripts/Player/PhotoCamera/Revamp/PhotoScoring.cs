@@ -20,7 +20,7 @@ public class PhotoScoring : MonoBehaviour
     private ScoreParameters currScore;
 
 
-    public void EvaluateCaptureData(CaptureData data)
+    public void EvaluateCaptureData(CaptureData data, bool getMonster)
     {
         currScore = new ScoreParameters();
 
@@ -53,20 +53,32 @@ public class PhotoScoring : MonoBehaviour
         Debug.Log("develop: " + developPercent + " | Score: " + currScore.development);
     }
 
-    public ScoreParameters CalculatePhotoScore()
+    public ScoreParameters CalculatePhotoScore(bool getMonster)
     {
-        float weightedDistance = currScore.distance * distWeight;
-        float weightedFacing   = currScore.facing * faceWeight;
-        float weightedSize     = currScore.size * sizeWeight;
-        float weightedFocus    = currScore.focus * focusWeight;
-        float weightedDevelop  = currScore.development * developWeight;
-        
-        float baseScore = weightedDistance + weightedFacing + weightedSize + weightedFocus + weightedDevelop;
+        if (getMonster)
+        {
+            float weightedDistance = currScore.distance * distWeight;
+            float weightedFacing   = currScore.facing * faceWeight;
+            float weightedSize     = currScore.size * sizeWeight;
+            float weightedFocus    = currScore.focus * focusWeight;
+            float weightedDevelop  = currScore.development * developWeight;
+            
+            float baseScore = weightedDistance + weightedFacing + weightedSize + weightedFocus + weightedDevelop;
 
-        float extrasMultiplier = 1f + (currScore.extras * 0.1f);
+            float extrasMultiplier = 1f + (currScore.extras * 0.1f);
 
-        currScore.result = baseScore * extrasMultiplier;
-        
+            currScore.result = baseScore * extrasMultiplier;
+        }
+        else // failed to capture the monster
+        {   
+            currScore.distance = 0;
+            currScore.facing = 0;
+            currScore.size = 0;
+            currScore.focus = 0;
+            currScore.development = 0;
+            currScore.result = 0;
+            currScore.extras = 0;
+        }
 
         return currScore;
     }
